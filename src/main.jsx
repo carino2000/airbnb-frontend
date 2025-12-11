@@ -12,7 +12,7 @@ const router = createBrowserRouter([
     element: <AirbnbHomePage />,
   },
   {
-    path: "/rooms",
+    path: "/room",
     element: <AirbnbRoomsPage />,
   },
 ]);
