@@ -3,8 +3,25 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
-import AirbnbHomePage from "./pages/AirbnbHomePage";
-import AirbnbRoomsPage from "./pages/AirbnbRoomsPage";
+import Main from "./pages/Main";
+import RoomDetail from "./pages/RoomDetail";
+import RoomDetail from "./pages/RoomDetail";
+import MessageWrite from "./pages/MessageWrite";
+import Review from "./pages/Review";
+import Signup from "./pages/Signup";
+import Login from "./pages/Login";
+import Profile from "./pages/Profile";
+import Wishlist from "./pages/Wishlist";
+import AccountDelete from "./pages/AccountDelete";
+import BookingHistory from "./pages/BookingHistory";
+import ReservationDetail from "./pages/ReservationDetail";
+import HostingAccommodation from "./pages/HostingAccommodation";
+import HostingAmenities from "./pages/HostingAmenities";
+import HostingImages from "./pages/HostingImages";
+import HostingTags from "./pages/HostingTags";
+import HostingList from "./pages/HostingList";
+import HostingEdit from "./pages/HostingEdit";
+
 
 const router = createBrowserRouter([
   {
