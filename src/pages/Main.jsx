@@ -1,63 +1,85 @@
+import { useState, useRef } from "react";
+
 import logo from "../assets/Airbnb_Logo.png";
 import stays from "../assets/nav-stays.png";
 import experiences from "../assets/nav-experiences.png";
 import services from "../assets/nav-services.png";
+import { useNavigate } from "react-router";
 
-export default function AirbnbHomePage() {
+export default function Main() {
+  const [index, setIndex] = useState(0);
+  const checkinRef = useRef(null);
+  const checkoutRef = useRef(null);
+
+  const [openMenu, setOpenMenu] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const navigate = useNavigate();
+
+  const items = [1, 2, 3, 4, 5, 6, 7, 8];
+  const VISIBLE = 7;
+  const CARD_PERCENT = 100 / VISIBLE;
+
+  const prev = () => setIndex((i) => Math.max(i - 1, 0));
+  const next = () => setIndex((i) => Math.min(i + 1, items.length - VISIBLE));
+
   return (
     <>
-      {/* 상단 헤더 고정 */}
-      <header className="fixed top-0 left-0 w-full h-[200px] bg-neutral-100 border-b-2 z-50 border-b-neutral-200">
-        <div className="h-25 flex items-center px-10">
-          <div className="flex items-center justify-between w-full">
+      {/* 헤더 */}
+      <header className="fixed top-0 left-0 w-full h-[160px] md:h-[200px] bg-neutral-100 border-b-2 z-50 border-b-neutral-200">
+        <div className="h-25 flex items-center px-6 md:px-10">
+          <div className="flex items-center justify-between w-full gap-4">
             {/* 로고 */}
-            <div>
-              <img
-                src={logo}
-                alt=""
-                className="w-[100px] h-auto cursor-pointer"
-              />
-            </div>
+            <img
+              src={logo}
+              alt=""
+              className="w-[100px] h-auto cursor-pointer shrink-0"
+            />
 
-            {/* 메뉴 */}
-            <nav className="flex gap-9 text-sm font-m text-gray-700 cursor-pointer">
-              {/* 숙소 */}
-              <div className="flex gap-3 items-center group cursor-pointer">
+            {/* 중앙 메뉴 */}
+            <nav className="hidden md:flex gap-5 text-sm text-gray-700 cursor-pointer whitespace-nowrap">
+              <div className="flex gap-2 items-center group">
                 <img
                   src={stays}
-                  alt=""
-                  className="w-11 h-auto transition-transform duration-200 group-hover:scale-125"
+                  className="w-9 h-auto group-hover:scale-110 transition-transform duration-200"
                 />
-                <p className="group-hover:font-semibold">숙소</p>
+                <p className="hidden lg:block group-hover:font-semibold">
+                  숙소
+                </p>
               </div>
 
-              {/* 체험 */}
-              <div className="flex gap-3 items-center group cursor-pointer">
+              <div className="flex gap-2 items-center group">
                 <img
                   src={experiences}
-                  alt=""
-                  className="w-9 h-auto transition-transform duration-200 group-hover:scale-125"
+                  className="w-8 h-auto group-hover:scale-110 transition-transform duration-200"
                 />
-                <p className="group-hover:font-semibold">체험</p>
+                <p className="hidden lg:block group-hover:font-semibold">
+                  체험
+                </p>
               </div>
 
-              {/* 서비스 */}
-              <div className="flex gap-3 items-center group cursor-pointer">
+              <div className="flex gap-2 items-center group">
                 <img
                   src={services}
-                  alt=""
-                  className="w-9 h-auto transition-transform duration-200 group-hover:scale-125"
+                  className="w-8 h-auto group-hover:scale-110 transition-transform duration-200"
                 />
-                <p className="group-hover:font-semibold">서비스</p>
+                <p className="hidden lg:block group-hover:font-semibold">
+                  서비스
+                </p>
               </div>
             </nav>
 
             {/* 우측 메뉴 */}
-            <div className="flex gap-3 items-center">
-              <div className="rounded-full px-3 py-2 hover:bg-gray-200 cursor-pointer">
-                <p className="text-xs font-bold">호스팅 하기</p>
+            <div className="flex gap-1 items-center shrink-0">
+              <div className="hidden sm:block rounded-full px-3 py-2 hover:bg-gray-200 cursor-pointer">
+                <p className="text-xs font-bold whitespace-nowrap">
+                  호스팅 하기
+                </p>
               </div>
-              <div className="text-smcursor-pointer rounded-full px-2 py-2 bg-gray-100 hover:bg-gray-200">
+
+              <div
+                className="rounded-full px-2 py-2 bg-gray-100 hover:bg-gray-200 cursor-pointer"
+                onClick={() => setOpenMenu((prev) => !prev)}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -74,66 +96,101 @@ export default function AirbnbHomePage() {
                 </svg>
               </div>
             </div>
+
+            {/* 햄버거 메뉴 */}
+            {openMenu && (
+              <div className="absolute top-[70px] right-6 md:right-10 w-[150px] bg-white rounded-md shadow-xl border border-gray-200 z-999">
+                <div
+                  className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-xs hover:font-semibold"
+                  onClick={() => {
+                    setShowLogin(true);
+                    setOpenMenu(false);
+                  }}
+                >
+                  로그인
+                </div>
+                <div
+                  className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-xs hover:font-semibold"
+                  onClick={() => {
+                    navigate("/sign-up");
+                    setOpenMenu(false);
+                  }}
+                >
+                  회원가입
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
         {/* 검색창 */}
-        <div className="w-full flex justify-center mb-6">
-          <div className="flex items-center w-[900px] bg-white shadow-md rounded-full overflow-hidden border border-gray-200">
+        <div className="w-full flex justify-center px-4 mb-4 md:mb-6">
+          <div className="flex items-center w-full max-w-[800px] md:w-[600px] lg:w-[800px] bg-white shadow-md rounded-full overflow-hidden border border-neutral-200">
             {/* 여행지 */}
-            <div className="flex-2 px-6 py-4 cursor-pointer hover:bg-neutral-200 hover:rounded-full transition-all">
-              <p className="text-xs font-normal">여행지</p>
+            <div className="flex-auto min-w-0 px-6 py-4 hover:bg-neutral-200 rounded-full cursor-pointer">
+              <p className="text-xs truncate whitespace-nowrap">여행지</p>
               <input
                 type="text"
                 placeholder="여행지 검색"
-                className="w-full text-sm text-gray-600 focus:outline-none bg-transparent"
+                className="w-full min-w-0 truncate text-sm text-gray-600 bg-transparent focus:outline-none placeholder:text-xs"
               />
             </div>
 
             <div className="w-px h-8 bg-gray-300"></div>
 
             {/* 체크인 */}
-            <div className="flex-1 px-6 py-4 cursor-pointer hover:bg-neutral-200 hover:rounded-full transition-all">
-              <p className="text-xs font-normal">체크인</p>
+            <div
+              className="flex-auto min-w-0 px-6 py-4 hover:bg-neutral-200 rounded-full cursor-pointer"
+              onClick={() => checkinRef.current.showPicker()}
+            >
+              <p className="text-xs truncate whitespace-nowrap">체크인</p>
               <input
+                ref={checkinRef}
                 type="date"
-                className="text-sm text-gray-600 focus:outline-none bg-transparent"
+                onMouseDown={(e) => e.preventDefault()}
+                className="w-full min-w-0 truncate text-xs text-gray-600 bg-transparent focus:outline-none cursor-pointer"
               />
             </div>
 
             <div className="w-px h-8 bg-gray-300"></div>
 
             {/* 체크아웃 */}
-            <div className="flex-1 px-6 py-4 cursor-pointer hover:bg-neutral-200 hover:rounded-full transition-all">
-              <p className="text-xs font-normal">체크아웃</p>
+            <div
+              className="flex-auto min-w-0 px-6 py-4 hover:bg-neutral-200 rounded-full cursor-pointer"
+              onClick={() => checkoutRef.current.showPicker()}
+            >
+              <p className="text-xs truncate whitespace-nowrap">체크아웃</p>
               <input
+                ref={checkoutRef}
                 type="date"
-                className="text-sm text-gray-600 focus:outline-none bg-transparent"
+                onMouseDown={(e) => e.preventDefault()}
+                className="w-full min-w-0 truncate text-xs text-gray-600 bg-transparent focus:outline-none cursor-pointer"
               />
             </div>
 
             <div className="w-px h-8 bg-gray-300"></div>
 
-            {/* 인원수 + 검색 버튼 */}
-            <div className="flex items-center px-2 py-1 hover:bg-neutral-200 hover:rounded-full transition-all">
-              <div className="flex-1 px-4 py-3 cursor-pointer">
-                <p className="text-xs font-normal">여행자</p>
+            {/* 여행자 + 돋보기 */}
+            <div className="flex min-w-0 items-center px-2 py-1 hover:bg-neutral-200 rounded-full transition-all">
+              <div className="flex-1 min-w-0 px-4 py-3">
+                <p className="text-xs truncate whitespace-nowrap">여행자</p>
                 <input
                   type="number"
                   min="1"
                   placeholder="게스트 추가"
-                  className="w-full text-sm text-gray-600 focus:outline-none bg-transparent"
+                  className="w-full truncate text-sm text-gray-600 bg-transparent focus:outline-none placeholder:text-xs"
                 />
               </div>
 
-              <button className="bg-rose-500 text-white p-3 rounded-full ml-2 mr-3 hover:bg-rose-700 transition cursor-pointer">
+              {/* 🔍 돋보기 — 절대 변경 안 함 */}
+              <button className="shrink-0 bg-rose-500 text-white p-3 rounded-full hover:bg-rose-700 transition cursor-pointer">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
-                  strokeWidth="2.5"
+                  strokeWidth="2"
                   stroke="currentColor"
-                  className="size-6"
+                  className="size-5"
                 >
                   <path
                     strokeLinecap="round"
@@ -148,100 +205,138 @@ export default function AirbnbHomePage() {
       </header>
 
       {/* 본문 */}
-      <main className="mt-[250px] px-10">
-        <div>
-          {/* 서브타이틑 + 버튼*/}
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-1">
-              <h3 className="font-semibold text-xl">부산 인기 숙소</h3>
+      <main className="mt-[250px] w-5/6 mx-auto lg:px-10">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-1">
+            <h3 className="font-semibold text-lg sm:text-xl">부산 인기 숙소</h3>
+
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="3"
+              stroke="currentColor"
+              className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2 translate-y-0.5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="m8.25 4.5 7.5 7.5-7.5 7.5"
+              />
+            </svg>
+          </div>
+
+          {/* 슬라이드 버튼 */}
+          <div className="flex gap-3">
+            <button
+              onClick={prev}
+              disabled={index === 0}
+              className="rounded-full bg-neutral-200 px-2 py-2 text-neutral-400 disabled:opacity-30 cursor-pointer"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke-width="3"
+                strokeWidth="2"
                 stroke="currentColor"
-                class="size-3"
-                className="w-4 h-4 ml-2 translate-y-0.5"
+                className="size-4"
               >
                 <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 19.5 8.25 12l7.5-7.5"
+                />
+              </svg>
+            </button>
+
+            <button
+              onClick={next}
+              disabled={index === items.length - VISIBLE}
+              className="rounded-full bg-neutral-200 px-2 py-2 text-neutral-400 disabled:opacity-30 cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="2"
+                stroke="currentColor"
+                className="size-4"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   d="m8.25 4.5 7.5 7.5-7.5 7.5"
                 />
               </svg>
-            </div>
-            {/* 버튼 */}
-            <div className="flex gap-3">
-              <div className="rounded-full bg-neutral-200 px-2 py-2 text-neutral-400">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                  class="size-4"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M15.75 19.5 8.25 12l7.5-7.5"
-                    className="w-4 h-4"
-                  />
-                </svg>
-              </div>
-              <div className="rounded-full bg-neutral-200 px-2 py-2  text-neutral-400">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                  class="size-4"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="m8.25 4.5 7.5 7.5-7.5 7.5"
-                    className="w-4 h-4"
-                  />
-                </svg>
-              </div>
-            </div>
+            </button>
           </div>
         </div>
-        {/* 썸네일 목록 */}
-        <div className="grid grid-cols-7 grid-rows-5 gap-4 mt-7">
-          <div>
-            <div className="row-span-2 aspect-square rounded-lg border flex items-center justify-center">
-              1
-            </div>
-            <div>
-              <div className="border">서울의 집</div>
-              <div>
-                1월 30일 ~ 2월 1일 ₩205,000 · 2박 , · 평점 5.0점(5점 만점) 5.0
+
+        {/* 슬라이드 */}
+        <div className="overflow-hidden mt-3 cursor-pointer">
+          <div
+            className="flex transition-transform duration-300"
+            style={{ transform: `translateX(-${index * CARD_PERCENT}%)` }}
+          >
+            {items.map((num) => (
+              <div
+                key={num}
+                className="shrink-0 px-1.5"
+                style={{ width: `${CARD_PERCENT}%` }}
+                onClick={() => navigate(`/room/${num}`)}
+              >
+                <div className="aspect-square rounded-lg border flex items-center justify-center">
+                  {num}
+                </div>
+
+                <div className="mt-2 text-left">
+                  <div className="font-medium text-sm truncate">
+                    서울의 집 {num}
+                  </div>
+                  <div className="text-xs text-gray-500 truncate">
+                    1월 30일 ~ 2월 1일
+                  </div>
+                  <div className="text-xs text-gray-500 truncate">
+                    ₩205,000 · 평점 5.0
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-          <div className="row-span-2 aspect-square rounded-lg border flex items-center justify-center">
-            2
-          </div>
-          <div className="row-span-2 aspect-square rounded-lg border flex items-center justify-center">
-            3
-          </div>
-          <div className="row-span-2 aspect-square rounded-lg border flex items-center justify-center">
-            4
-          </div>
-          <div className="row-span-2 aspect-square rounded-lg border flex items-center justify-center">
-            5
-          </div>
-          <div className="row-span-2 aspect-square rounded-lg border flex items-center justify-center">
-            6
-          </div>
-          <div className="row-span-2 aspect-square rounded-lg border flex items-center justify-center">
-            7
+            ))}
           </div>
         </div>
       </main>
+
+      {/* 로그인 모달 */}
+      {showLogin && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-9999">
+          <div className="bg-white w-96 p-8 rounded-md shadow-xl">
+            <h2 className="text-base font-semibold mb-6 text-left">로그인</h2>
+
+            <input
+              type="text"
+              placeholder="아이디"
+              className="border border-gray-400 w-full p-2.5 rounded-md mb-3 placeholder:text-xs text-sm"
+            />
+
+            <input
+              type="password"
+              placeholder="비밀번호"
+              className="border border-gray-400 w-full p-2.5 rounded-md mb-4 placeholder:text-xs text-sm"
+            />
+
+            <button className="w-full bg-rose-600 text-white p-3 rounded-md text-sm hover:bg-rose-700 transition cursor-pointer">
+              로그인
+            </button>
+
+            <button
+              onClick={() => setShowLogin(false)}
+              className="w-full mt-3 text-gray-600 text-sm hover:underline cursor-pointer"
+            >
+              닫기
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
