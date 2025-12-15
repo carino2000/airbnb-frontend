@@ -42,17 +42,17 @@ function insertAccount(data) {
   });
 }
 
-function loginCheck(id, pw) {
-  const data = { id, pw };
-  return fetch(serverAddr + "/account/log-in", {
+function loginCheck(accountId, pw) {
+  return fetch(serverAddr + "/accounts/login", {
     method: "post",
-    body: JSON.stringify(data),
+    body: JSON.stringify({
+      accountId: accountId,
+      pw: pw,
+    }),
     headers: {
       "Content-type": "application/json",
     },
-  }).then(function (response) {
-    return response.json();
-  });
+  }).then((res) => res.json());
 }
 
 function addBulkExpense(data) {

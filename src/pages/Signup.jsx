@@ -168,7 +168,7 @@ export default function SignUp() {
                 type="password"
                 placeholder="영어 소문자 + 숫자 조합, 8~20자 이내 입력"
                 className={
-                  "p-2.5 rounded-md border border-gray-400 placeholder:text-xs " +
+                  "p-2.5 rounded-md border border-gray-400 placeholder:text-xs hover:cup" +
                   (pwError ? "border-red-500" : "border-gray-400") +
                   disabledInputStyle
                 }
@@ -257,7 +257,7 @@ export default function SignUp() {
               "p-3 w-full rounded-md text-sm " +
               (isCodeSent
                 ? "bg-gray-300 cursor-not-allowed"
-                : "bg-rose-600 text-white hover:bg-rose-700")
+                : "bg-rose-600 text-white hover:bg-rose-700 cursor-pointer")
             }
           >
             인증코드 발송
