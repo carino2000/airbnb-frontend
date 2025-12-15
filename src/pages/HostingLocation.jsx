@@ -5,7 +5,16 @@ import { useAccommodation } from "../stores/account-store";
 
 export default function HostingLocation() {
   const navigate = useNavigate();
-  const [address, setAddress] = useState("");
+
+  const [province, setProvince] = useState(""); // 도/광역시 (필수)
+  const [city, setCity] = useState(""); // 도시 (필수)
+  const [road, setRoad] = useState(""); // 도로명 주소 (필수)
+
+  // 선택 항목
+  const [detail, setDetail] = useState(""); // 동/호수
+  const [zipcode, setZipcode] = useState(""); // 우편번호
+
+  const isFormValid = province.trim() && city.trim() && road.trim();
 
   const setAccommodation = useAccommodation((s) => s.setAccommodation);
 
@@ -52,7 +61,7 @@ export default function HostingLocation() {
       >
         <div className="w-full">
           {/* 타이틀 */}
-          <div className="max-w-[520px] mb-14 mx-auto">
+          <div className="max-w-[700px] mb-14 mx-auto">
             <h1 className="text-2xl lg:text-[35px] font-bold leading-tight mb-4 text-left">
               숙소 위치는 어디인가요?
             </h1>
@@ -62,48 +71,69 @@ export default function HostingLocation() {
           </div>
 
           {/* 콘텐츠 */}
-          <div className="grid grid-cols-1 gap-12 items-start border">
-            {/* 왼쪽 - 입력 */}
-            <div className="flex flex-col gap-5 max-w-[520px] mx-auto">
-              <div className="relative">
-                <input
-                  type="text"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder="주소를 입력하세요"
-                  className="
-                    w-full h-12
-                    border border-neutral-400
-                    rounded-xl
-                    pl-4 pr-12
-                    text-sm
-                    focus:outline-none
-                    focus:border-black
-                  "
-                />
-
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-5 h-5 absolute right-4 top-1/2 -translate-y-1/2 text-neutral-500"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m21 21-4.35-4.35m0 0a7.5 7.5 0 1 0-10.6 0a7.5 7.5 0 0 0 10.6 0Z"
-                  />
-                </svg>
+          <div className="grid grid-cols-1 gap-12  w-full max-w-[700px] mx-auto">
+            {/* 주소 정보 박스 */}
+            <div className=" border border-neutral-300 rounded-xl overflow-hidden text-sm">
+              <div className="px-4 py-3 border-b">
+                <p className="text-neutral-500 mb-2 text-xs">국가/지역</p>
+                <p className="font-medium text-base">한국 · KR</p>
               </div>
 
-              <div className="h-80 bg-neutral-200 rounded-xl flex items-center justify-center text-sm text-neutral-500">
-                지도 영역
+              <div className="px-4 py-3 border-b">
+                <p className="text-neutral-500 mb-2 text-xs">도/특별·광역시</p>
+                <input
+                  type="text"
+                  value={province}
+                  onChange={(e) => setProvince(e.target.value)}
+                  className="w-full outline-none font-medium text-base"
+                />
+              </div>
+
+              <div className="px-4 py-3 border-b">
+                <p className="text-neutral-500 mb-2 text-xs">시/군/구</p>
+                <input
+                  type="text"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  className="w-full outline-none font-medium text-base"
+                />
+              </div>
+
+              <div className="px-4 py-3 border-b">
+                <p className="text-neutral-500 mb-2 text-xs">도로명 주소</p>
+                <input
+                  type="text"
+                  value={road}
+                  onChange={(e) => setRoad(e.target.value)}
+                  className="w-full outline-none font-medium text-base"
+                />
+              </div>
+
+              <div className="px-4 py-3 border-b">
+                <p className="text-neutral-500 mb-2 text-xs">
+                  아파트 동/호수, 건물명 (해당하는 경우)
+                </p>
+                <input
+                  type="text"
+                  value={detail}
+                  onChange={(e) => setDetail(e.target.value)}
+                  className="w-full outline-none font-medium text-base"
+                />
+              </div>
+
+              <div className="px-4 py-3">
+                <p className="text-neutral-500 mb-2 text-xs">
+                  우편번호 (해당하는 경우)
+                </p>
+                <input
+                  type="text"
+                  value={zipcode}
+                  onChange={(e) => setZipcode(e.target.value)}
+                  className="w-full outline-none font-medium text-base"
+                />
               </div>
             </div>
 
-            {/* 오른쪽 여백 */}
             <div />
           </div>
         </div>
@@ -119,23 +149,23 @@ export default function HostingLocation() {
 
         <div className="md:px-11 flex items-center justify-between h-[calc(100%-6px)]">
           <button
-            className="border-b-2"
+            className="border-b-2 cursor-pointer text-sm"
             onClick={() => navigate("/hosting/accommodation/structure")}
           >
             뒤로
           </button>
 
           <button
-            disabled={!address.trim()}
+            disabled={!isFormValid}
             className={`
-              px-8 py-3 rounded-xl text-sm font-bold
+              px-8 py-3 rounded-xl text-sm font-bold cursor-pointer
               ${
-                address.trim()
+                isFormValid
                   ? "bg-neutral-950 text-white hover:bg-neutral-800"
                   : "bg-neutral-300 text-white cursor-not-allowed"
               }
             `}
-            onClick={() => navigate("/hosting/accommodation")}
+            onClick={() => navigate("/hosting/accommodation/floor-plan")}
           >
             다음
           </button>

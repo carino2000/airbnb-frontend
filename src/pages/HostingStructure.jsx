@@ -55,19 +55,20 @@ export default function HostingStructure() {
   
 "
       >
-        <div className="w-full max-w-[600px] ">
+        <div className="w-full max-w-[700px] ">
           <h1 className="text-2xl lg:text-[35px] font-bold leading-tight mb-25 text-left">
-            다음중 숙소를 가장 잘 설명하는 것은 무엇인가요?
+            다음중 숙소를 가장 잘 설명하는 것은 <br />
+            무엇인가요?
           </h1>
         </div>
 
         {/* 카드 */}
-        <div className="w-full max-w-[800px] grid grid-cols-1 md:grid-cols-2 gap-8 h-60 ">
+        <div className="w-full max-w-[700px] grid grid-cols-1 md:grid-cols-2 gap-8 h-60 ">
           {/* 주택 */}
           <button
             onClick={() => setSelectedType("house")}
             className={`
-                w-full h-[350px]
+                w-full h-[330px]
                 flex flex-col items-center justify-center gap-4
                 border rounded-2xl p-8 cursor-pointer
                 transition
@@ -100,7 +101,7 @@ export default function HostingStructure() {
           <button
             onClick={() => setSelectedType("apartment")}
             className={`
-               w-full h-[350px]
+               w-full h-[330px]
                 flex flex-col items-center justify-center gap-4
                 border rounded-2xl p-8 cursor-pointer
                 transition
@@ -141,7 +142,7 @@ export default function HostingStructure() {
 
         <div className="md:px-11 flex items-center justify-between h-[calc(100%-6px)] ">
           <button
-            className="border-b-2 cursor-pointer"
+            className="border-b-2 cursor-pointer text-sm"
             onClick={() => navigate("/hosting/accommodation")}
           >
             뒤로
