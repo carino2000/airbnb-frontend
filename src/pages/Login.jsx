@@ -21,7 +21,7 @@ export default function Login() {
         setLoginError(true);
       } else {
         setToken(obj.token); // 토큰 저장
-        setAccount(obj.account); // 계정 저장
+        setAccount(obj.data); // 계정 저장
         navigate("/");
       }
     });

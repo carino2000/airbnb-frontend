@@ -50,7 +50,7 @@ export default function Main() {
       } else {
         // ✅ 여기!!!!!
         setToken(obj.token);
-        setAccount(obj.account);
+        setAccount(obj.data);
         setShowLogin(false); // 모달 닫기
         setLoginError(false);
       }
@@ -116,7 +116,7 @@ export default function Main() {
               {/* 로그인 상태면 이름 표시 */}
               {token && (
                 <div className="hidden sm:block text-xs font-semibold whitespace-nowrap">
-                  {account?.accountId}님
+                  {account && account.name}님
                 </div>
               )}
 
