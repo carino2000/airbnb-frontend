@@ -2,9 +2,11 @@ import { useNavigate } from "react-router";
 import { useState } from "react";
 import logo from "../assets/arbnb_logo-b.png";
 import CounterRow from "../components/CounterRow";
+import { useAccommodation } from "../stores/account-store";
 
 export default function HostingLocation() {
   const navigate = useNavigate();
+  const setAccommodation = useAccommodation((s) => s.setAccommodation);
   const [counts, setCounts] = useState({
     guests: 2,
     bedrooms: 1,
@@ -20,6 +22,17 @@ export default function HostingLocation() {
   };
 
   const isFormValid = counts.guests > 0;
+
+  function floorPlanSubmit() {
+    setAccommodation((old) => ({
+      ...old,
+      maxCapacity: counts.guests,
+      bedroom: counts.bedrooms,
+      bed: bed,
+      bathroom: bathrooms,
+    }));
+    navigate("/hosting/");
+  }
 
   return (
     <>
@@ -128,7 +141,7 @@ export default function HostingLocation() {
                   : "bg-neutral-300 text-white cursor-not-allowed"
               }
             `}
-            onClick={() => navigate("/hosting/")}
+            onClick={floorPlanSubmit}
           >
             다음
           </button>

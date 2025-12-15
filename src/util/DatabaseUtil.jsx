@@ -55,28 +55,22 @@ function loginCheck(accountId, pw) {
   }).then((res) => res.json());
 }
 
-function addBulkExpense(data) {
-  const value = {
-    accountId: data.accountId,
-    items: [...data.payment],
-  };
-
-  return fetch(serverAddr + "/expense/insert/bulk", {
+function HostingAccommodation(data) {
+  return fetch(serverAddr + "/accommodations", {
     method: "post",
-    body: JSON.stringify(value),
+    body: JSON.stringify(data),
     headers: {
-      Token: data.token,
+      Token: token,
       "Content-type": "application/json",
     },
   }).then((response) => response.json());
 }
 
-function addExpense(data) {
-  return fetch(serverAddr + "/expense/insert/one", {
-    method: "post",
-    body: JSON.stringify(data),
+function searchAccommodation(data) {
+  const addr = `${serverAddr}/accommodations?destination=${data.destination}&checkInDate=${data.checkInDate}&checkOutDate=${data.checkOutDate}&guests=${data.guests}`;
+  return fetch(addr, {
+    method: "get",
     headers: {
-      Token: token,
       "Content-type": "application/json",
     },
   }).then((response) => response.json());
@@ -88,6 +82,6 @@ export {
   emailCodeCheck,
   loginCheck,
   insertAccount,
-  addExpense,
-  addBulkExpense,
+  HostingAccommodation,
+  searchAccommodation,
 };
