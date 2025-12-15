@@ -1,16 +1,17 @@
-//모달 + 슬라이드 애니메이션
-export default function SearchOverlay({ open, onClose, children }) {
-  if (!open) return null;
-
+export default function SearchOverlay({ onClose, children }) {
   return (
-    <div className="fixed inset-0 bg-black/40 z-[9998]">
-      <div className="animate-slideDown pt-[120px]">{children}</div>
+    <>
+      {/* 배경 */}
+      <div className="fixed inset-0 bg-black/30 z-50" onClick={onClose} />
 
+      {/* 슬라이드 헤더 */}
       <div
-        className="absolute top-0 left-0 w-full h-full"
-        onClick={onClose}
-      ></div>
-    </div>
+        className="fixed top-0 left-0 w-full bg-white z-60
+                   transition-transform duration-300 ease-out
+                   translate-y-0"
+      >
+        {children}
+      </div>
+    </>
   );
-  
 }

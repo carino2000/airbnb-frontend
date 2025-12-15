@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
+import "react-day-picker/dist/style.css";
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import Main from "./pages/Main";
@@ -15,12 +16,15 @@ import Wishlist from "./pages/Wishlist";
 import AccountDelete from "./pages/AccountDelete";
 import BookingHistory from "./pages/BookingHistory";
 import ReservationDetail from "./pages/ReservationDetail";
+import Hosting from "./pages/hosting";
 import HostingAccommodation from "./pages/HostingAccommodation";
 import HostingAmenities from "./pages/HostingAmenities";
 import HostingImages from "./pages/HostingImages";
 import HostingTags from "./pages/HostingTags";
 import HostingList from "./pages/HostingList";
 import HostingEdit from "./pages/HostingEdit";
+import HostingStructure from "./pages/HostingStructure";
+import HostingLocation from "./pages/HostingLocation";
 
 const router = createBrowserRouter([
   {
@@ -90,8 +94,20 @@ const router = createBrowserRouter([
   //---------------------------------------------------
 
   {
+    path: "/hosting",
+    element: <Hosting />, // 숙소 시작
+  },
+  {
     path: "/hosting/accommodation",
     element: <HostingAccommodation />, // 숙소 등록 1차
+  },
+  {
+    path: "/hosting/accommodation/structure",
+    element: <HostingStructure />, // 숙소 등록
+  },
+  {
+    path: "/hosting/accommodation/location",
+    element: <HostingLocation />, // 숙소 등록
   },
   {
     path: "/hosting/amenities",
