@@ -1,10 +1,21 @@
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import logo from "../assets/arbnb_logo-b.png";
+import { useAccommodation } from "../stores/account-store";
 
 export default function HostingLocation() {
   const navigate = useNavigate();
   const [address, setAddress] = useState("");
+
+  const setAccommodation = useAccommodation((s) => s.setAccommodation);
+
+  function locationSubmit() {
+    const location = "";
+    setAccommodation((old) => ({
+      ...old,
+      address: location,
+    }));
+  }
 
   return (
     <>

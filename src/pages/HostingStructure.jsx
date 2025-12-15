@@ -1,10 +1,26 @@
 import { useNavigate } from "react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import logo from "../assets/arbnb_logo-b.png";
+import {
+  useAccommodation,
+  useAccount,
+  useToken,
+} from "../stores/account-store";
 
 export default function HostingStructure() {
   const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState(null);
+
+  const account = useAccount((s) => s.account);
+  const setAccommodation = useAccommodation((s) => s.setAccommodation);
+  const clearAccommodation = useAccommodation((s) => s.clearAccommodation);
+
+  useEffect(() => {
+    clearAccommodation();
+    setAccommodation({
+      hostId: account.id,
+    });
+  }, []);
 
   return (
     <>
