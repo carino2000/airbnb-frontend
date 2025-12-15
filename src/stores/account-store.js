@@ -42,3 +42,24 @@ export const useToken = create(
     }
   )
 );
+
+export const useAccommodation = create(
+  persist(
+    function (set) {
+      return {
+        accommodation: null,
+
+        clearAccommodation: function () {
+          set({ accommodation: null });
+        },
+
+        setAccommodation: function (newAccommodation) {
+          set({ accommodation: newAccommodation });
+        },
+      };
+    },
+    {
+      name: "accommodation",
+    }
+  )
+);
