@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
 import logo from "../assets/arbnb_logo-b.png";
-import step1 from "../assets/step1.mp4";
+import step2 from "../assets/step1.mp4";
 
 export default function Hosting() {
   const navigate = useNavigate();
@@ -39,28 +39,29 @@ export default function Hosting() {
               pt-10                  // 위 기준선 고정 (찌부 방지)
             "
           >
-            <span className="text-sm font-bold mb-2">1단계</span>
+            <span className="text-sm font-bold mb-2">2단계</span>
 
             <h1 className="text-3xl lg:text-[40px] font-bold leading-tight mb-6">
-              숙소 정보를 알려주세요.
+              숙소의 매력을 <br />
+              돋보이게 하세요.
             </h1>
 
             <p className="text-neutral-700 leading-relaxed max-w-[520px]">
-              먼저 숙소 유형을 선택하고, 게스트가 예약할 수 있는 숙소가 공간
-              전체인지 개인실 또는 다인실인지 알려주세요. 그런 다음 숙소 위치와
-              수용 가능 인원을 알려주세요.
+              이 단계에서는 숙소에 갖춰진 편의시설과 사진 5장 이상을 추가한 후
+              <br />
+              숙소 이름과 설명을 작성하시면 됩니다.
             </p>
           </div>
 
           {/* 오른쪽 영상 */}
           <div className="lg:col-span-2 flex justify-center items-center">
             <video
-              src={step1}
+              src={step2}
               muted
               autoPlay
               loop
               playsInline
-              className="w-full max-w-[520px] rounded-xl" // ✅ 수정: 영상도 폭 맞춤
+              className="w-full max-w-[520px] rounded-xl" //  영상도 폭 맞춤
             />
           </div>
         </div>
@@ -70,7 +71,7 @@ export default function Hosting() {
         {/* ✅ 수정: 진행바를 padding 영향 없이 full width로 */}
         <div className="grid grid-cols-3 h-1.5 w-full">
           <div className="bg-neutral-950" /> {/* 1단계 */}
-          <div className="bg-neutral-300" />
+          <div className="bg-neutral-950" />
           <div className="bg-neutral-300" />
         </div>
 
@@ -84,7 +85,7 @@ export default function Hosting() {
           </button>
 
           <button
-            className="px-8 py-3 bg-neutral-950  rounded-xl text-sm text-white font-bold hover:bg-neutral-950/50  cursor-pointer"
+            className="px-8 py-3 bg-neutral-500/50  rounded-xl text-sm text-white font-bold hover:bg-neutral-950  cursor-pointer"
             onClick={() => navigate("/hosting/accommodation/structure")}
           >
             다음

@@ -24,6 +24,8 @@ import HostingList from "./pages/HostingList";
 import HostingEdit from "./pages/HostingEdit";
 import HostingStructure from "./pages/HostingStructure";
 import HostingLocation from "./pages/HostingLocation";
+import HostingFloorPlan from "./pages/HostingFloorPlan";
+import HostingStandOut from "./pages/HostingStandOut";
 
 const router = createBrowserRouter([
   {
@@ -107,6 +109,14 @@ const router = createBrowserRouter([
   {
     path: "/hosting/accommodation/location",
     element: <HostingLocation />, // 숙소 등록
+  },
+  {
+    path: "/hosting/accommodation/floor-plan",
+    element: <HostingFloorPlan />, // 숙소 기본정보
+  },
+  {
+    path: "/hosting/stand-out",
+    element: <HostingStandOut />, // 숙소 등록 2차-편의시설
   },
   {
     path: "/hosting/amenities",
