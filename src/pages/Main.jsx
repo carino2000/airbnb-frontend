@@ -74,69 +74,74 @@ export default function Main() {
 
   return (
     <>
-      {/* 헤더 */}
       <header className="fixed top-0 left-0 w-full h-40 md:h-[200px] bg-neutral-100 border-b-2 z-50 border-b-neutral-200">
         <div className="h-25 flex items-center px-6 md:px-10">
-          <div className="flex items-center justify-between w-full gap-4">
-            {/* 로고 */}
-            <img
-              src={logo}
-              alt=""
-              className="w-[100px] h-auto cursor-pointer shrink-0"
-            />
+          <div className="grid grid-cols-3 items-center w-full">
+            {/* ================= 왼쪽 : 로고 ================= */}
+            <div className="flex items-center">
+              <img
+                src={logo}
+                alt=""
+                className="w-[100px] h-auto cursor-pointer"
+                onClick={() => navigate("/")}
+              />
+            </div>
 
-            {/* 중앙 메뉴 */}
-            <nav className="hidden md:flex gap-5 text-sm text-gray-700 cursor-pointer whitespace-nowrap">
-              <div className="flex gap-2 items-center group">
+            {/* ================= 가운데 : 숙소 / 체험 / 서비스 ================= */}
+            <nav className="hidden md:flex justify-center gap-8 whitespace-nowrap">
+              <div className="flex items-center gap-2 cursor-pointer group">
                 <img
                   src={stays}
                   className="w-9 h-auto group-hover:scale-110 transition-transform duration-200"
                 />
-                <p className="hidden lg:block group-hover:font-semibold">
+                <p className="hidden lg:block text-sm font-medium group-hover:font-semibold">
                   숙소
                 </p>
               </div>
 
-              <div className="flex gap-2 items-center group">
+              <div className="flex items-center gap-2 cursor-pointer group">
                 <img
                   src={experiences}
                   className="w-8 h-auto group-hover:scale-110 transition-transform duration-200"
                 />
-                <p className="hidden lg:block group-hover:font-semibold">
+                <p className="hidden lg:block text-sm font-medium group-hover:font-semibold">
                   체험
                 </p>
               </div>
 
-              <div className="flex gap-2 items-center group">
+              <div className="flex items-center gap-2 cursor-pointer group">
                 <img
                   src={services}
                   className="w-8 h-auto group-hover:scale-110 transition-transform duration-200"
                 />
-                <p className="hidden lg:block group-hover:font-semibold">
+                <p className="hidden lg:block text-sm font-medium group-hover:font-semibold">
                   서비스
                 </p>
               </div>
             </nav>
 
-            {/* 우측 메뉴 */}
-            <div className="flex gap-1 items-center shrink-0">
-              <div className="hidden sm:block rounded-full px-3 py-2 hover:bg-gray-200 cursor-pointer">
-                <p
-                  className="text-xs font-bold whitespace-nowrap"
-                  onClick={() => navigate("/hosting")}
-                >
-                  호스팅 하기
-                </p>
-              </div>
-              {/* 로그인 상태면 이름 표시 */}
+            {/* ================= 오른쪽 : 상태별 메뉴 ================= */}
+            <div className="flex justify-end items-center gap-3">
+              {/* 로그인 상태일 때 */}
               {token && (
-                <div className="hidden sm:block text-xs font-semibold whitespace-nowrap">
-                  {account && account.name}님
-                </div>
+                <>
+                  <button
+                    className="hidden sm:block text-xs font-bold px-3 py-2 rounded-full hover:bg-gray-200"
+                    onClick={() => navigate("/hosting")}
+                  >
+                    호스팅 하기
+                  </button>
+
+                  {/* 원형 프로필 */}
+                  <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white text-xs font-bold cursor-pointer">
+                    {account?.name?.[0]}
+                  </div>
+                </>
               )}
 
+              {/* 햄버거 */}
               <div
-                className="rounded-full px-2 py-2 bg-gray-100 hover:bg-gray-200 cursor-pointer"
+                className="rounded-full px-1.5 py-1.5 bg-gray-200 hover:bg-gray-300 cursor-pointer"
                 onClick={() => setOpenMenu((prev) => !prev)}
               >
                 <svg
@@ -156,48 +161,64 @@ export default function Main() {
               </div>
             </div>
 
-            {/* 햄버거 메뉴 */}
+            {/* ================= 햄버거 메뉴 ================= */}
             {openMenu && (
-              <div className="absolute top-[70px] right-6 md:right-10 w-[150px] bg-white rounded-md shadow-xl border border-gray-200 z-999">
-                {/* ❌ 비로그인 상태 */}
-                {!token && (
-                  <>
-                    <div
-                      className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-xs hover:font-semibold"
-                      onClick={() => {
-                        setShowLogin(true); // 로그인 모달
-                        setOpenMenu(false);
-                      }}
-                    >
-                      로그인
-                    </div>
+              <>
+                {/* ⬇️ 바깥 클릭 감지용 오버레이 */}
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setOpenMenu(false)}
+                />
 
-                    <div
-                      className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-xs hover:font-semibold"
-                      onClick={() => {
-                        navigate("/sign-up");
-                        setOpenMenu(false);
-                      }}
-                    >
-                      회원가입
-                    </div>
-                  </>
-                )}
+                {/* ⬇️ 기존 메뉴 (그대로) */}
+                <div className="absolute top-[70px] right-6 md:right-10 w-[180px] bg-white rounded-md shadow-xl border border-gray-200 z-50">
+                  {!token && (
+                    <>
+                      <div
+                        className="px-4 py-3 hover:bg-gray-100 text-xs cursor-pointer"
+                        onClick={() => {
+                          setShowLogin(true);
+                          setOpenMenu(false);
+                        }}
+                      >
+                        로그인
+                      </div>
+                      <div
+                        className="px-4 py-3 hover:bg-gray-100 text-xs cursor-pointer"
+                        onClick={() => {
+                          navigate("/sign-up");
+                          setOpenMenu(false);
+                        }}
+                      >
+                        회원가입
+                      </div>
+                    </>
+                  )}
 
-                {/* ✅ 로그인 상태 */}
-                {token && (
-                  <div
-                    className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-xs hover:font-semibold text-red-500"
-                    onClick={() => {
-                      clearToken();
-                      clearAccount();
-                      setOpenMenu(false);
-                    }}
-                  >
-                    로그아웃
-                  </div>
-                )}
-              </div>
+                  {token && (
+                    <>
+                      {["찜", "리스트", "메시지", "내 프로필"].map((v) => (
+                        <div
+                          key={v}
+                          className="px-4 py-3 hover:bg-gray-100 text-xs cursor-pointer"
+                        >
+                          {v}
+                        </div>
+                      ))}
+                      <div
+                        className="px-4 py-3 hover:bg-gray-100 text-xs text-red-500 cursor-pointer"
+                        onClick={() => {
+                          clearToken();
+                          clearAccount();
+                          setOpenMenu(false);
+                        }}
+                      >
+                        로그아웃
+                      </div>
+                    </>
+                  )}
+                </div>
+              </>
             )}
           </div>
         </div>
