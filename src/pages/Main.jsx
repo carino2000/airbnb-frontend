@@ -28,7 +28,7 @@ export default function Main() {
   const [item, setItem] = useState([]);
 
   const items = [1, 2, 3, 4, 5, 6, 7, 8];
-  const VISIBLE = 7;
+  const VISIBLE = 4;
   const CARD_PERCENT = 100 / VISIBLE;
 
   const prev = () => setIndex((i) => Math.max(i - 1, 0));
@@ -386,14 +386,14 @@ export default function Main() {
             {item.map((one) => (
               <div
                 key={one.id}
-                className="shrink-0 px-1.5"
+                className="shrink-0"
                 style={{ width: `${CARD_PERCENT}%` }}
                 onClick={() => navigate(`/room/${one.id}`)}
               >
-                <div className="aspect-square rounded-lg border flex items-center justify-center">
+                <div className="aspect-square flex items-center justify-center">
                   {one.images.length !== 0 && (
                     <img
-                      className="w-full h-full rounded-lg"
+                      className="w-full h-full rounded-xl object-cover"
                       src={`http://192.168.0.17:8080${one.images[0].uri}`}
                       alt=""
                     />
