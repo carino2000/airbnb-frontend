@@ -9,8 +9,8 @@ import SearchBarMini from "../components/SearchBarMini";
 import GuestRow from "../components/GuestRow";
 
 export default function RoomDetail() {
-  const { account, clearAccount } = useAccount();
-  const { token, clearToken } = useToken();
+  const { token, setToken, clearToken } = useToken();
+  const { account, setAccount, clearAccount } = useAccount();
 
   const navigate = useNavigate();
 
@@ -75,9 +75,9 @@ export default function RoomDetail() {
 
   return (
     <>
-      {/* ===== 헤더 ===== */}
+      {/* ================= 헤더 ================= */}
       <header className="fixed top-0 left-0 w-full h-[90px] border-b border-neutral-200 z-50 bg-white">
-        <div className="h-full w-full flex items-center justify-between max-w-[1200px] mx-auto px-6">
+        <div className="h-full w-full flex items-center justify-between max-w-[1350px] mx-auto px-6">
           {/* 로고 */}
           <img
             src={logo}
@@ -88,36 +88,28 @@ export default function RoomDetail() {
           {/* 검색창 */}
           <SearchBarMini onClick={() => setExpandSearch(true)} />
 
-          {/* 우측 메뉴 */}
-          <div className="flex gap-2 items-center shrink-0 relative">
-            {/* 호스팅 하기 (유지) */}
-            <div className="hidden sm:block rounded-full px-3 py-2 hover:bg-gray-200 cursor-pointer">
-              <p
-                className="text-xs font-bold whitespace-nowrap"
+          {/* 우측 영역 */}
+          <div className="flex items-center gap-2 relative shrink-0">
+            {/* 로그인 O → 호스팅하기 */}
+            {token && account && (
+              <div
+                className="hidden sm:block rounded-full px-3 py-2 hover:bg-gray-200 cursor-pointer"
                 onClick={() => navigate("/hosting")}
               >
-                호스팅 하기
-              </p>
-            </div>
+                <p className="text-xs font-bold whitespace-nowrap">
+                  호스팅하기
+                </p>
+              </div>
+            )}
 
-            {/* ✅ 로그인 시 프로필 원형 (김) */}
-            {account && (
-              <div
-                className="
-            w-8 h-8
-            rounded-full
-            bg-neutral-800
-            text-white
-            flex items-center justify-center
-            text-xs font-bold
-            cursor-pointer
-          "
-              >
+            {/* 로그인 O → 프로필 원형 */}
+            {token && account && (
+              <div className="w-8 h-8 rounded-full bg-neutral-800 text-white flex items-center justify-center text-xs font-bold">
                 {account.name?.charAt(0)}
               </div>
             )}
 
-            {/* 햄버거 버튼 */}
+            {/* 햄버거 */}
             <div
               className="rounded-full px-2 py-2 bg-gray-100 hover:bg-gray-200 cursor-pointer"
               onClick={() => setOpenMenu((prev) => !prev)}
@@ -138,27 +130,70 @@ export default function RoomDetail() {
               </svg>
             </div>
 
-            {/* 햄버거 메뉴 (기존 그대로 사용 가능) */}
+            {/* ================= 메뉴 ================= */}
             {openMenu && (
-              <div className="absolute top-[48px] right-0 w-[150px] bg-white rounded-md shadow-xl border border-gray-200 z-50">
-                <div
-                  className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-xs font-semibold"
-                  onClick={() => setShowLogin(true)}
-                >
-                  로그인
-                </div>
-                <div
-                  className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-xs font-semibold"
-                  onClick={() => navigate("/sign-up")}
-                >
-                  회원가입
-                </div>
+              <div className="absolute top-[48px] right-0 w-[180px] bg-white rounded-md shadow-xl border border-gray-200 z-50">
+                {/* 로그인 X */}
+                {!token && (
+                  <>
+                    <div
+                      className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-xs"
+                      onClick={() => {
+                        setShowLogin(true);
+                        setOpenMenu(false);
+                      }}
+                    >
+                      로그인
+                    </div>
+                    <div
+                      className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-xs"
+                      onClick={() => navigate("/sign-up")}
+                    >
+                      회원가입
+                    </div>
+                  </>
+                )}
+
+                {/* 로그인 O */}
+                {token && (
+                  <>
+                    <div className="px-4 py-3 text-xs hover:bg-gray-100 cursor-pointer">
+                      찜
+                    </div>
+                    <div
+                      className="px-4 py-3 text-xs hover:bg-gray-100 cursor-pointer"
+                      onClick={() => navigate("/hosting/list")}
+                    >
+                      리스트
+                    </div>
+                    <div className="px-4 py-3 text-xs hover:bg-gray-100 cursor-pointer">
+                      메시지
+                    </div>
+                    <div
+                      className="px-4 py-3 text-xs hover:bg-gray-100 cursor-pointer"
+                      onClick={() => navigate("/profile/edit")}
+                    >
+                      내 프로필
+                    </div>
+                    <div
+                      className="px-4 py-3 text-xs font-semibold text-red-500 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => {
+                        clearToken();
+                        clearAccount();
+                        navigate("/");
+                      }}
+                    >
+                      로그아웃
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </div>
         </div>
       </header>
 
+      {/* ================= 검색 오버레이 ================= */}
       {expandSearch && (
         <SearchOverlay onClose={() => setExpandSearch(false)}>
           <SearchHeader onClose={() => setExpandSearch(false)} />
@@ -169,7 +204,7 @@ export default function RoomDetail() {
         {/*  사진  */}
         <section className="mb-12">
           <div className="flex justify-between mb-6">
-            <h2 className="font-bold text-2xl">
+            <h2 className="font-semibold text-2xl">
               [Travel Light 105B] for Women 서면역 도보 3분
             </h2>
             <div className="flex items-center gap-1 cursor-pointer">

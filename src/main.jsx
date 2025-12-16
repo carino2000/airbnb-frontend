@@ -165,7 +165,9 @@ const router = createBrowserRouter([
 
   //---------------------------------------------------
 
-  {
+  
+ 
+    {
     path: "/hosting/listings",
     element: <HostingList />, // 내가 호스팅한 숙소 목록 노출
   },
