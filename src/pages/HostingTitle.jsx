@@ -1,9 +1,12 @@
 import { useNavigate } from "react-router";
+import { useState } from "react";
 import logo from "../assets/arbnb_logo-b.png";
-import step1 from "../assets/step1.mp4";
 
-export default function Hosting() {
+export default function HostingTitle() {
   const navigate = useNavigate();
+
+  const [title, setTitle] = useState("");
+  const isFormValid = title.trim().length > 0 && title.length <= 50;
 
   return (
     <>
@@ -35,38 +38,44 @@ export default function Hosting() {
           left-0
           w-full
           h-[calc(100vh-185px)]
-          px-6
           flex
-          items-center
           justify-center
+          px-6
+          overflow-y-auto
         "
       >
-        <div className="w-full max-w-[1200px] grid grid-cols-1 lg:grid-cols-4 gap-12 px-6 lg:px-16">
-          {/* 왼쪽 텍스트 */}
-          <div className="lg:col-span-2 flex flex-col justify-center max-w-[520px]">
-            <span className="text-sm font-bold mb-2">1단계</span>
-
-            <h1 className="text-3xl lg:text-[40px] font-bold leading-tight mb-6">
-              숙소 정보를 알려주세요.
+        <div className="w-full max-w-[700px] py-12">
+          {/* 타이틀 */}
+          <div className="mb-14">
+            <h1 className="text-2xl lg:text-[35px] font-bold leading-tight mb-4">
+              이제 숙소 이름을 지어주세요
             </h1>
 
             <p className="text-neutral-700 leading-relaxed">
-              먼저 숙소 유형을 선택하고, 게스트가 예약할 수 있는 숙소가 공간
-              전체인지 개인실 또는 다인실인지 알려주세요. 그런 다음 숙소 위치와
-              수용 가능 인원을 알려주세요.
+              숙소 이름은 짧을수록 효과적입니다. 나중에 언제든지 변경할 수
+              있으니,
+              <br />
+              너무 걱정하지 마세요.
             </p>
           </div>
 
-          {/* 오른쪽 영상 */}
-          <div className="lg:col-span-2 flex justify-center items-center">
-            <video
-              src={step1}
-              muted
-              autoPlay
-              loop
-              playsInline
-              className="w-full max-w-[600px]"
+          {/* 입력 */}
+          <div className="relative">
+            <textarea
+              maxLength={50}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="
+                w-full h-[150px]
+                border border-neutral-300 rounded-xl
+                p-4 text-base outline-none resize-none
+                focus:border-black
+              "
             />
+
+            <span className="absolute bottom-3 right-4 text-sm text-neutral-500">
+              {title.length}/50
+            </span>
           </div>
         </div>
       </main>
@@ -75,21 +84,29 @@ export default function Hosting() {
       <footer className="fixed bottom-0 left-0 w-full h-[95px] bg-white z-40">
         <div className="grid grid-cols-3 h-1.5 w-full">
           <div className="bg-neutral-950" />
-          <div className="bg-neutral-300" />
+          <div className="bg-neutral-950" />
           <div className="bg-neutral-300" />
         </div>
 
         <div className="md:px-11 flex items-center justify-between h-[calc(100%-6px)]">
           <button
             className="border-b-2 cursor-pointer text-sm"
-            onClick={() => navigate("/hosting")}
+            onClick={() => navigate("/hosting/stand-out")}
           >
             뒤로
           </button>
 
           <button
-            className="px-8 py-3 bg-neutral-950 rounded-xl text-sm text-white font-bold hover:bg-neutral-950/50 cursor-pointer"
-            onClick={() => navigate("/hosting/accommodation/structure")}
+            disabled={!isFormValid}
+            className={`
+              px-8 py-3 rounded-xl text-sm font-bold
+              ${
+                isFormValid
+                  ? "bg-neutral-950 text-white hover:bg-neutral-800"
+                  : "bg-neutral-300 text-white cursor-not-allowed"
+              }
+            `}
+            onClick={() => navigate("/hosting/description")}
           >
             다음
           </button>

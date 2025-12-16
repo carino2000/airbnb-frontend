@@ -26,6 +26,11 @@ import HostingStructure from "./pages/HostingStructure";
 import HostingLocation from "./pages/HostingLocation";
 import HostingFloorPlan from "./pages/HostingFloorPlan";
 import HostingStandOut from "./pages/HostingStandOut";
+import HostingTitle from "./pages/HostingTitle";
+import HostingDescription from "./pages/HostingDescription";
+import HostingWeekendRate from "./pages/HostingWeekendRate";
+import HostingFinishSetUp from "./pages/HostingFinishSetUp";
+import HostingBaseRate from "./pages/HostingBaseRate";
 
 const router = createBrowserRouter([
   {
@@ -108,7 +113,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/hosting/accommodation/location",
-    element: <HostingLocation />, // 숙소 등록
+    element: <HostingLocation />, // 숙소 주소
   },
   {
     path: "/hosting/accommodation/floor-plan",
@@ -116,11 +121,32 @@ const router = createBrowserRouter([
   },
   {
     path: "/hosting/stand-out",
-    element: <HostingStandOut />, // 숙소 등록 2차-편의시설
+    element: <HostingStandOut />, // 숙소 등록 2차
   },
+  {
+    path: "/hosting/title",
+    element: <HostingTitle />, // 숙소 이름
+  },
+  {
+    path: "/hosting/description",
+    element: <HostingDescription />, // 숙소 설명
+  },
+
   {
     path: "/hosting/amenities",
     element: <HostingAmenities />, // 숙소 등록 2차-편의시설
+  },
+  {
+    path: "/hosting/finish-setup",
+    element: <HostingFinishSetUp />, // 숙소 설명
+  },
+  {
+    path: "/hosting/baseRate",
+    element: <HostingBaseRate />, // 숙소 설명
+  },
+  {
+    path: "/hosting/weekendRate",
+    element: <HostingWeekendRate />, // 숙소 설명
   },
   {
     path: "/hosting/images",

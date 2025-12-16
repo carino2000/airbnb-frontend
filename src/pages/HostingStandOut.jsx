@@ -1,13 +1,14 @@
 import { useNavigate } from "react-router";
 import logo from "../assets/arbnb_logo-b.png";
-import step2 from "../assets/step1.mp4";
+import step2 from "../assets/step2.mp4";
 
 export default function Hosting() {
   const navigate = useNavigate();
 
   return (
     <>
-      <header className="top-0 left-0 w-full h-40 md:h-[90px]">
+      {/* HEADER */}
+      <header className="fixed top-0 left-0 w-full h-[90px] bg-white z-40">
         <div className="h-full flex items-center px-6 md:px-10">
           <div className="flex items-center justify-between w-full">
             <img
@@ -16,7 +17,6 @@ export default function Hosting() {
               className="w-9 cursor-pointer"
               onClick={() => navigate("/")}
             />
-
             <button
               className="px-6 py-2 border border-neutral-400 rounded-full text-xs font-bold"
               onClick={() => navigate("/")}
@@ -27,18 +27,23 @@ export default function Hosting() {
         </div>
       </header>
 
-      <main className="px-30">
-        <div className="min-h-[calc(100vh-200px)] grid grid-cols-1 lg:grid-cols-4 gap-12 px-6 lg:px-16">
-          {/* 왼쪽 텍스트 영역 */}
-          <div
-            className="
-              lg:col-span-2
-              flex flex-col
-              justify-center
-              max-w-[520px]          // 텍스트 폭 제한
-              pt-10                  // 위 기준선 고정 (찌부 방지)
-            "
-          >
+      {/* MAIN */}
+      <main
+        className="
+          fixed
+          top-[90px]
+          left-0
+          w-full
+          h-[calc(100vh-185px)]
+          flex
+          items-center
+          justify-center
+          px-6
+        "
+      >
+        <div className="w-full max-w-[1200px] grid grid-cols-1 lg:grid-cols-4 gap-12 px-6 lg:px-16">
+          {/* 왼쪽 텍스트 */}
+          <div className="lg:col-span-2 flex flex-col justify-center max-w-[520px]">
             <span className="text-sm font-bold mb-2">2단계</span>
 
             <h1 className="text-3xl lg:text-[40px] font-bold leading-tight mb-6">
@@ -61,32 +66,31 @@ export default function Hosting() {
               autoPlay
               loop
               playsInline
-              className="w-full max-w-[520px] rounded-xl" //  영상도 폭 맞춤
+              className="w-full max-w-[600px]"
             />
           </div>
         </div>
       </main>
 
-      <footer className="md:h-[95px] border-t border-neutral-300">
-        {/* ✅ 수정: 진행바를 padding 영향 없이 full width로 */}
+      {/* FOOTER */}
+      <footer className="fixed bottom-0 left-0 w-full h-[95px] bg-white z-40">
         <div className="grid grid-cols-3 h-1.5 w-full">
-          <div className="bg-neutral-950" /> {/* 1단계 */}
+          <div className="bg-neutral-950" />
           <div className="bg-neutral-950" />
           <div className="bg-neutral-300" />
         </div>
 
-        {/* 기존 버튼 영역 (padding 유지) */}
         <div className="md:px-11 flex items-center justify-between h-[calc(100%-6px)]">
           <button
             className="border-b-2 cursor-pointer text-sm"
-            onClick={() => navigate("/hosting")}
+            onClick={() => navigate("/hosting/accommodation/floor-plan")}
           >
             뒤로
           </button>
 
           <button
-            className="px-8 py-3 bg-neutral-500/50  rounded-xl text-sm text-white font-bold hover:bg-neutral-950  cursor-pointer"
-            onClick={() => navigate("/hosting/accommodation/structure")}
+            className="px-8 py-3 bg-neutral-950 rounded-xl text-sm text-white font-bold hover:bg-neutral-950/50"
+            onClick={() => navigate("/hosting/title")}
           >
             다음
           </button>

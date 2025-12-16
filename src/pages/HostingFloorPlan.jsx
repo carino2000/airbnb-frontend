@@ -36,8 +36,8 @@ export default function HostingLocation() {
 
   return (
     <>
-      {/* 헤더 */}
-      <header className="top-0 left-0 w-full h-40 md:h-[90px]">
+      {/* HEADER */}
+      <header className="fixed top-0 left-0 w-full h-[90px] bg-white z-40">
         <div className="h-full flex items-center px-6 md:px-10">
           <div className="flex items-center justify-between w-full">
             <img
@@ -46,9 +46,8 @@ export default function HostingLocation() {
               className="w-9 cursor-pointer"
               onClick={() => navigate("/")}
             />
-
             <button
-              className="px-6 py-2 border border-neutral-400 rounded-full text-xs font-bold cursor-pointer"
+              className="px-6 py-2 border border-neutral-400 rounded-full text-xs font-bold"
               onClick={() => navigate("/")}
             >
               나가기
@@ -57,66 +56,66 @@ export default function HostingLocation() {
         </div>
       </header>
 
-      {/* 메인 */}
+      {/* MAIN */}
       <main
         className="
-          min-h-[calc(100vh-200px)]
+          fixed
+          top-[90px]
+          left-0
+          w-full
+          h-[calc(100vh-185px)]
           flex
           justify-center
           px-6
-          pt-28 md:pt-10
+          overflow-y-auto
         "
       >
-        <div className="w-full">
+        <div className="w-full max-w-[700px] py-12">
           {/* 타이틀 */}
-          <div className="max-w-[700px] mb-14 mx-auto">
-            <h1 className="text-2xl lg:text-[35px] font-bold leading-tight mb-4 text-left">
+          <div className="mb-14">
+            <h1 className="text-2xl lg:text-[35px] font-bold leading-tight mb-4">
               숙소 기본 정보를 알려주세요
             </h1>
-            <p className="text-neutral-700 leading-relaxed text-left">
+            <p className="text-neutral-700 leading-relaxed">
               침대 유형과 같은 세부 사항은 나중에 추가하실 수 있습니다.
             </p>
           </div>
 
-          {/* 콘텐츠 */}
-          <div className="grid grid-cols-1 gap-12  w-full max-w-[700px] mx-auto">
-            <div className="border border-neutral-300 rounded-xl px-6">
-              <CounterRow
-                label="게스트"
-                value={counts.guests}
-                onMinus={() => changeCount("guests", -1)}
-                onPlus={() => changeCount("guests", 1)}
-              />
+          {/* 카운터 */}
+          <div className="border border-neutral-300 rounded-xl px-6">
+            <CounterRow
+              label="게스트"
+              value={counts.guests}
+              onMinus={() => changeCount("guests", -1)}
+              onPlus={() => changeCount("guests", 1)}
+            />
 
-              <CounterRow
-                label="침실"
-                value={counts.bedrooms}
-                onMinus={() => changeCount("bedrooms", -1)}
-                onPlus={() => changeCount("bedrooms", 1)}
-              />
+            <CounterRow
+              label="침실"
+              value={counts.bedrooms}
+              onMinus={() => changeCount("bedrooms", -1)}
+              onPlus={() => changeCount("bedrooms", 1)}
+            />
 
-              <CounterRow
-                label="침대"
-                value={counts.beds}
-                onMinus={() => changeCount("beds", -1)}
-                onPlus={() => changeCount("beds", 1)}
-              />
+            <CounterRow
+              label="침대"
+              value={counts.beds}
+              onMinus={() => changeCount("beds", -1)}
+              onPlus={() => changeCount("beds", 1)}
+            />
 
-              <CounterRow
-                label="욕실"
-                value={counts.bathrooms}
-                onMinus={() => changeCount("bathrooms", -1)}
-                onPlus={() => changeCount("bathrooms", 1)}
-              />
-            </div>
-
-            <div />
+            <CounterRow
+              label="욕실"
+              value={counts.bathrooms}
+              onMinus={() => changeCount("bathrooms", -1)}
+              onPlus={() => changeCount("bathrooms", 1)}
+            />
           </div>
         </div>
       </main>
 
-      {/* 푸터 */}
-      <footer className="md:h-[95px] border-t border-neutral-300">
+      {/* FOOTER */}
+      <footer className="fixed bottom-0 left-0 w-full h-[95px] bg-white z-40">
         <div className="grid grid-cols-3 h-1.5 w-full">
           <div className="bg-neutral-950" />
           <div className="bg-neutral-300" />
@@ -134,7 +133,7 @@ export default function HostingLocation() {
           <button
             disabled={!isFormValid}
             className={`
-              px-8 py-3 rounded-xl text-sm font-bold cursor-pointer
+              px-8 py-3 rounded-xl text-sm font-bold
               ${
                 isFormValid
                   ? "bg-neutral-950 text-white hover:bg-neutral-800"

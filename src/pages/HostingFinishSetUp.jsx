@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router";
 import logo from "../assets/arbnb_logo-b.png";
-import step1 from "../assets/step1.mp4";
+import step3 from "../assets/step3.mp4";
 
-export default function Hosting() {
+export default function HostingFinishSetUp() {
   const navigate = useNavigate();
 
   return (
@@ -35,32 +35,31 @@ export default function Hosting() {
           left-0
           w-full
           h-[calc(100vh-185px)]
-          px-6
           flex
           items-center
           justify-center
+          px-6
         "
       >
         <div className="w-full max-w-[1200px] grid grid-cols-1 lg:grid-cols-4 gap-12 px-6 lg:px-16">
           {/* 왼쪽 텍스트 */}
           <div className="lg:col-span-2 flex flex-col justify-center max-w-[520px]">
-            <span className="text-sm font-bold mb-2">1단계</span>
+            <span className="text-sm font-bold mb-2">3단계</span>
 
             <h1 className="text-3xl lg:text-[40px] font-bold leading-tight mb-6">
-              숙소 정보를 알려주세요.
+              등록을 완료하세요
             </h1>
 
-            <p className="text-neutral-700 leading-relaxed">
-              먼저 숙소 유형을 선택하고, 게스트가 예약할 수 있는 숙소가 공간
-              전체인지 개인실 또는 다인실인지 알려주세요. 그런 다음 숙소 위치와
-              수용 가능 인원을 알려주세요.
+            <p className="text-neutral-700 leading-relaxed max-w-[520px]">
+              마지막으로, 예약 설정을 선택하고 요금을 설정한 후 <br />
+              숙소 등록을 완료할 차례입니다.
             </p>
           </div>
 
           {/* 오른쪽 영상 */}
           <div className="lg:col-span-2 flex justify-center items-center">
             <video
-              src={step1}
+              src={step3}
               muted
               autoPlay
               loop
@@ -75,21 +74,21 @@ export default function Hosting() {
       <footer className="fixed bottom-0 left-0 w-full h-[95px] bg-white z-40">
         <div className="grid grid-cols-3 h-1.5 w-full">
           <div className="bg-neutral-950" />
-          <div className="bg-neutral-300" />
-          <div className="bg-neutral-300" />
+          <div className="bg-neutral-950" />
+          <div className="bg-neutral-950" />
         </div>
 
         <div className="md:px-11 flex items-center justify-between h-[calc(100%-6px)]">
           <button
             className="border-b-2 cursor-pointer text-sm"
-            onClick={() => navigate("/hosting")}
+            onClick={() => navigate("/hosting/description")}
           >
             뒤로
           </button>
 
           <button
-            className="px-8 py-3 bg-neutral-950 rounded-xl text-sm text-white font-bold hover:bg-neutral-950/50 cursor-pointer"
-            onClick={() => navigate("/hosting/accommodation/structure")}
+            className="px-8 py-3 bg-neutral-950 rounded-xl text-sm text-white font-bold hover:bg-neutral-950/50"
+            onClick={() => navigate("/hosting/baseRate")}
           >
             다음
           </button>
