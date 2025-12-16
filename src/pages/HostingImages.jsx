@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import logo from "../assets/arbnb_logo-b.png";
 import camera from "../assets/free-icon-camera-5904494.png";
 import { useImage } from "../stores/account-store";
@@ -17,8 +17,9 @@ export default function HostingImages() {
   const hasImages = images.length > 0;
 
   function imageSubmit() {
-    setImage(() => images.map((img) => img.file));
-    navigate("/hosting/finish-setup");
+    setImage(() => [...images]);
+    setImage(() => images.map((item) => item.file));
+    navigate("/hosting/title");
   }
 
   /** 파일 선택 */
@@ -126,13 +127,13 @@ export default function HostingImages() {
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
-                      stroke-width="1"
+                      strokeWidth="1"
                       stroke="currentColor"
                       className="w-6 h-6 "
                     >
                       <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
                       />
                     </svg>

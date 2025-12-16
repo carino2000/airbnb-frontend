@@ -10,6 +10,10 @@ export default function Hosting() {
   const navigate = useNavigate();
   const clearAccommodation = useAccommodation((s) => s.clearAccommodation);
 
+  useEffect(() => {
+    clearAccommodation();
+  }, []);
+
   return (
     <>
       <header className="top-0 left-0 w-full h-40 md:h-[90px]">

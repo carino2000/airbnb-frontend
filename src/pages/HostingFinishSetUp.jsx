@@ -1,9 +1,43 @@
 import { useNavigate } from "react-router";
 import logo from "../assets/arbnb_logo-b.png";
 import step3 from "../assets/step3.mp4";
+import {
+  useAccommodation,
+  useAccount,
+  useAmenities,
+  useImage,
+  useTags,
+} from "../stores/account-store";
+import {
+  createAccommodation,
+  createAmenities,
+  createimages,
+} from "../util/DatabaseUtil";
 
 export default function HostingFinishSetUp() {
   const navigate = useNavigate();
+
+  // const account = useAccount((s) => s.account);
+  // const accommodation = useAccommodation((s) => s.accommodation);
+  // const amenities = useAmenities((s) => s.amenities);
+  // const image = useImage((s) => s.image);
+  // const tags = useTags((s) => s.tags);
+
+  // async function registerAccommodation() {
+  //   const obj = await createAccommodation(accommodation);
+  //   if (obj.success) {
+  //     const imageInsert = await createimages(obj.accommodation.id, image);
+  //     console.log(imageInsert.success);
+  //     const tagsInsert = await createTags(obj.accommodation.id, tags);
+  //     console.log(tagsInsert.success);
+  //     const amenitiesInsert = await createAmenities(
+  //       obj.accommodation.id,
+  //       amenities
+  //     );
+  //     console.log(amenitiesInsert.success);
+  //   }
+  //   navigate("/hosting/listings");
+  // }
 
   return (
     <>
@@ -81,7 +115,7 @@ export default function HostingFinishSetUp() {
         <div className="md:px-11 flex items-center justify-between h-[calc(100%-6px)]">
           <button
             className="border-b-2 cursor-pointer text-sm"
-            onClick={() => navigate("/hosting/tags")}
+            onClick={() => navigate("/hosting/description")}
           >
             뒤로
           </button>

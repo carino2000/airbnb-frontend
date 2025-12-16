@@ -120,3 +120,26 @@ export const useImage = create(
     }
   )
 );
+
+export const useTags = create(
+  persist(
+    function (set) {
+      return {
+        tags: [],
+
+        clearTags: function () {
+          set({ tags: [] });
+        },
+
+        setTags: function (func) {
+          set((state) => ({
+            tags: func(state.tags),
+          }));
+        },
+      };
+    },
+    {
+      name: "tags",
+    }
+  )
+);

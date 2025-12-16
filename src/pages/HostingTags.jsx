@@ -1,13 +1,16 @@
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import logo from "../assets/arbnb_logo-b.png";
+import { useTags } from "../stores/account-store";
 
 export default function HostingTags() {
   const navigate = useNavigate();
-  const [selectedAmenities, setSelectedAmenities] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
 
-  const toggleAmenity = (label) => {
-    setSelectedAmenities((prev) =>
+  const setTags = useTags((s) => s.setTags);
+
+  const toggleTags = (label) => {
+    setSelectedTags((prev) =>
       prev.includes(label)
         ? prev.filter((item) => item !== label)
         : [...prev, label]
@@ -36,6 +39,11 @@ export default function HostingTags() {
     "TV/프로젝터 있음",
     "맛있는 조식",
   ];
+
+  function tagSubmit() {
+    setTags(() => [...selectedTags]);
+    navigate("/hosting/description");
+  }
 
   return (
     <>
@@ -84,12 +92,12 @@ export default function HostingTags() {
 
           <div className="flex w-full max-w-[700px] flex-wrap gap-3 mt-20">
             {tags.map((tag) => {
-              const active = selectedAmenities.includes(tag);
+              const active = selectedTags.includes(tag);
 
               return (
                 <button
                   key={tag}
-                  onClick={() => toggleAmenity(tag)}
+                  onClick={() => toggleTags(tag)}
                   className={`
                     px-4 py-2 rounded-full text-sm border
                     transition
@@ -119,22 +127,22 @@ export default function HostingTags() {
         <div className="md:px-11 flex items-center justify-between h-[calc(100%-6px)]">
           <button
             className="border-b-2 text-sm"
-            onClick={() => navigate("/hosting/description")}
+            onClick={() => navigate("/hosting/title")}
           >
             뒤로
           </button>
 
           <button
-            disabled={selectedAmenities.length === 0}
+            disabled={selectedTags.length === 0}
             className={`
               px-8 py-3 rounded-xl text-sm font-bold
               ${
-                selectedAmenities.length > 0
+                selectedTags.length > 0
                   ? "bg-neutral-950 text-white hover:bg-neutral-950/70"
                   : "bg-neutral-300 text-white cursor-not-allowed"
               }
             `}
-            onClick={() => navigate("/hosting/finish-setup")}
+            onClick={tagSubmit}
           >
             다음
           </button>
