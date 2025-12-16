@@ -16,10 +16,10 @@ export default function HostingLocation() {
   const setAccommodation = useAccommodation((s) => s.setAccommodation);
 
   function locationSubmit() {
-    const location = "";
+    const address = "";
     setAccommodation((old) => ({
       ...old,
-      address: location,
+      address,
     }));
   }
 

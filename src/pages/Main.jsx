@@ -4,7 +4,7 @@ import logo from "../assets/Airbnb_Logo.png";
 import stays from "../assets/nav-stays.png";
 import experiences from "../assets/nav-experiences.png";
 import services from "../assets/nav-services.png";
-import { loginCheck } from "../util/DatabaseUtil";
+import { loginCheck, searchAccommodation } from "../util/DatabaseUtil";
 
 import { useAccount, useToken } from "../stores/account-store";
 import { useNavigate } from "react-router";
@@ -25,6 +25,7 @@ export default function Main() {
 
   const [openMenu, setOpenMenu] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  const [item, setItem] = useState([]);
 
   const items = [1, 2, 3, 4, 5, 6, 7, 8];
   const VISIBLE = 7;
@@ -54,6 +55,20 @@ export default function Main() {
         setShowLogin(false); // 모달 닫기
         setLoginError(false);
       }
+    });
+  }
+
+  function searchHandle(evt) {
+    evt.preventDefault();
+    const data = {
+      destination: evt.target.destination.value,
+      checkInDate: checkinRef.current.value,
+      checkOutDate: checkoutRef.current.value,
+      guests: evt.target.visitor.value,
+    };
+    searchAccommodation(data).then((obj) => {
+      console.log(obj.accommodations[0].name);
+      setItem([...obj.accommodations]);
     });
   }
 
@@ -188,12 +203,16 @@ export default function Main() {
         </div>
 
         {/* 검색창 */}
-        <div className="w-full flex justify-center px-4 mb-4 md:mb-6">
+        <form
+          onSubmit={searchHandle}
+          className="w-full flex justify-center px-4 mb-4 md:mb-6"
+        >
           <div className="flex items-center w-full max-w-[800px] md:w-[600px] lg:w-[800px] bg-white shadow-md rounded-full overflow-hidden border border-neutral-200">
             {/* 여행지 */}
             <div className="flex-auto min-w-0 px-6 py-4 hover:bg-neutral-200 rounded-full cursor-pointer">
               <p className="text-xs truncate whitespace-nowrap">여행지</p>
               <input
+                name="destination"
                 type="text"
                 placeholder="여행지 검색"
                 className="w-full min-w-0 truncate text-sm text-gray-600 bg-transparent focus:outline-none placeholder:text-xs"
@@ -239,6 +258,7 @@ export default function Main() {
               <div className="flex-1 min-w-0 px-4 py-3">
                 <p className="text-xs truncate whitespace-nowrap">여행자</p>
                 <input
+                  name="visitor"
                   type="number"
                   min="1"
                   placeholder="게스트 추가"
@@ -265,7 +285,7 @@ export default function Main() {
               </button>
             </div>
           </div>
-        </div>
+        </form>
       </header>
 
       {/* 본문 */}
@@ -342,20 +362,23 @@ export default function Main() {
             className="flex transition-transform duration-300"
             style={{ transform: `translateX(-${index * CARD_PERCENT}%)` }}
           >
-            {items.map((num) => (
+            {item.map((one) => (
               <div
-                key={num}
+                key={one.id}
                 className="shrink-0 px-1.5"
                 style={{ width: `${CARD_PERCENT}%` }}
-                onClick={() => navigate(`/room/${num}`)}
+                onClick={() => navigate(`/room/${one.id}`)}
               >
                 <div className="aspect-square rounded-lg border flex items-center justify-center">
-                  {num}
+                  <img
+                    src={`http://192.168.0.17:8080${one.images[0].uri}`}
+                    alt=""
+                  />
                 </div>
 
                 <div className="mt-2 text-left">
                   <div className="font-medium text-sm truncate">
-                    서울의 집 {num}
+                    서울의 집 {1}
                   </div>
                   <div className="text-xs text-gray-500 truncate">
                     1월 30일 ~ 2월 1일
