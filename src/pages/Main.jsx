@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 import logo from "../assets/Airbnb_Logo.png";
 import stays from "../assets/nav-stays.png";
@@ -71,6 +71,18 @@ export default function Main() {
       setItem([...obj.accommodations]);
     });
   }
+
+  useEffect(() => {
+    const data = {
+      destination: "",
+      checkInDate: "",
+      checkOutDate: "",
+      guests: "",
+    };
+    searchAccommodation(data).then((obj) => {
+      setItem([...obj.accommodations]);
+    });
+  }, []);
 
   return (
     <>

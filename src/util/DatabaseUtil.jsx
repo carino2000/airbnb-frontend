@@ -77,8 +77,6 @@ function createAccommodation(data, token) {
 }
 
 function createImages(accommodationId, data, token) {
-  console.log(data);
-  console.log(!Array.isArray(data), data.length === 0);
   if (!Array.isArray(data) || data.length === 0) {
     return Promise.resolve({ success: true, message: "no images" });
   }

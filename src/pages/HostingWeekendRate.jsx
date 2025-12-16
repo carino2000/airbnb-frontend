@@ -26,7 +26,6 @@ export default function HostingWeekendRate() {
 
   const isFormValid = weekendRate >= 0;
 
-  const setAccommodation = useAccommodation((s) => s.setAccommodation);
   const accommodation = useAccommodation((s) => s.accommodation);
   const amenities = useAmenities((s) => s.amenities);
   const image = useImage((s) => s.image);
@@ -34,30 +33,35 @@ export default function HostingWeekendRate() {
   const token = useToken((s) => s.token);
 
   async function registerAccommodation() {
-    setAccommodation((old) => ({
-      ...old,
+    const payload = {
+      ...accommodation,
       extraRate: weekendRate / 100,
-    }));
+    };
 
-    const obj = await createAccommodation(accommodation, token);
-    console.log(obj);
+    const obj = await createAccommodation(payload, token);
     if (obj.success) {
       const imageInsert = await createImages(
         obj.accommodation.id,
         image,
         token
       );
-      console.log(imageInsert.success);
       const tagsInsert = await createTags(obj.accommodation.id, tags, token);
-      console.log(tagsInsert.success);
       const amenitiesInsert = await createAmenities(
         obj.accommodation.id,
         amenities,
         token
       );
-      console.log(amenitiesInsert.success);
+      if (
+        !imageInsert.success ||
+        !tagsInsert.success ||
+        !amenitiesInsert.success
+      ) {
+        window.alert("숙소 사진/태그/편의시설 등록 중 오류 발생");
+        navigate("/hosting/complete");
+      }
     }
-    navigate("/hosting/complete");
+
+    navigate("/hosting");
   }
 
   return (
