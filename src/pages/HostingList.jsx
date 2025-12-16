@@ -1,24 +1,29 @@
 import logo from "../assets/Airbnb_Logo.png";
 import { useState } from "react";
 import { useNavigate } from "react-router";
-
-import SearchBarMini from "../components/SearchBarMini";
 import { useToken, useAccount } from "../stores/account-store";
 
 export default function HostingList() {
   const navigate = useNavigate();
 
+  //  리스팅 / 메시지 탭 상태
+  const [tab, setTab] = useState("listings"); // "listings" | "messages"
   const [openMenu, setOpenMenu] = useState(false);
 
   const { clearToken } = useToken();
   const { account, clearAccount } = useAccount();
 
+  const [items, setItems] = useState([1, 2, 3, 4]);
+
+  const addItem = () => {
+    setItems((prev) => [...prev, prev.length + 1]);
+  };
+
   return (
     <>
-      {/* 헤더 */}
+      {/* ================= 헤더 ================= */}
       <header className="fixed top-0 left-0 w-full h-[90px] border-b border-neutral-200 z-50 bg-white">
-        {/* 🔥 여기만 수정됨: w-full 추가 */}
-        <div className="h-full w-full flex items-center justify-between max-w-[1200px] mx-auto px-6">
+        <div className="h-full w-full flex items-center justify-between max-w-[1350px] mx-auto px-6">
           {/* 로고 */}
           <img
             src={logo}
@@ -26,8 +31,36 @@ export default function HostingList() {
             onClick={() => navigate("/")}
           />
 
-          {/* 검색창 */}
-          <SearchBarMini />
+          {/* 리스팅 / 메시지 (페이지 이동 ❌) */}
+          <div className="flex items-center gap-6 ">
+            <button
+              className={`
+                text-sm font-semibold
+                ${
+                  tab === "listings"
+                    ? "text-black underline underline-offset-6"
+                    : "text-neutral-500 hover:underline hover:underline-offset-6"
+                }
+              `}
+              onClick={() => setTab("listings")}
+            >
+              리스팅
+            </button>
+
+            <button
+              className={`
+                text-sm font-semibold
+                ${
+                  tab === "messages"
+                    ? "text-black underline underline-offset-6"
+                    : "text-neutral-500 hover:underline hover:underline-offset-6"
+                }
+              `}
+              onClick={() => setTab("messages")}
+            >
+              메시지
+            </button>
+          </div>
 
           {/* 우측 메뉴 */}
           <div className="flex gap-2 items-center shrink-0 relative">
@@ -41,16 +74,11 @@ export default function HostingList() {
               </p>
             </div>
 
-            {/* 프로필 원형 아이콘 (이름 첫 글자) */}
+            {/* 프로필 원형 */}
             <div
               className="
-                w-8 h-8
-                rounded-full
-                bg-neutral-800
-                text-white
-                flex items-center justify-center
-                text-xs font-bold
-                cursor-pointer
+                w-8 h-8 rounded-full bg-neutral-800 text-white
+                flex items-center justify-center text-xs font-bold cursor-pointer
               "
               onClick={() => setOpenMenu((prev) => !prev)}
             >
@@ -80,15 +108,7 @@ export default function HostingList() {
 
             {/* 햄버거 메뉴 */}
             {openMenu && (
-              <div
-                className="
-                  absolute top-[48px] right-0
-                  w-[160px]
-                  bg-white rounded-md shadow-xl
-                  border border-gray-200 z-50
-                "
-              >
-                {/* 프로필 수정 */}
+              <div className="absolute top-[48px] right-0 w-[150px] bg-white rounded-md shadow-xl z-50">
                 <div
                   className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-xs font-semibold"
                   onClick={() => {
@@ -99,10 +119,8 @@ export default function HostingList() {
                   프로필 수정
                 </div>
 
-                {/* 로그아웃 */}
                 <div
-                  className="px-4 py-3 hover:bg-gray-100 cursor-pointer
-                             text-xs font-semibold text-red-500"
+                  className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-xs font-semibold text-red-500"
                   onClick={() => {
                     clearToken();
                     clearAccount();
@@ -116,6 +134,64 @@ export default function HostingList() {
           </div>
         </div>
       </header>
+
+      {/* ================= 본문 ================= */}
+      <main className="mt-[120px] max-w-[1350px] mx-auto px-6">
+        {/* 리스팅 화면 */}
+        {tab === "listings" && (
+          <>
+            <div className="flex justify-between items-start">
+              <h1 className="text-xl font-bold mb-6">내 리스팅</h1>
+              <button
+                onClick={() => {
+                  addItem();
+                  navigate("/hosting");
+                }}
+                className="flex items-cente gap-2 cursor-pointer text-sm"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1"
+                  stroke="currentColor"
+                  className="W-5 w-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 4.5v15m7.5-7.5h-15"
+                  />
+                </svg>
+                추가하기
+              </button>
+            </div>
+            <div className="rounded-xl">
+              <div className="grid grid-cols-4 gap-4">
+                {items.map((item) => (
+                  <div
+                    key={item}
+                    className="bg-green-100 rounded-lg flex items-center justify-center aspect-square"
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* 메시지 화면 */}
+        {tab === "messages" && (
+          <>
+            <h1 className="text-xl font-bold mb-6">메시지</h1>
+            <div className="h-[300px] bg-neutral-100 rounded-xl flex items-center justify-center">
+              메시지 콘텐츠 영역
+            </div>
+          </>
+        )}
+      </main>
+      <footer></footer>
     </>
   );
 }
