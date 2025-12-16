@@ -1,26 +1,12 @@
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import logo from "../assets/arbnb_logo-b.png";
-import CounterRow from "../components/CounterRow";
 
-export default function HostingLocation() {
+export default function HostingDescription() {
   const navigate = useNavigate();
 
-  const [counts, setCounts] = useState({
-    guests: 2,
-    bedrooms: 1,
-    beds: 1,
-    bathrooms: 1,
-  });
-
-  const changeCount = (key, diff) => {
-    setCounts((prev) => ({
-      ...prev,
-      [key]: Math.max(0, prev[key] + diff),
-    }));
-  };
-
-  const isFormValid = counts.guests > 0;
+  const [desc, setDesc] = useState("");
+  const isFormValid = desc.trim().length > 0 && desc.length <= 500;
 
   return (
     <>
@@ -62,42 +48,31 @@ export default function HostingLocation() {
           {/* 타이틀 */}
           <div className="mb-14">
             <h1 className="text-2xl lg:text-[35px] font-bold leading-tight mb-4">
-              숙소 기본 정보를 알려주세요
+              숙소 설명 작성하기
             </h1>
+
             <p className="text-neutral-700 leading-relaxed">
-              침대 유형과 같은 세부 사항은 나중에 추가하실 수 있습니다.
+              숙소의 특징과 장점을 알려주세요.
             </p>
           </div>
 
-          {/* 카운터 */}
-          <div className="border border-neutral-300 rounded-xl px-6">
-            <CounterRow
-              label="게스트"
-              value={counts.guests}
-              onMinus={() => changeCount("guests", -1)}
-              onPlus={() => changeCount("guests", 1)}
+          {/* 입력 */}
+          <div className="relative">
+            <textarea
+              maxLength={500}
+              value={desc}
+              onChange={(e) => setDesc(e.target.value)}
+              className="
+                w-full h-[300px]
+                border border-neutral-300 rounded-xl
+                p-4 text-base outline-none resize-none
+                focus:border-black
+              "
             />
 
-            <CounterRow
-              label="침실"
-              value={counts.bedrooms}
-              onMinus={() => changeCount("bedrooms", -1)}
-              onPlus={() => changeCount("bedrooms", 1)}
-            />
-
-            <CounterRow
-              label="침대"
-              value={counts.beds}
-              onMinus={() => changeCount("beds", -1)}
-              onPlus={() => changeCount("beds", 1)}
-            />
-
-            <CounterRow
-              label="욕실"
-              value={counts.bathrooms}
-              onMinus={() => changeCount("bathrooms", -1)}
-              onPlus={() => changeCount("bathrooms", 1)}
-            />
+            <span className="absolute bottom-3 right-4 text-sm text-neutral-500">
+              {desc.length}/500
+            </span>
           </div>
         </div>
       </main>
@@ -106,14 +81,14 @@ export default function HostingLocation() {
       <footer className="fixed bottom-0 left-0 w-full h-[95px] bg-white z-40">
         <div className="grid grid-cols-3 h-1.5 w-full">
           <div className="bg-neutral-950" />
-          <div className="bg-neutral-300" />
+          <div className="bg-neutral-950" />
           <div className="bg-neutral-300" />
         </div>
 
         <div className="md:px-11 flex items-center justify-between h-[calc(100%-6px)]">
           <button
             className="border-b-2 cursor-pointer text-sm"
-            onClick={() => navigate("/hosting/accommodation/location")}
+            onClick={() => navigate("/hosting/title")}
           >
             뒤로
           </button>
@@ -128,7 +103,7 @@ export default function HostingLocation() {
                   : "bg-neutral-300 text-white cursor-not-allowed"
               }
             `}
-            onClick={() => navigate("/hosting/stand-out")}
+            onClick={() => navigate("/hosting/finish-setup")}
           >
             다음
           </button>

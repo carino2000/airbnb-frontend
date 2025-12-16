@@ -1,26 +1,17 @@
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import logo from "../assets/arbnb_logo-b.png";
-import CounterRow from "../components/CounterRow";
 
-export default function HostingLocation() {
+export default function HostingWeekendRate() {
   const navigate = useNavigate();
 
-  const [counts, setCounts] = useState({
-    guests: 2,
-    bedrooms: 1,
-    beds: 1,
-    bathrooms: 1,
-  });
+  const BASE_PRICE = 66350;
+  const [weekendRate, setWeekendRate] = useState(36);
 
-  const changeCount = (key, diff) => {
-    setCounts((prev) => ({
-      ...prev,
-      [key]: Math.max(0, prev[key] + diff),
-    }));
-  };
+  const weekendPrice = Math.round(BASE_PRICE * (1 + weekendRate / 100));
+  const formatWon = (num) => "₩" + num.toLocaleString("ko-KR");
 
-  const isFormValid = counts.guests > 0;
+  const isFormValid = weekendRate >= 0;
 
   return (
     <>
@@ -58,46 +49,52 @@ export default function HostingLocation() {
           overflow-y-auto
         "
       >
-        <div className="w-full max-w-[700px] py-12">
+        <div className="w-full max-w-[700px] py-12 text-left">
           {/* 타이틀 */}
-          <div className="mb-14">
-            <h1 className="text-2xl lg:text-[35px] font-bold leading-tight mb-4">
-              숙소 기본 정보를 알려주세요
-            </h1>
-            <p className="text-neutral-700 leading-relaxed">
-              침대 유형과 같은 세부 사항은 나중에 추가하실 수 있습니다.
-            </p>
+          <h1 className="text-2xl lg:text-[35px] font-bold mb-4">
+            주말 요금을 설정하세요
+          </h1>
+
+          <p className="text-neutral-600 mb-16">
+            금요일과 토요일에는 주말 할증을 추가하세요.
+          </p>
+
+          {/* 금액 */}
+          <div className="text-[48px] font-bold mb-6 text-center">
+            {formatWon(weekendPrice)}
           </div>
 
-          {/* 카운터 */}
-          <div className="border border-neutral-300 rounded-xl px-6">
-            <CounterRow
-              label="게스트"
-              value={counts.guests}
-              onMinus={() => changeCount("guests", -1)}
-              onPlus={() => changeCount("guests", 1)}
-            />
+          <p className="text-sm text-neutral-600 mb-20 text-center">
+            게스트 지불 요금: {formatWon(Math.round(weekendPrice * 1.14))}
+          </p>
 
-            <CounterRow
-              label="침실"
-              value={counts.bedrooms}
-              onMinus={() => changeCount("bedrooms", -1)}
-              onPlus={() => changeCount("bedrooms", 1)}
-            />
+          {/* 주말 프리미엄 */}
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="font-medium">주말 프리미엄</p>
+              <p className="text-sm text-neutral-500">
+                제안 할증률: {weekendRate}%
+              </p>
+            </div>
 
-            <CounterRow
-              label="침대"
-              value={counts.beds}
-              onMinus={() => changeCount("beds", -1)}
-              onPlus={() => changeCount("beds", 1)}
-            />
+            <div className="border rounded-full px-4 py-2 text-sm font-medium">
+              {weekendRate}%
+            </div>
+          </div>
 
-            <CounterRow
-              label="욕실"
-              value={counts.bathrooms}
-              onMinus={() => changeCount("bathrooms", -1)}
-              onPlus={() => changeCount("bathrooms", 1)}
-            />
+          {/* 슬라이더 */}
+          <input
+            type="range"
+            min={0}
+            max={99}
+            value={weekendRate}
+            onChange={(e) => setWeekendRate(Number(e.target.value))}
+            className="w-full accent-black"
+          />
+
+          <div className="flex justify-between text-xs text-neutral-400 mt-2">
+            <span>0%</span>
+            <span>99%</span>
           </div>
         </div>
       </main>
@@ -106,14 +103,14 @@ export default function HostingLocation() {
       <footer className="fixed bottom-0 left-0 w-full h-[95px] bg-white z-40">
         <div className="grid grid-cols-3 h-1.5 w-full">
           <div className="bg-neutral-950" />
-          <div className="bg-neutral-300" />
-          <div className="bg-neutral-300" />
+          <div className="bg-neutral-950" />
+          <div className="bg-neutral-950" />
         </div>
 
         <div className="md:px-11 flex items-center justify-between h-[calc(100%-6px)]">
           <button
             className="border-b-2 cursor-pointer text-sm"
-            onClick={() => navigate("/hosting/accommodation/location")}
+            onClick={() => navigate("/hosting/baseRate")}
           >
             뒤로
           </button>
@@ -128,7 +125,7 @@ export default function HostingLocation() {
                   : "bg-neutral-300 text-white cursor-not-allowed"
               }
             `}
-            onClick={() => navigate("/hosting/stand-out")}
+            onClick={() => navigate("/hosting/amenities")}
           >
             다음
           </button>
