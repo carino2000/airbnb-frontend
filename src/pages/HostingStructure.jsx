@@ -55,7 +55,7 @@ export default function HostingStructure() {
         "
       >
         {/* 제목 */}
-        <div className="w-full max-w-[700px] mb-10">
+        <div className="w-full max-w-[700px]  py-12">
           <h1 className="text-2xl lg:text-[35px] font-bold leading-tight">
             다음중 숙소를 가장 잘 설명하는 것은 <br />
             무엇인가요?
@@ -63,7 +63,7 @@ export default function HostingStructure() {
         </div>
 
         {/* 카드 */}
-        <div className="w-full max-w-[700px] grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="w-full max-w-[700px] grid grid-cols-1 md:grid-cols-2 gap-8 mt-15">
           {/* 주택 */}
           <button
             onClick={() => setSelectedType("house")}
@@ -113,16 +113,17 @@ export default function HostingStructure() {
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
-              strokeWidth={1.5}
+              stroke-width="1.5"
               stroke="currentColor"
               className="w-12 h-12"
             >
               <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z"
               />
             </svg>
+
             <span className="text-base font-semibold">아파트</span>
           </button>
         </div>

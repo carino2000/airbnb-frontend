@@ -103,7 +103,7 @@ export default function HostingDescription() {
                   : "bg-neutral-300 text-white cursor-not-allowed"
               }
             `}
-            onClick={() => navigate("/hosting/finish-setup")}
+            onClick={() => navigate("/hosting/tags")}
           >
             다음
           </button>

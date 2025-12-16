@@ -23,7 +23,8 @@ export default function HostingImages() {
       preview: URL.createObjectURL(file),
     }));
 
-    setImages((prev) => [...prev, ...newImages]);
+    // 최신순 (방금 업로드한 게 위)
+    setImages((prev) => [...newImages, ...prev]);
   };
 
   /** 사진 삭제 */
@@ -63,54 +64,71 @@ export default function HostingImages() {
 "
       >
         <div className="w-full max-w-[700px]">
-          <h1
-            className="text-2xl lg:text-[35px]
+          {/* STEP 1 : 사진 선택 */}
+
+          {step === "select" && (
+            <>
+              <h1
+                className="text-2xl lg:text-[35px]
     font-bold
     leading-tight
     min-h-[56px]
     mb-4"
-          >
-            숙소 사진 추가하기
-          </h1>
+              >
+                숙소 사진 추가하기
+              </h1>
 
-          <p className="text-neutral-600 mb-10">
-            숙소 등록을 시작하려면 사진 5장을 제출하셔야 합니다.
-          </p>
-
-          {/* STEP 1 : 사진 선택 */}
-          {step === "select" && (
-            <div className="flex justify-center">
-              <button
-                onClick={() => setOpenModal(true)}
-                className="w-full h-[420px] border-2 border-dashed rounded-2xl
+              <p className="text-neutral-600 mb-10">
+                숙소 등록을 시작하려면 사진 5장을 제출하셔야 합니다.
+              </p>
+              <div className="flex justify-center">
+                <button
+                  onClick={() => setOpenModal(true)}
+                  className="w-full h-[420px] border-2 border-dashed rounded-2xl
                            flex flex-col items-center justify-center gap-4
                            hover:border-black transition"
-              >
-                <img src={camera} className="w-16 h-16 opacity-80" />
-                <div className="px-4 py-2 border rounded-lg text-sm font-medium">
-                  사진 추가하기
-                </div>
-              </button>
-            </div>
+                >
+                  <img src={camera} className="w-16 h-16 opacity-80" />
+                  <div className="px-4 py-2 border rounded-lg text-sm font-medium">
+                    사진 추가하기
+                  </div>
+                </button>
+              </div>
+            </>
           )}
 
           {/* STEP 2 : 선택된 사진 확인 */}
           {step === "review" && (
             <>
-              <h2 className="text-lg font-bold mb-6">
-                사진이 잘 나왔는지 확인해 주세요
-              </h2>
+              <div className="flex justify-between items-center">
+                <h2 className="text-lg font-bold mb-6">
+                  사진이 잘 나왔는지 확인해 주세요
+                </h2>
 
-              {/* 🔥 사진 더 추가하기 버튼 (위로 이동) */}
-              <button
-                onClick={() => setOpenModal(true)}
-                className="mb-4 flex items-center gap-2 text-sm font-medium"
-              >
-                <span className="w-6 h-6 rounded-full border flex items-center justify-center">
-                  +
-                </span>
-                사진 더 추가하기
-              </button>
+                {/* 🔥 사진 더 추가하기 버튼 (위로 이동) */}
+                <button
+                  onClick={() => setOpenModal(true)}
+                  className="mb-4 flex items-center gap-2 text-sm font-medium"
+                >
+                  <span className="flex items-center justify-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1"
+                      stroke="currentColor"
+                      className="w-6 h-6 "
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                      />
+                    </svg>
+                  </span>
+                  사진 더 추가하기
+                </button>
+              </div>
 
               {/* 사진 그리드 */}
               <div className="grid grid-cols-2 gap-4">
@@ -139,6 +157,7 @@ export default function HostingImages() {
       </main>
 
       {/* ================= 모달 ================= */}
+
       {openModal && (
         <>
           <div
@@ -232,7 +251,7 @@ export default function HostingImages() {
                 ? "bg-neutral-950 text-white"
                 : "bg-neutral-300 text-white"
             }`}
-            onClick={() => navigate("/hosting/finish-setup")}
+            onClick={() => navigate("/hosting/listings")}
           >
             다음
           </button>
