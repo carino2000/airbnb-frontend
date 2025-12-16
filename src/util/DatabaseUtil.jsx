@@ -76,10 +76,11 @@ function createAccommodation(data) {
   }).then((response) => response.json());
 }
 
-function createimages(data, accommodationId) {
+function createimages(accommodationId, data) {
   const formData = new FormData();
-  data.map((item) => {
-    formData.append("uri", item);
+
+  data.forEach((file) => {
+    formData.append("images", file);
   });
 
   fetch(`${serverAddr}/${accommodationId}/images`, {
@@ -91,9 +92,27 @@ function createimages(data, accommodationId) {
   }).then((response) => response.json());
 }
 
-function createTags(data) {}
+function createTags(accommodationId, data) {
+  return fetch(`${serverAddr}/${accommodationId}/tags`, {
+    method: "post",
+    body: JSON.stringify(data),
+    headers: {
+      Token: token,
+      "Content-type": "application/json",
+    },
+  }).then((response) => response.json());
+}
 
-function createAmenities(data) {}
+function createAmenities(accommodationId, data) {
+  return fetch(`${serverAddr}/${accommodationId}/amenities`, {
+    method: "post",
+    body: JSON.stringify(data),
+    headers: {
+      Token: token,
+      "Content-type": "application/json",
+    },
+  }).then((response) => response.json());
+}
 
 export {
   idCheck,
@@ -103,4 +122,7 @@ export {
   insertAccount,
   createAccommodation,
   searchAccommodation,
+  createimages,
+  createTags,
+  createAmenities,
 };

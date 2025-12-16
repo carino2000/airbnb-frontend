@@ -21,7 +21,7 @@ export default function HostingWeekendRate() {
       ...old,
       extraRate: weekendRate,
     }));
-    navigate("/hosting/amenities");
+    navigate("/hosting/complete");
   }
 
   return (

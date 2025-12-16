@@ -15,7 +15,7 @@ export default function HostingTitle() {
       ...old,
       name: title,
     }));
-    navigate("/hosting/description");
+    navigate("/hosting/tags");
   }
 
   return (
@@ -101,7 +101,7 @@ export default function HostingTitle() {
         <div className="md:px-11 flex items-center justify-between h-[calc(100%-6px)]">
           <button
             className="border-b-2 cursor-pointer text-sm"
-            onClick={() => navigate("/hosting/stand-out")}
+            onClick={() => navigate("/hosting/images")}
           >
             뒤로
           </button>

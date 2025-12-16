@@ -2,7 +2,7 @@ import { useNavigate } from "react-router";
 import logo from "../assets/arbnb_logo-b.png";
 import step2 from "../assets/step2.mp4";
 
-export default function Hosting() {
+export default function HostingStandOut() {
   const navigate = useNavigate();
 
   return (
@@ -90,7 +90,7 @@ export default function Hosting() {
 
           <button
             className="px-8 py-3 bg-neutral-950 rounded-xl text-sm text-white font-bold hover:bg-neutral-950/50"
-            onClick={() => navigate("/hosting/title")}
+            onClick={() => navigate("/hosting/amenities")}
           >
             다음
           </button>

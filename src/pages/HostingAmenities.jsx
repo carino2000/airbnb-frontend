@@ -143,7 +143,7 @@ export default function HostingAmenities() {
         <div className="md:px-11 flex items-center justify-between h-[calc(100%-6px)] ">
           <button
             className="border-b-2 cursor-pointer text-sm"
-            onClick={() => navigate("/hosting/weekendRate")}
+            onClick={() => navigate("/hosting/stand-out")}
           >
             뒤로
           </button>

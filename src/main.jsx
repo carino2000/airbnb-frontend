@@ -109,7 +109,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/hosting/accommodation/structure",
-    element: <HostingStructure />, // 숙소 등록
+    element: <HostingStructure />, // 숙소 구조
   },
   {
     path: "/hosting/accommodation/location",
@@ -119,26 +119,36 @@ const router = createBrowserRouter([
     path: "/hosting/accommodation/floor-plan",
     element: <HostingFloorPlan />, // 숙소 기본정보
   },
+
   {
     path: "/hosting/stand-out",
     element: <HostingStandOut />, // 숙소 등록 2차
+  },
+  {
+    path: "/hosting/amenities",
+    element: <HostingAmenities />, // 숙소 편의시설
+  },
+  {
+    path: "/hosting/images",
+    element: <HostingImages />, // 숙소 이미지
   },
   {
     path: "/hosting/title",
     element: <HostingTitle />, // 숙소 이름
   },
   {
+    path: "/hosting/tags",
+    element: <HostingTags />, // 숙소 태그
+  },
+  {
     path: "/hosting/description",
     element: <HostingDescription />, // 숙소 설명
   },
 
-  {
-    path: "/hosting/amenities",
-    element: <HostingAmenities />, // 숙소 등록 2차-편의시설
-  },
+  
   {
     path: "/hosting/finish-setup",
-    element: <HostingFinishSetUp />, // 숙소 설명
+    element: <HostingFinishSetUp />, // 숙소 3차
   },
   {
     path: "/hosting/baseRate",
@@ -149,12 +159,8 @@ const router = createBrowserRouter([
     element: <HostingWeekendRate />, // 주말 요금 퍼센트
   },
   {
-    path: "/hosting/images",
-    element: <HostingImages />, // 숙소 등록 2차-이미지
-  },
-  {
-    path: "/hosting/tags",
-    element: <HostingTags />, // 숙소 등록 2차-태그
+    path: "/hosting/complete",
+    element: <Main />, // 호스팅 완료
   },
 
   //---------------------------------------------------

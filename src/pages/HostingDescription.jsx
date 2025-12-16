@@ -98,7 +98,7 @@ export default function HostingDescription() {
         <div className="md:px-11 flex items-center justify-between h-[calc(100%-6px)]">
           <button
             className="border-b-2 cursor-pointer text-sm"
-            onClick={() => navigate("/hosting/title")}
+            onClick={() => navigate("/hosting/tags")}
           >
             뒤로
           </button>
