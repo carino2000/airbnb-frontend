@@ -1,12 +1,24 @@
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import logo from "../assets/arbnb_logo-b.png";
-import { useAccommodation } from "../stores/account-store";
+import {
+  useAccommodation,
+  useAmenities,
+  useImage,
+  useTags,
+  useToken,
+} from "../stores/account-store";
+import {
+  createAccommodation,
+  createAmenities,
+  createImages,
+  createTags,
+} from "../util/DatabaseUtil";
 
 export default function HostingWeekendRate() {
   const navigate = useNavigate();
 
-  const BASE_PRICE = 66350;
+  const BASE_PRICE = useAccommodation((s) => s.accommodation.price);
   const [weekendRate, setWeekendRate] = useState(36);
 
   const weekendPrice = Math.round(BASE_PRICE * (1 + weekendRate / 100));
@@ -15,12 +27,36 @@ export default function HostingWeekendRate() {
   const isFormValid = weekendRate >= 0;
 
   const setAccommodation = useAccommodation((s) => s.setAccommodation);
+  const accommodation = useAccommodation((s) => s.accommodation);
+  const amenities = useAmenities((s) => s.amenities);
+  const image = useImage((s) => s.image);
+  const tags = useTags((s) => s.tags);
+  const token = useToken((s) => s.token);
 
-  function extraRateSubmit() {
+  async function registerAccommodation() {
     setAccommodation((old) => ({
       ...old,
-      extraRate: weekendRate,
+      extraRate: weekendRate / 100,
     }));
+
+    const obj = await createAccommodation(accommodation, token);
+    console.log(obj);
+    if (obj.success) {
+      const imageInsert = await createImages(
+        obj.accommodation.id,
+        image,
+        token
+      );
+      console.log(imageInsert.success);
+      const tagsInsert = await createTags(obj.accommodation.id, tags, token);
+      console.log(tagsInsert.success);
+      const amenitiesInsert = await createAmenities(
+        obj.accommodation.id,
+        amenities,
+        token
+      );
+      console.log(amenitiesInsert.success);
+    }
     navigate("/hosting/complete");
   }
 
@@ -74,6 +110,13 @@ export default function HostingWeekendRate() {
           <div className="text-[48px] font-bold mb-6 text-center">
             {formatWon(weekendPrice)}
           </div>
+
+          <p className="text-sm text-neutral-600 mb-2 text-center">
+            기본 요금: {formatWon(weekendPrice)}
+          </p>
+          <p className="text-sm text-neutral-600 mb-5 border-b-gray-black text-center">
+            게스트 서비스 수수료: + {formatWon(Math.round(weekendPrice * 0.14))}
+          </p>
 
           <p className="text-sm text-neutral-600 mb-20 text-center">
             게스트 지불 요금: {formatWon(Math.round(weekendPrice * 1.14))}
@@ -136,7 +179,7 @@ export default function HostingWeekendRate() {
                   : "bg-neutral-300 text-white cursor-not-allowed"
               }
             `}
-            onClick={extraRateSubmit}
+            onClick={registerAccommodation}
           >
             다음
           </button>

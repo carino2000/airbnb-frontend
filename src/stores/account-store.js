@@ -98,28 +98,22 @@ export const useAmenities = create(
   )
 );
 
-export const useImage = create(
-  persist(
-    function (set) {
-      return {
-        image: [],
+export const useImage = create(function (set) {
+  return {
+    image: [],
 
-        clearImage: function () {
-          set({ images: [] });
-        },
-
-        setImage: function (func) {
-          set((state) => ({
-            images: func(state.images),
-          }));
-        },
-      };
+    clearImage: function () {
+      set({ images: [] });
     },
-    {
-      name: "image",
-    }
-  )
-);
+
+    setImage: function (func) {
+      console.log;
+      set((state) => ({
+        image: func(state.image),
+      }));
+    },
+  };
+});
 
 export const useTags = create(
   persist(

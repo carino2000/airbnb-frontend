@@ -65,7 +65,7 @@ function searchAccommodation(data) {
   }).then((response) => response.json());
 }
 
-function createAccommodation(data) {
+function createAccommodation(data, token) {
   return fetch(serverAddr + "/accommodations", {
     method: "post",
     body: JSON.stringify(data),
@@ -76,15 +76,20 @@ function createAccommodation(data) {
   }).then((response) => response.json());
 }
 
-function createimages(accommodationId, data) {
-  const formData = new FormData();
+function createImages(accommodationId, data, token) {
+  console.log(data);
+  console.log(!Array.isArray(data), data.length === 0);
+  if (!Array.isArray(data) || data.length === 0) {
+    return Promise.resolve({ success: true, message: "no images" });
+  }
 
+  const formData = new FormData();
   data.forEach((file) => {
     formData.append("images", file);
   });
 
-  fetch(`${serverAddr}/${accommodationId}/images`, {
-    method: "post",
+  return fetch(`${serverAddr}/accommodations/${accommodationId}/images`, {
+    method: "POST",
     body: formData,
     headers: {
       Token: token,
@@ -92,10 +97,13 @@ function createimages(accommodationId, data) {
   }).then((response) => response.json());
 }
 
-function createTags(accommodationId, data) {
-  return fetch(`${serverAddr}/${accommodationId}/tags`, {
+function createTags(accommodationId, data, token) {
+  const tag = {
+    tags: [...data],
+  };
+  return fetch(`${serverAddr}/accommodations/${accommodationId}/tags`, {
     method: "post",
-    body: JSON.stringify(data),
+    body: JSON.stringify(tag),
     headers: {
       Token: token,
       "Content-type": "application/json",
@@ -103,10 +111,13 @@ function createTags(accommodationId, data) {
   }).then((response) => response.json());
 }
 
-function createAmenities(accommodationId, data) {
-  return fetch(`${serverAddr}/${accommodationId}/amenities`, {
+function createAmenities(accommodationId, data, token) {
+  const amenity = {
+    amenities: [...data],
+  };
+  return fetch(`${serverAddr}/accommodations/${accommodationId}/amenities`, {
     method: "post",
-    body: JSON.stringify(data),
+    body: JSON.stringify(amenity),
     headers: {
       Token: token,
       "Content-type": "application/json",
@@ -122,7 +133,7 @@ export {
   insertAccount,
   createAccommodation,
   searchAccommodation,
-  createimages,
+  createImages,
   createTags,
   createAmenities,
 };
