@@ -16,11 +16,12 @@ export default function HostingLocation() {
   const setAccommodation = useAccommodation((s) => s.setAccommodation);
 
   function locationSubmit() {
-    const address = "";
+    const address = `${city} ${road} ${detail} ${zipcode}`;
     setAccommodation((old) => ({
       ...old,
       address,
     }));
+    navigate("/hosting/accommodation/floor-plan");
   }
 
   return (
@@ -157,7 +158,6 @@ export default function HostingLocation() {
             `}
             onClick={() => {
               locationSubmit();
-              navigate("/hosting/accommodation/floor-plan");
             }}
           >
             다음

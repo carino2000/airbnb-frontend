@@ -13,6 +13,7 @@ import aid from "../assets/noun-first-aid-6113071.png";
 import hair from "../assets/noun-hair-dryer-6112790.png";
 import washing from "../assets/noun-washing-machine-6113545.png";
 import bed from "../assets/noun-single-bed-6113298.png";
+import { useAmenities } from "../stores/account-store";
 
 const amenities = [
   { id: "wifi", label: "와이파이", icon: wifi },
@@ -33,12 +34,20 @@ export default function HostingAmenities() {
   const navigate = useNavigate();
 
   const [selectedAmenities, setSelectedAmenities] = useState([]);
+  const setAmenities = useAmenities((s) => s.setAmenities);
+  const clearAmenities = useAmenities((s) => s.clearAmenities);
 
   const toggleAmenity = (id) => {
     setSelectedAmenities((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
+
+  function amenitiesSubmit() {
+    clearAmenities();
+    setAmenities(() => [...selectedAmenities]);
+    navigate("/hosting/images");
+  }
 
   return (
     <>
@@ -65,22 +74,22 @@ export default function HostingAmenities() {
 
       <main
         className="
-  min-h-[calc(100vh-185px)]  // 90(header) + 95(footer)
-  px-6
-  pt-[110px]                // header height + 여유
-  pb-[120px]                // footer height + 여유
-  flex
-  flex-col
-  items-center
+          min-h-[calc(100vh-185px)]
+          px-6
+          pt-[110px]
+          pb-[120px]
+          flex
+          flex-col
+          items-center
 "
       >
         <div className="w-full max-w-[700px]">
           <h1
             className="text-2xl lg:text-[35px]
-    font-bold
-    leading-tight
-    min-h-[56px]
-    mb-4"
+              font-bold
+              leading-tight
+              min-h-14
+              mb-4"
           >
             숙소 편의시설 정보를 추가하세요
           </h1>
@@ -98,10 +107,10 @@ export default function HostingAmenities() {
                   key={item.id}
                   onClick={() => toggleAmenity(item.id)}
                   className={`
-          h-[110px]
-          flex flex-col items-center justify-center gap-2
-          rounded-xl border
-          transition
+                    h-[110px]
+                    flex flex-col items-center justify-center gap-2
+                    rounded-xl border
+                    transition
           ${
             active
               ? "border-black border-3 scale-105"
@@ -141,14 +150,14 @@ export default function HostingAmenities() {
           <button
             disabled={selectedAmenities.length === 0}
             className={`
-    px-8 py-3 rounded-xl text-sm font-bold cursor-pointer
+              px-8 py-3 rounded-xl text-sm font-bold cursor-pointer
     ${
       selectedAmenities.length > 0
         ? "bg-neutral-950 text-white hover:bg-neutral-950/50"
         : "bg-neutral-300 text-white cursor-not-allowed"
     }
   `}
-            onClick={() => navigate("/hosting/images")}
+            onClick={amenitiesSubmit}
           >
             다음
           </button>

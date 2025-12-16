@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import logo from "../assets/arbnb_logo-b.png";
+import { useAccommodation } from "../stores/account-store";
 
 export default function HostingWeekendRate() {
   const navigate = useNavigate();
@@ -12,6 +13,16 @@ export default function HostingWeekendRate() {
   const formatWon = (num) => "₩" + num.toLocaleString("ko-KR");
 
   const isFormValid = weekendRate >= 0;
+
+  const setAccommodation = useAccommodation((s) => s.setAccommodation);
+
+  function extraRateSubmit() {
+    setAccommodation((old) => ({
+      ...old,
+      extraRate: weekendRate,
+    }));
+    navigate("/hosting/amenities");
+  }
 
   return (
     <>
@@ -125,7 +136,7 @@ export default function HostingWeekendRate() {
                   : "bg-neutral-300 text-white cursor-not-allowed"
               }
             `}
-            onClick={() => navigate("/hosting/amenities")}
+            onClick={extraRateSubmit}
           >
             다음
           </button>

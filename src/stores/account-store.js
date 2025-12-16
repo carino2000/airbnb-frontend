@@ -53,13 +53,70 @@ export const useAccommodation = create(
           set({ accommodation: null });
         },
 
-        setAccommodation: function (newAccommodation) {
-          set({ accommodation: newAccommodation });
+        // setAccommodation: function (newAccommodation) {
+        //   set({ accommodation: newAccommodation });
+        // },
+
+        // setAccommodation: function (fn) {
+        //   const ret = fn(accommodation);
+        //   set({ accommodation: ret });
+        // }, // 이건 문법 오류.. 위 or 아래껄로 사용
+
+        setAccommodation: function (func) {
+          set((state) => ({
+            accommodation: func(state.accommodation),
+          }));
         },
       };
     },
     {
       name: "accommodation",
+    }
+  )
+);
+
+export const useAmenities = create(
+  persist(
+    function (set) {
+      return {
+        amenities: [],
+
+        clearAmenities: function () {
+          set({ amenities: [] });
+        },
+
+        setAmenities: function (func) {
+          set((state) => ({
+            amenities: func(state.amenities),
+          }));
+        },
+      };
+    },
+    {
+      name: "amenities",
+    }
+  )
+);
+
+export const useImage = create(
+  persist(
+    function (set) {
+      return {
+        image: [],
+
+        clearImage: function () {
+          set({ images: [] });
+        },
+
+        setImage: function (func) {
+          set((state) => ({
+            images: func(state.images),
+          }));
+        },
+      };
+    },
+    {
+      name: "image",
     }
   )
 );

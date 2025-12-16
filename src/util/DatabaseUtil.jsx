@@ -55,17 +55,6 @@ function loginCheck(accountId, pw) {
   }).then((res) => res.json());
 }
 
-function HostingAccommodation(data) {
-  return fetch(serverAddr + "/accommodations", {
-    method: "post",
-    body: JSON.stringify(data),
-    headers: {
-      Token: token,
-      "Content-type": "application/json",
-    },
-  }).then((response) => response.json());
-}
-
 function searchAccommodation(data) {
   const addr = `${serverAddr}/accommodations?destination=${data.destination}&checkInDate=${data.checkInDate}&checkOutDate=${data.checkOutDate}&guests=${data.guests}`;
   return fetch(addr, {
@@ -76,12 +65,42 @@ function searchAccommodation(data) {
   }).then((response) => response.json());
 }
 
+function createAccommodation(data) {
+  return fetch(serverAddr + "/accommodations", {
+    method: "post",
+    body: JSON.stringify(data),
+    headers: {
+      Token: token,
+      "Content-type": "application/json",
+    },
+  }).then((response) => response.json());
+}
+
+function createimages(data, accommodationId) {
+  const formData = new FormData();
+  data.map((item) => {
+    formData.append("uri", item);
+  });
+
+  fetch(`${serverAddr}/${accommodationId}/images`, {
+    method: "post",
+    body: formData,
+    headers: {
+      Token: token,
+    },
+  }).then((response) => response.json());
+}
+
+function createTags(data) {}
+
+function createAmenities(data) {}
+
 export {
   idCheck,
   emailCheck,
   emailCodeCheck,
   loginCheck,
   insertAccount,
-  HostingAccommodation,
+  createAccommodation,
   searchAccommodation,
 };

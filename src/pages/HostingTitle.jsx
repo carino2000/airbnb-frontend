@@ -1,12 +1,22 @@
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import logo from "../assets/arbnb_logo-b.png";
+import { useAccommodation } from "../stores/account-store";
 
 export default function HostingTitle() {
   const navigate = useNavigate();
 
   const [title, setTitle] = useState("");
   const isFormValid = title.trim().length > 0 && title.length <= 50;
+  const setAccommodation = useAccommodation((s) => s.setAccommodation);
+
+  function titleSubmit() {
+    setAccommodation((old) => ({
+      ...old,
+      name: title,
+    }));
+    navigate("/hosting/description");
+  }
 
   return (
     <>
@@ -106,7 +116,7 @@ export default function HostingTitle() {
                   : "bg-neutral-300 text-white cursor-not-allowed"
               }
             `}
-            onClick={() => navigate("/hosting/description")}
+            onClick={titleSubmit}
           >
             다음
           </button>

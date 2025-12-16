@@ -2,6 +2,7 @@ import { useNavigate } from "react-router";
 import { useRef, useState } from "react";
 import logo from "../assets/arbnb_logo-b.png";
 import camera from "../assets/free-icon-camera-5904494.png";
+import { useImage } from "../stores/account-store";
 
 export default function HostingImages() {
   const navigate = useNavigate();
@@ -11,7 +12,14 @@ export default function HostingImages() {
   const [step, setStep] = useState("select"); // select | review
   const fileInputRef = useRef(null);
 
+  const setImage = useImage((s) => s.setImage);
+
   const hasImages = images.length > 0;
+
+  function imageSubmit() {
+    setImage(() => images.map((img) => img.file));
+    navigate("/hosting/finish-setup");
+  }
 
   /** 파일 선택 */
   const handleFiles = (e) => {
@@ -28,7 +36,10 @@ export default function HostingImages() {
 
   /** 사진 삭제 */
   const removeImage = (idx) => {
-    setImages((prev) => prev.filter((_, i) => i !== idx));
+    setImages((prev) => {
+      URL.revokeObjectURL(prev[idx].preview);
+      return prev.filter((_, i) => i !== idx);
+    });
   };
 
   return (
@@ -67,7 +78,7 @@ export default function HostingImages() {
             className="text-2xl lg:text-[35px]
     font-bold
     leading-tight
-    min-h-[56px]
+    min-h-14
     mb-4"
           >
             숙소 사진 추가하기
@@ -232,7 +243,7 @@ export default function HostingImages() {
                 ? "bg-neutral-950 text-white"
                 : "bg-neutral-300 text-white"
             }`}
-            onClick={() => navigate("/hosting/finish-setup")}
+            onClick={imageSubmit}
           >
             다음
           </button>
