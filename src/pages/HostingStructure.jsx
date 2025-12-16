@@ -13,10 +13,17 @@ export default function HostingStructure() {
 
   useEffect(() => {
     clearAccommodation();
-    setAccommodation({
-      hostId: account.id,
-    });
   }, []);
+
+  function structSubmit(evt) {
+    evt.preventDefault();
+    clearAccommodation();
+    setAccommodation((old) => ({
+      hostId: account.id,
+      struct: selectedType,
+    }));
+    navigate("/hosting/accommodation/location");
+  }
 
   return (
     <>
@@ -155,7 +162,7 @@ export default function HostingStructure() {
                   : "bg-neutral-300 text-white cursor-not-allowed"
               }
             `}
-            onClick={() => navigate("/hosting/accommodation/location")}
+            onClick={structSubmit}
           >
             다음
           </button>

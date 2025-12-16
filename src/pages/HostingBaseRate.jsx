@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import logo from "../assets/arbnb_logo-b.png";
+import { useAccommodation } from "../stores/account-store";
 
 export default function HostingBaseRate() {
   const navigate = useNavigate();
@@ -11,6 +12,16 @@ export default function HostingBaseRate() {
   const formatWon = (num) => "₩" + num.toLocaleString("ko-KR");
   const guestPrice = Math.round(basePrice * 1.14);
   const isFormValid = basePrice > 0;
+
+  const setAccommodation = useAccommodation((s) => s.setAccommodation);
+
+  function priceSubmit() {
+    setAccommodation((old) => ({
+      ...old,
+      price: basePrice,
+    }));
+    navigate("/hosting/weekendRate");
+  }
 
   return (
     <>
@@ -111,7 +122,7 @@ export default function HostingBaseRate() {
                   : "bg-neutral-300 text-white cursor-not-allowed"
               }
             `}
-            onClick={() => navigate("/hosting/weekendRate")}
+            onClick={priceSubmit}
           >
             다음
           </button>

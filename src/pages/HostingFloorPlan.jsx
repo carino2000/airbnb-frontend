@@ -28,10 +28,10 @@ export default function HostingLocation() {
       ...old,
       maxCapacity: counts.guests,
       bedroom: counts.bedrooms,
-      bed: bed,
-      bathroom: bathrooms,
+      bed: counts.beds,
+      bathroom: counts.bathrooms,
     }));
-    navigate("/hosting/");
+    navigate("/hosting/stand-out");
   }
 
   return (

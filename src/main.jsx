@@ -142,11 +142,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/hosting/baseRate",
-    element: <HostingBaseRate />, // 숙소 설명
+    element: <HostingBaseRate />, // 기본 요금
   },
   {
     path: "/hosting/weekendRate",
-    element: <HostingWeekendRate />, // 숙소 설명
+    element: <HostingWeekendRate />, // 주말 요금 퍼센트
   },
   {
     path: "/hosting/images",
