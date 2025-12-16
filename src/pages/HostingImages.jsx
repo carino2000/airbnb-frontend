@@ -17,7 +17,6 @@ export default function HostingImages() {
   const hasImages = images.length > 0;
 
   function imageSubmit() {
-    setImage(() => [...images]);
     setImage(() => images.map((item) => item.file));
     navigate("/hosting/title");
   }

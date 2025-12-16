@@ -3,15 +3,26 @@ import logo from "../assets/arbnb_logo-b.png";
 import stays1 from "../assets/listing information.png";
 import stays2 from "../assets/room photos.png";
 import stays3 from "../assets/room registration.png";
-import { useAccommodation } from "../stores/account-store";
+import {
+  useAccommodation,
+  useAmenities,
+  useImage,
+  useTags,
+} from "../stores/account-store";
 import { useEffect } from "react";
 
 export default function Hosting() {
   const navigate = useNavigate();
   const clearAccommodation = useAccommodation((s) => s.clearAccommodation);
+  const clearAmenities = useAmenities((s) => s.clearAmenities);
+  const clearImage = useImage((s) => s.clearImage);
+  const clearTags = useTags((s) => s.clearTags);
 
   useEffect(() => {
     clearAccommodation();
+    clearAmenities();
+    clearImage();
+    clearTags();
   }, []);
 
   return (

@@ -370,10 +370,13 @@ export default function Main() {
                 onClick={() => navigate(`/room/${one.id}`)}
               >
                 <div className="aspect-square rounded-lg border flex items-center justify-center">
-                  <img
-                    src={`http://192.168.0.17:8080${one.images[0].uri}`}
-                    alt=""
-                  />
+                  {one.images.length !== 0 && (
+                    <img
+                      className="w-full h-full rounded-lg"
+                      src={`http://192.168.0.17:8080${one.images[0].uri}`}
+                      alt=""
+                    />
+                  )}
                 </div>
 
                 <div className="mt-2 text-left">

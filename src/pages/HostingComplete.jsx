@@ -68,8 +68,7 @@ export default function HostingComplete() {
         </svg>
 
         <h2 className="text-xl font-bold">신청해주셔서 감사합니다.</h2>
-        <p className="text-sm text-gray-500 text-center">
-        </p>
+        <p className="text-sm text-gray-500 text-center"></p>
       </main>
 
       {/* ================= 푸터 ================= */}
