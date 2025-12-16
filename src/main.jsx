@@ -31,6 +31,7 @@ import HostingDescription from "./pages/HostingDescription";
 import HostingWeekendRate from "./pages/HostingWeekendRate";
 import HostingFinishSetUp from "./pages/HostingFinishSetUp";
 import HostingBaseRate from "./pages/HostingBaseRate";
+import HostingComplete from "./pages/HostingComplete";
 
 const router = createBrowserRouter([
   {
@@ -145,7 +146,6 @@ const router = createBrowserRouter([
     element: <HostingDescription />, // 숙소 설명
   },
 
-  
   {
     path: "/hosting/finish-setup",
     element: <HostingFinishSetUp />, // 숙소 3차
@@ -160,7 +160,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/hosting/complete",
-    element: <Main />, // 호스팅 완료
+    element: <HostingComplete />, // 호스팅 완료
   },
 
   //---------------------------------------------------
