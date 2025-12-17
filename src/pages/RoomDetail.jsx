@@ -12,7 +12,12 @@ import SearchHeader from "../components/SearchHeader";
 import SearchOverlay from "../components/SearchOverlay";
 import SearchBarMini from "../components/SearchBarMini";
 import GuestRow from "../components/GuestRow";
-import { getDetailAccommodation } from "../util/DatabaseUtil";
+import {
+  checkReservation,
+  createReservation,
+  getAccommodationReview,
+  getDetailAccommodation,
+} from "../util/DatabaseUtil";
 
 export default function RoomDetail() {
   const { token, setToken, clearToken } = useToken();
@@ -51,6 +56,13 @@ export default function RoomDetail() {
 
   // 설명 더보기 모달
   const [openDescription, setOpenDescription] = useState(false);
+  const [reservation, setReservation] = useState({
+    message: "",
+    reservationAvailable: true,
+    totalPrice: room.price,
+  });
+
+  const [review, setReview] = useState([]);
 
   // ================= 예약 카드 스크롤 =================
   useEffect(() => {
@@ -86,15 +98,65 @@ export default function RoomDetail() {
   // ===============================================
 
   useEffect(() => {
+    getAccommodationReview(accommodationId).then((obj) => {
+      if (obj.success) {
+        setReview([...obj.review]);
+      } else {
+        window.alert("리뷰 가져오기 오류!");
+      }
+    });
+  }, []);
+
+  useEffect(() => {
     getDetailAccommodation(accommodationId).then((obj) => {
       if (obj.success) {
         setRoom({ ...obj.accommodation });
+        setReservation({ totalPrice: obj.accommodation.price });
       } else {
         window.alert("숙소 상세정보 불러오기 오류!");
         navigate("/");
       }
     });
   }, []);
+
+  useEffect(() => {
+    const data = {
+      accommodationId: accommodationId,
+      accountId: account.id,
+      visitors: guests.adult + guests.child,
+      startDate: checkin,
+      endDate: checkout,
+    };
+    checkReservation(data).then((obj) => {
+      if (obj.success) {
+        setReservation(() => ({ ...obj }));
+        if (!obj.reservationAvailable) {
+          window.alert("해당 일자는 예약 불가한 일자입니다");
+          setCheckin();
+          setCheckout();
+        }
+      }
+    });
+  }, [checkin, checkout, guests]);
+
+  function confirmReservation() {
+    const data = {
+      accommodationId: accommodationId,
+      accountId: account.id,
+      visitors: guests.adult + guests.child,
+      startDate: checkin,
+      endDate: checkout,
+      price: reservation.totalPrice,
+    };
+    createReservation(data, token).then((obj) => {
+      if (obj.success) {
+        window.alert("예약이 확정되었습니다!");
+        navigate("/");
+      } else {
+        window.alert("예약 진행중 오류 발생!");
+      }
+    });
+  }
 
   return (
     <>
@@ -359,7 +421,21 @@ export default function RoomDetail() {
 
         <section className="pt-16">
           <h2 className="text-xl font-bold mb-4">리뷰</h2>
-          <div className="h-[420px] bg-gray-100 rounded-md w-full" />
+          <div className="h-[420px] bg-gray-100 rounded-md w-full">
+            {review.length > 0 &&
+              review.map((item) => {
+                return (
+                  <div key={item.id}>
+                    <div>
+                      <span>아이디: {item.accountId}</span>
+                      <span>별점: {item.rating}</span>
+                      <span>작성일자: {item.writeAt}</span>
+                      <span>내용: {item.content}</span>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
         </section>
 
         <section className="pt-16">
@@ -412,7 +488,7 @@ export default function RoomDetail() {
 
         {/* 가격 */}
         <div className="mb-5">
-          <span className="text-2xl font-bold">₩{room.price}</span>
+          <span className="text-2xl font-bold">₩{reservation.totalPrice}</span>
           <span className="text-sm text-gray-500"> · 1박</span>
         </div>
 
@@ -451,6 +527,7 @@ export default function RoomDetail() {
               </p>
               <input
                 ref={checkoutRef}
+                name="endDate"
                 type="date"
                 value={checkout}
                 onChange={(e) => setCheckout(e.target.value)}
@@ -538,7 +615,11 @@ export default function RoomDetail() {
         </div>
 
         {/* 예약 버튼 */}
-        <button className="w-full h-[35px] rounded-full bg-rose-500 text-white font-medium text-sm hover:bg-rose-700 cursor-pointer">
+        <button
+          onClick={confirmReservation}
+          className="w-full h-[35px] rounded-full bg-rose-500 text-white font-medium text-sm hover:bg-rose-700 cursor-pointer"
+          disabled={!reservation.reservationAvailable}
+        >
           예약하기
         </button>
 
