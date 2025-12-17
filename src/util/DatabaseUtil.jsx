@@ -123,6 +123,15 @@ function createAmenities(accommodationId, data, token) {
   }).then((response) => response.json());
 }
 
+function getDetailAccommodation(accommodationId) {
+  return fetch(`${serverAddr}/accommodations/${accommodationId}`, {
+    method: "get",
+    headers: {
+      "Content-type": "application/json",
+    },
+  }).then((response) => response.json());
+}
+
 // 메시지 작성
 function createMessage(data, token) {
   return fetch(serverAddr + "/reservations/messages", {

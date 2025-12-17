@@ -1,12 +1,18 @@
 import logo from "../assets/Airbnb_Logo.png";
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router";
-import { useToken, useAccount } from "../stores/account-store";
+import { useNavigate, useParams } from "react-router";
+import {
+  useToken,
+  useAccount,
+  useAccommodation,
+  useRoom,
+} from "../stores/account-store";
 
 import SearchHeader from "../components/SearchHeader";
 import SearchOverlay from "../components/SearchOverlay";
 import SearchBarMini from "../components/SearchBarMini";
 import GuestRow from "../components/GuestRow";
+import { getDetailAccommodation } from "../util/DatabaseUtil";
 
 export default function RoomDetail() {
   const { token, setToken, clearToken } = useToken();
@@ -40,6 +46,9 @@ export default function RoomDetail() {
 
   const totalGuests = guests.adult + guests.child;
 
+  const { room, setRoom } = useRoom();
+  const { accommodationId } = useParams();
+
   // ================= 예약 카드 스크롤 =================
   useEffect(() => {
     const onScroll = () => {
@@ -72,6 +81,17 @@ export default function RoomDetail() {
     };
   }, []);
   // ===============================================
+
+  useEffect(() => {
+    getDetailAccommodation(accommodationId).then((obj) => {
+      if (obj.success) {
+        setRoom({ ...obj.accommodation });
+      } else {
+        window.alert("숙소 상세정보 불러오기 오류!");
+        navigate("/");
+      }
+    });
+  }, []);
 
   return (
     <>
@@ -132,7 +152,7 @@ export default function RoomDetail() {
 
             {/* ================= 메뉴 ================= */}
             {openMenu && (
-              <div className="absolute top-[48px] right-0 w-[180px] bg-white rounded-md shadow-xl border border-gray-200 z-50">
+              <div className="absolute top-12 right-0 w-[180px] bg-white rounded-md shadow-xl border border-gray-200 z-50">
                 {/* 로그인 X */}
                 {!token && (
                   <>
@@ -204,20 +224,57 @@ export default function RoomDetail() {
         {/*  사진  */}
         <section className="mb-12">
           <div className="flex justify-between mb-6">
-            <h2 className="font-semibold text-2xl">
-              [Travel Light 105B] for Women 서면역 도보 3분
-            </h2>
+            <h2 className="font-semibold text-2xl">{room.name}</h2>
             <div className="flex items-center gap-1 cursor-pointer">
               ❤️ <span>찜</span>
             </div>
           </div>
 
           <div className="w-full h-[480px] grid grid-cols-4 grid-rows-2 gap-2 rounded-xl overflow-hidden">
-            <div className="col-span-2 row-span-2 bg-gray-200" />
-            <div className="bg-gray-200" />
-            <div className="bg-gray-200" />
-            <div className="bg-gray-200" />
+            <div className="col-span-2 row-span-2 bg-gray-200">
+              {room.images.length > 0 && (
+                <img
+                  className="w-full h-full rounded-xl object-cover"
+                  src={`http://192.168.0.17:8080${room.images[0].uri}`}
+                  alt=""
+                />
+              )}
+            </div>
+            <div className="bg-gray-200">
+              {room.images.length > 1 && (
+                <img
+                  className="w-full h-full rounded-xl object-cover"
+                  src={`http://192.168.0.17:8080${room.images[1].uri}`}
+                  alt=""
+                />
+              )}
+            </div>
+            <div className="bg-gray-200">
+              {room.images.length > 2 && (
+                <img
+                  className="w-full h-full rounded-xl object-cover"
+                  src={`http://192.168.0.17:8080${room.images[2].uri}`}
+                  alt=""
+                />
+              )}
+            </div>
+            <div className="bg-gray-200">
+              {room.images.length > 3 && (
+                <img
+                  className="w-full h-full rounded-xl object-cover"
+                  src={`http://192.168.0.17:8080${room.images[3].uri}`}
+                  alt=""
+                />
+              )}
+            </div>
             <div className="bg-gray-200 relative">
+              {room.images.length > 4 && (
+                <img
+                  className="w-full h-full rounded-xl object-cover"
+                  src={`http://192.168.0.17:8080${room.images[4].uri}`}
+                  alt=""
+                />
+              )}
               <button className="absolute bottom-3 right-3 bg-white text-sm px-3 py-1.5 rounded-md shadow">
                 사진 모두 보기
               </button>
@@ -230,10 +287,11 @@ export default function RoomDetail() {
           <div className="space-y-10">
             <section>
               <h3 ref={roomTitleRef} className="text-xl font-semibold">
-                한국의 방
+                {room.address.split(" ")[0]}의 집
               </h3>
               <p className="text-sm text-gray-600 mt-1">
-                퀸사이즈 침대 1개 · 공용 욕실
+                최대 인원 {room.maxCapacity}명 · 침실 {room.bedroom} · 침대{" "}
+                {room.bed}개 · 욕실 {room.bathroom}
               </p>
 
               <div className="mt-4 flex items-center gap-4 text-sm">
@@ -246,7 +304,14 @@ export default function RoomDetail() {
             </section>
 
             <section className="grid grid-cols-2 gap-y-4 text-sm border-t pt-6">
-              <div className="flex items-center gap-3">🧳 셀프 체크인</div>
+              {room.tags.map((item) => {
+                return (
+                  <div key={item.id} className="flex items-center gap-3">
+                    🧳 {item.tag}
+                  </div>
+                );
+              })}
+
               <div className="flex items-center gap-3">❄️ 에어컨</div>
               <div className="flex items-center gap-3">🧺 세탁기</div>
               <div className="flex items-center gap-3">🔥 난방</div>
@@ -255,7 +320,7 @@ export default function RoomDetail() {
             <section className="flex items-center gap-4 border-t pt-6">
               <div className="w-12 h-12 rounded-full bg-gray-300" />
               <div>
-                <p className="font-semibold">호스트: Sean님</p>
+                <p className="font-semibold">호스트: {room.hostId}님</p>
                 <p className="text-sm text-gray-500">
                   슈퍼호스트 · 호스팅 경력 3년
                 </p>
@@ -264,6 +329,7 @@ export default function RoomDetail() {
 
             <section className="border-t pt-6">
               <p className="text-sm leading-relaxed text-gray-700">
+                {room.description}
                 ⭐️합정역(2호선,6호선)에서 도보7분 거리에 위치하여 어디로든
                 이동이 편리합니다. <br />
                 ⭐️최고의 가성비를 자랑하는 프라이빗 숙소입니다. <br />
@@ -293,7 +359,15 @@ export default function RoomDetail() {
 
         <section className="pt-16">
           <h2 className="text-xl font-bold mb-4">숙소 편의시설</h2>
-          <div className="h-[420px] bg-gray-200 rounded-md w-full" />
+          <div className="h-[420px] bg-gray-200 rounded-md w-full">
+            {room.amenities.map((item) => {
+              return (
+                <div key={item.id} className="flex items-center gap-3">
+                  🧳 {item.amenity}
+                </div>
+              );
+            })}
+          </div>
         </section>
 
         <section className="pt-16">
@@ -333,8 +407,8 @@ export default function RoomDetail() {
 
         {/* 가격 */}
         <div className="mb-5">
-          <span className="text-2xl font-bold">₩115,530</span>
-          <span className="text-sm text-gray-500"> · 2박</span>
+          <span className="text-2xl font-bold">₩{room.price}</span>
+          <span className="text-sm text-gray-500"> · 1박</span>
         </div>
 
         {/* 날짜 선택 박스 */}
@@ -461,7 +535,7 @@ export default function RoomDetail() {
       {/* ================= 로그인 모달 ================= */}
       {showLogin && (
         <div
-          className="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999]"
+          className="fixed inset-0 bg-black/40 flex items-center justify-center z-9999"
           onClick={() => setShowLogin(false)} // 배경 클릭 닫기
         >
           <div

@@ -81,7 +81,7 @@ export default function HostingList() {
             </div>
 
             {openMenu && (
-              <div className="absolute top-[48px] right-0 w-[150px] bg-white rounded-md shadow-xl z-50">
+              <div className="absolute top-12 right-0 w-[150px] bg-white rounded-md shadow-xl z-50">
                 <div
                   className="px-4 py-3 hover:bg-gray-100 text-xs cursor-pointer"
                   onClick={() => {

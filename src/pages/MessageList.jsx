@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useToken, useAccount } from "../stores/account-store";
-import { createMessage, getMessage } from "../util/DatabaseUtil";
+import { createMessage, getMessage } from "../util/DatabaseUtil"; //TEST
 
 export default function MessageList() {
   const token = useToken((s) => s.token);
