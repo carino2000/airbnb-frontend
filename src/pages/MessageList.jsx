@@ -1,4 +1,21 @@
+import { useEffect, useState } from "react";
+import { useAccount, useToken } from "../stores/account-store";
+
 export default function MessageList() {
+  const { token, setToken, clearToken } = useToken();
+  const { account, setAccount, clearAccount } = useAccount();
+
+  const [messageList, setMessageList] = useState([]);
+  const [message, setMessage] = useState([]);
+
+  // useEffect(() => {
+  //   getMyMessageList(account.id).then((obj) => {
+  //     if (obj.success) {
+  //       setMessageList([...obj.messageRoom]);
+  //     }
+  //   });
+  // }, []);
+
   return (
     <section className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 h-[600px]">
       {/* ================= 왼쪽: 대화 목록 ================= */}
