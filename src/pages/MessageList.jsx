@@ -1,28 +1,67 @@
+import { useEffect, useState } from "react";
+import { useAccount, useToken } from "../stores/account-store";
+import { getMyMessageList } from "../util/DatabaseUtil";
+
 export default function MessageList() {
+  const { token, setToken, clearToken } = useToken();
+  const { account, setAccount, clearAccount } = useAccount();
+
+  const [messageList, setMessageList] = useState([]);
+  const [message, setMessage] = useState([]);
+
+  useEffect(() => {
+    getMyMessageList(account.id, token).then((obj) => {
+      if (obj.success) {
+        setMessageList([...obj.messageRooms]);
+      } else {
+        window.alert("메시지 방 불러오기 실패!");
+      }
+    });
+  }, []);
+
+  function selectMessageRoom() {
+    getMessage().then((obj) => {
+      if (obj.success) {
+        setMessage([...obj.messages]);
+      } else {
+        window.alert("대화 내용 불러오기 실패!");
+      }
+    });
+  }
+
   return (
     <section className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 h-[600px]">
       {/* ================= 왼쪽: 대화 목록 ================= */}
       <aside className="border rounded-xl overflow-y-auto bg-white">
         {/* 대화 아이템 (반복될 자리) */}
-        <div className="px-4 py-3 border-b">
-          <div className="flex justify-between">
-            <p className="font-semibold text-sm text-neutral-800">
-              사용자 이름
-            </p>
-            <span className="text-xs text-neutral-400">시간</span>
-          </div>
+        {messageList.length > 0 &&
+          messageList.map((messageRoom) => {
+            return (
+              <div key={messageRoom.reservationCode}>
+                <div className="px-4 py-3 border-b">
+                  <div className="flex justify-between">
+                    <p className="font-semibold text-sm text-neutral-800">
+                      {messageRoom.recipientId} 님
+                    </p>
+                    <span className="text-xs text-neutral-400">
+                      {messageRoom.lastReceiveTime}
+                    </span>
+                  </div>
 
-          <div className="flex justify-between mt-1">
-            <p className="text-xs text-neutral-500 truncate max-w-[220px]">
-              마지막 메시지 미리보기
-            </p>
+                  <div className="flex justify-between mt-1">
+                    <p className="text-xs text-neutral-500 truncate max-w-[220px]">
+                      {messageRoom.lastMessage}
+                    </p>
 
-            {/* 읽지 않은 메시지 뱃지 */}
-            <span className="bg-rose-500 text-white text-[10px] px-2 rounded-full">
-              2
-            </span>
-          </div>
-        </div>
+                    {/* 읽지 않은 메시지 뱃지 */}
+                    <span className="bg-rose-500 text-white text-[10px] px-2 rounded-full">
+                      {messageRoom.unReadCount}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
       </aside>
 
       {/* ================= 오른쪽: 채팅 영역 ================= */}

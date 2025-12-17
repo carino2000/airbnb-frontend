@@ -191,14 +191,24 @@ function deleteMessage(messageId, token) {
 }
 
 // 메시지 조회
-function getMessage(recipientId, token) {
-  return fetch(`${serverAddr}/reservations/messages/${recipientId}`, {
+function getMessage(reservationCode, token) {
+  return fetch(`${serverAddr}/reservations/messages/${reservationCode}`, {
     method: "GET",
     headers: {
       Token: token,
     },
   }).then((res) => res.json());
 }
+
+function getMyMessageList(accountId, token) {
+  return fetch(`${serverAddr}/reservations/messages/list/${accountId}`, {
+    method: "GET",
+    headers: {
+      Token: token,
+    },
+  }).then((res) => res.json());
+}
+
 
 export {
   idCheck,
@@ -218,4 +228,5 @@ export {
   checkReservation,
   createReservation,
   getAccommodationReview,
+  getMyMessageList,
 };
