@@ -132,16 +132,52 @@ function getDetailAccommodation(accommodationId) {
   }).then((response) => response.json());
 }
 
+function createReservation(data, token) {
+  return fetch(`${serverAddr}/reservations`, {
+    method: "post",
+    body: JSON.stringify(data),
+    headers: {
+      Token: token,
+      "Content-type": "application/json",
+    },
+  }).then((response) => response.json());
+}
+
+function checkReservation({
+  accommodationId,
+  accountId,
+  visitors,
+  startDate,
+  endDate,
+}) {
+  const addr = `${serverAddr}/validate/reservation?accommodationId=${accommodationId}&accountId=${accountId}&visitors=${visitors}&startDate=${startDate}&endDate=${endDate}`;
+  return fetch(addr, {
+    method: "get",
+    headers: {
+      "Content-type": "application/json",
+    },
+  }).then((response) => response.json());
+}
+
+function getAccommodationReview(accommodationId) {
+  return fetch(`${serverAddr}/accommodations/${accommodationId}/reviews`, {
+    method: "get",
+    headers: {
+      "Content-type": "application/json",
+    },
+  }).then((response) => response.json());
+}
+
 // 메시지 작성
 function createMessage(data, token) {
   return fetch(serverAddr + "/reservations/messages", {
     method: "POST",
     body: JSON.stringify(data),
-    header: {
+    headers: {
       Token: token,
       "Content-type": "application/json",
     },
-  }).then((response) => response.json());
+  }).then((res) => res.json());
 }
 
 // 메시지 삭제
@@ -154,7 +190,7 @@ function deleteMessage(messageId, token) {
   }).then((res) => res.json());
 }
 
-// 메시지 조회(받은 쪽지)
+// 메시지 조회
 function getMessage(recipientId, token) {
   return fetch(`${serverAddr}/reservations/messages/${recipientId}`, {
     method: "GET",
@@ -179,4 +215,7 @@ export {
   deleteMessage,
   getMessage,
   getDetailAccommodation,
+  checkReservation,
+  createReservation,
+  getAccommodationReview,
 };

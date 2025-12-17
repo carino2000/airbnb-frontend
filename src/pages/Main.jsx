@@ -6,7 +6,7 @@ import experiences from "../assets/nav-experiences.png";
 import services from "../assets/nav-services.png";
 import { loginCheck, searchAccommodation } from "../util/DatabaseUtil";
 
-import { useAccount, useToken } from "../stores/account-store";
+import { useAccount, useRoom, useToken } from "../stores/account-store";
 import { useNavigate } from "react-router";
 
 export default function Main() {
@@ -26,6 +26,8 @@ export default function Main() {
   const [openMenu, setOpenMenu] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [item, setItem] = useState([]);
+
+  const clearRoom = useRoom((s) => s.clearRoom);
 
   const items = [1, 2, 3, 4, 5, 6, 7, 8];
   const VISIBLE = 4;
@@ -73,6 +75,7 @@ export default function Main() {
   }
 
   useEffect(() => {
+    clearRoom();
     const data = {
       destination: "",
       checkInDate: "",
@@ -325,8 +328,8 @@ export default function Main() {
       <main className="mt-[250px] w-5/6 mx-auto lg:px-10">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-1">
-            <h3 className="font-semibold text-lg sm:text-xl">부산 인기 숙소</h3>
-
+            {/* 슬라이드 타이틀 */}
+            <h3 className="font-semibold text-lg sm:text-xl">인기 숙소</h3>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -392,13 +395,13 @@ export default function Main() {
         {/* 슬라이드 */}
         <div className="overflow-hidden mt-3 cursor-pointer">
           <div
-            className="flex transition-transform duration-300"
+            className="flex transition-transform duration-300 "
             style={{ transform: `translateX(-${index * CARD_PERCENT}%)` }}
           >
             {item.map((one) => (
               <div
                 key={one.id}
-                className="shrink-0"
+                className="shrink-0 px-2"
                 style={{ width: `${CARD_PERCENT}%` }}
                 onClick={() => navigate(`/room/${one.id}`)}
               >
@@ -414,13 +417,13 @@ export default function Main() {
 
                 <div className="mt-2 text-left">
                   <div className="font-medium text-sm truncate">
-                    서울의 집 {1}
+                    {one.address.split(" ")[0]}의 집
                   </div>
                   <div className="text-xs text-gray-500 truncate">
-                    1월 30일 ~ 2월 1일
+                    1월 1일 ~ 12월 31일
                   </div>
                   <div className="text-xs text-gray-500 truncate">
-                    ₩205,000 · 평점 5.0
+                    ₩{one.price} · 평점 5.0
                   </div>
                 </div>
               </div>
