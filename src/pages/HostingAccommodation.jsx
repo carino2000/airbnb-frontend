@@ -39,6 +39,7 @@ export default function Hosting() {
           flex
           items-center
           justify-center
+          pt-12
         "
       >
         <div className="w-full max-w-[1200px] grid grid-cols-1 lg:grid-cols-4 gap-12 px-6 lg:px-16">
@@ -50,7 +51,7 @@ export default function Hosting() {
               숙소 정보를 알려주세요.
             </h1>
 
-            <p className="text-neutral-700 leading-relaxed">
+            <p className="text-neutral-700 leading-relaxed max-w-[520px]">
               먼저 숙소 유형을 선택하고, 게스트가 예약할 수 있는 숙소가 공간
               전체인지 개인실 또는 다인실인지 알려주세요. 그런 다음 숙소 위치와
               수용 가능 인원을 알려주세요.

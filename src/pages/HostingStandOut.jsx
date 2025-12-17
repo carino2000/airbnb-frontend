@@ -38,6 +38,7 @@ export default function HostingStandOut() {
           flex
           items-center
           justify-center
+          pt-12
           px-6
         "
       >

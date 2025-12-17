@@ -65,10 +65,10 @@ export default function HostingImages() {
       {/* ================= 메인 ================= */}
       <main
         className="
-  min-h-[calc(100vh-185px)]  // 90(header) + 95(footer)
+  min-h-[calc(100vh-185px)]
   px-6
-  pt-[110px]                // header height + 여유
-  pb-[120px]                // footer height + 여유
+  pt-[110px]               
+  pb-[120px]                
   flex
   flex-col
   items-center
@@ -84,7 +84,7 @@ export default function HostingImages() {
     font-bold
     leading-tight
     min-h-14
-    mb-4"
+    mb-3"
               >
                 숙소 사진 추가하기
               </h1>
@@ -240,11 +240,11 @@ export default function HostingImages() {
       )}
 
       {/* ================= 푸터 ================= */}
-      <footer className="fixed bottom-0 left-0 w-full h-[95px] bg-white border-t z-40">
+      <footer className="fixed bottom-0 left-0 w-full h-[95px] bg-white z-40">
         <div className="grid grid-cols-3 h-1.5">
           <div className="bg-neutral-950" />
           <div className="bg-neutral-950" />
-          <div className="bg-neutral-950" />
+          <div className="bg-neutral-300" />
         </div>
 
         <div className="px-6 md:px-11 flex justify-between items-center h-[calc(100%-6px)]">

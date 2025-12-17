@@ -111,20 +111,26 @@ export default function HostingWeekendRate() {
           </p>
 
           {/* 금액 */}
-          <div className="text-[48px] font-bold mb-6 text-center">
+          <div className="text-7xl font-bold mb-10 text-center">
             {formatWon(weekendPrice)}
           </div>
 
-          <p className="text-sm text-neutral-600 mb-2 text-center">
-            기본 요금: {formatWon(weekendPrice)}
-          </p>
-          <p className="text-sm text-neutral-600 mb-5 border-b-gray-black text-center">
-            게스트 서비스 수수료: + {formatWon(Math.round(weekendPrice * 0.14))}
-          </p>
+          <div className="border border-neutral-300 rounded-xl p-4 max-w-[300px] mx-auto mb-20 text-sm">
+            <div className="flex justify-between mb-2">
+              <span className="text-neutral-600">기본 요금</span>
+              <span>{formatWon(weekendPrice)}</span>
+            </div>
 
-          <p className="text-sm text-neutral-600 mb-20 text-center">
-            게스트 지불 요금: {formatWon(Math.round(weekendPrice * 1.14))}
-          </p>
+            <div className="flex justify-between mb-3">
+              <span className="text-neutral-600">게스트 서비스 수수료</span>
+              <span>+ {formatWon(Math.round(weekendPrice * 0.14))}</span>
+            </div>
+
+            <div className="border-t pt-3 flex justify-between font-bold">
+              <span>게스트 지불 요금</span>
+              <span>{formatWon(Math.round(weekendPrice * 1.14))}</span>
+            </div>
+          </div>
 
           {/* 주말 프리미엄 */}
           <div className="flex items-center justify-between mb-4">
