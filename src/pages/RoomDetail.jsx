@@ -1,4 +1,5 @@
 import logo from "../assets/Airbnb_Logo.png";
+import { ko } from "date-fns/locale";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router";
 import {
@@ -96,6 +97,8 @@ import SearchHeader from "../components/SearchHeader";
 import SearchOverlay from "../components/SearchOverlay";
 import SearchBarMini from "../components/SearchBarMini";
 import GuestRow from "../components/GuestRow";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
 import {
   checkReservation,
   createReservation,
@@ -140,6 +143,17 @@ export default function RoomDetail() {
   const maxCapacity = room?.maxCapacity ?? 0;
 
   // 3. 파생 값 계산
+  const [dateRange, setDateRange] = useState({
+    from: null,
+    to: null,
+  });
+  const [blockedDays, setBlockDays] = useState([
+    "2025-12-17",
+    "2025-12-18",
+    "2025-12-19",
+  ]);
+  const [openCal, setOpenCal] = useState(false);
+
   const totalGuests = guests.adult + guests.child;
   const isMaxReached = totalGuests >= maxCapacity;
 
@@ -614,18 +628,18 @@ export default function RoomDetail() {
       <div
         ref={bookingRef}
         className="
-    fixed
-    right-[calc((100vw-1200px)/2+24px)]
-    w-[360px]
-    bg-white
-    rounded-2xl
-    p-6
-    shadow-[0_6px_20px_rgba(0,0,0,0.12)]
-    transition-[top]
-    duration-100
-    ease-linear
-    z-40
-  "
+              fixed
+              right-[calc((100vw-1200px)/2+24px)]
+              w-[360px]
+              bg-white
+              rounded-2xl
+              p-6
+              shadow-[0_6px_20px_rgba(0,0,0,0.12)]
+              transition-[top]
+              duration-100
+              ease-linear
+              z-40
+            "
       >
         {/* 안내 박스 */}
         <div className="flex items-start gap-3 bg-rose-50 rounded-xl p-4 mb-5">
@@ -643,49 +657,102 @@ export default function RoomDetail() {
           </span>
           <span className="text-sm text-gray-500"> · 1박</span>
         </div>
-        {/* 날짜 선택 박스 */}
-        <div className="border rounded-xl overflow-hidden text-sm mb-5">
-          <div className="grid grid-cols-2 border-b">
-            {/* 체크인 */}
-            <div
-              className="p-3 hover:bg-neutral-100 cursor-pointer"
-              onClick={() => checkinRef.current.showPicker()}
-            >
-              <p className="text-[11px] text-gray-500 font-semibold">체크인</p>
-              <p className="font-medium">
-                {checkin ? checkin.replaceAll("-", ". ") + "." : "날짜 선택"}
-              </p>
-              <input
-                ref={checkinRef}
-                type="date"
-                value={checkin}
-                onChange={(e) => setCheckin(e.target.value)}
-                onMouseDown={(e) => e.preventDefault()}
-                className="absolute opacity-0 pointer-events-none"
-              />
+
+        <div>
+          {/* 날짜 선택 박스 */}
+          <div className="border rounded-xl text-sm mb-5 relative">
+            <div className="grid grid-cols-2 border-b">
+              {/* 체크인 */}
+              <div
+                className="p-3 hover:bg-neutral-100 cursor-pointer"
+                onClick={() => setOpenCal(true)}
+              >
+                <p className="text-[11px] text-gray-500 font-semibold">
+                  체크인
+                </p>
+                <p className="font-medium">
+                  {checkin ? checkin + "." : "날짜 선택"}
+                </p>
+                <input
+                  ref={checkinRef}
+                  type="date"
+                  value={checkin}
+                  onChange={(e) => setCheckin(e.target.value)}
+                  onMouseDown={(e) => e.preventDefault()}
+                  className="absolute opacity-0 pointer-events-none"
+                />
+              </div>
+
+              {/* 체크아웃 */}
+              <div
+                className="p-3 border-l hover:bg-neutral-100 cursor-pointer"
+                onClick={() => setOpenCal(true)}
+              >
+                <p className="text-[11px] text-gray-500 font-semibold">
+                  체크아웃
+                </p>
+                <p className="font-medium">
+                  {checkout ? checkout + "." : "날짜 선택"}
+                </p>
+                <input
+                  ref={checkoutRef}
+                  type="date"
+                  value={checkout}
+                  disabled={blockedDays}
+                  onChange={(e) => setCheckout(e.target.value)}
+                  onMouseDown={(e) => e.preventDefault()}
+                  className="absolute opacity-0 pointer-events-none"
+                />
+              </div>
             </div>
 
-            {/* 체크아웃 */}
-            <div
-              className="p-3 border-l hover:bg-neutral-100 cursor-pointer"
-              onClick={() => checkoutRef.current.showPicker()}
-            >
-              <p className="text-[11px] text-gray-500 font-semibold">
-                체크아웃
-              </p>
-              <p className="font-medium">
-                {checkout ? checkout.replaceAll("-", ". ") + "." : "날짜 선택"}
-              </p>
-              <input
-                ref={checkoutRef}
-                name="endDate"
-                type="date"
-                value={checkout}
-                onChange={(e) => setCheckout(e.target.value)}
-                onMouseDown={(e) => e.preventDefault()}
-                className="absolute opacity-0 pointer-events-none"
-              />
-            </div>
+            {/* 아래로 펼쳐지는 달력 영역 */}
+            {openCal && (
+              <div className="absolute -left-40 top-10 mt-2 z-50  max-w-[calc(100vw-24px)] z-90">
+                <div
+                  className="rounded-xl border bg-white shadow-xl p-3"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Calendar
+                    locale={ko}
+                    mode="range"
+                    disabled={blockedDays.map((d) => new Date(d))}
+                    defaultMonth={dateRange?.from}
+                    selected={dateRange}
+                    numberOfMonths={2}
+                    onSelect={setDateRange}
+                    className="rounded-lg"
+                  />
+                  <div className="mt-3 flex items-center justify-end border-t pt-3 gap-5">
+                    <button
+                      onClick={() => {
+                        setDateRange(undefined);
+                        setCheckin("");
+                        setCheckout("");
+                      }}
+                      className="text-sm text-gray-500 hover:text-black "
+                    >
+                      초기화
+                    </button>
+                    <button
+                      onClick={() => {
+                        setCheckin(format(dateRange.from, "yyyy-MM-dd"));
+                        setCheckout(format(dateRange.to, "yyyy-MM-dd"));
+                        setOpenCal(false);
+                      }}
+                      className={[
+                        "text-sm font-medium",
+                        dateRange?.from && dateRange?.to
+                          ? "text-black hover:underline "
+                          : "text-gray-300 cursor-not-allowed",
+                      ].join(" ")}
+                    >
+                      적용
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* 인원 영역 wrapper */}
