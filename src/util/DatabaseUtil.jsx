@@ -137,11 +137,11 @@ function createMessage(data, token) {
   return fetch(serverAddr + "/reservations/messages", {
     method: "POST",
     body: JSON.stringify(data),
-    header: {
+    headers: {
       Token: token,
       "Content-type": "application/json",
     },
-  }).then((response) => response.json());
+  }).then((res) => res.json());
 }
 
 // 메시지 삭제
@@ -154,7 +154,7 @@ function deleteMessage(messageId, token) {
   }).then((res) => res.json());
 }
 
-// 메시지 조회(받은 쪽지)
+// 메시지 조회
 function getMessage(recipientId, token) {
   return fetch(`${serverAddr}/reservations/messages/${recipientId}`, {
     method: "GET",

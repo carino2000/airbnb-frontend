@@ -49,6 +49,9 @@ export default function RoomDetail() {
   const { room, setRoom } = useRoom();
   const { accommodationId } = useParams();
 
+  // 설명 더보기 모달
+  const [openDescription, setOpenDescription] = useState(false);
+
   // ================= 예약 카드 스크롤 =================
   useEffect(() => {
     const onScroll = () => {
@@ -328,16 +331,18 @@ export default function RoomDetail() {
             </section>
 
             <section className="border-t pt-6">
-              <p className="text-sm leading-relaxed text-gray-700">
+              <p className="text-sm leading-relaxed text-gray-700 line-clamp-5">
                 {room.description}
                 ⭐️합정역(2호선,6호선)에서 도보7분 거리에 위치하여 어디로든
-                이동이 편리합니다. <br />
-                ⭐️최고의 가성비를 자랑하는 프라이빗 숙소입니다. <br />
-                ⭐️숙소 근처에 홍대 메인거리가 있어 버스킹, 맛집, 쇼핑, 놀거리,
-                볼거리가 다양합니다. <br />
-                ⭐️여성외국인전용 쉐어하우스 입니다. (Women only)
+                이동이 편리합니다. ⭐️최고의 가성비를 자랑하는 프라이빗
+                숙소입니다. ⭐️숙소 근처에 홍대 메인거리가 있어 버스킹, 맛집,
+                쇼핑, 놀거리, 볼거리가 다양합니다. ⭐️여성외국인전용 쉐어하우스
+                입니다. (Women only)
               </p>
-              <button className="mt-10 underline text-sm font-semibold">
+              <button
+                className="mt-10 underline text-sm font-semibold"
+                onClick={() => setOpenDescription(true)}
+              >
                 더 보기
               </button>
             </section>
@@ -472,54 +477,63 @@ export default function RoomDetail() {
 
           {/* 게스트 패널 (형제 요소!) */}
           {guestOpen && (
-            <div className="absolute left-6 w-78 mt-3 bg-white rounded-2xl shadow-lg border p-6 z-50">
-              <GuestRow
-                title="성인"
-                desc="13세 이상"
-                value={guests.adult}
-                min={1}
-                onChange={(v) => setGuests({ ...guests, adult: v })}
+            <>
+              {/* ===== 배경 오버레이 (화면 클릭 시 닫힘) ===== */}
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setGuestOpen(false)}
               />
 
-              <GuestRow
-                title="어린이"
-                desc="2~12세"
-                value={guests.child}
-                min={0}
-                onChange={(v) => setGuests({ ...guests, child: v })}
-              />
+              {/* ===== 게스트 패널 ===== */}
+              <div className="absolute left-6 w-78 mt-3 bg-white rounded-2xl shadow-lg p-6 z-50">
+                <GuestRow
+                  title="성인"
+                  desc="13세 이상"
+                  value={guests.adult}
+                  min={1}
+                  onChange={(v) => setGuests({ ...guests, adult: v })}
+                />
 
-              <GuestRow
-                title="유아"
-                desc="2세 미만"
-                value={guests.infant}
-                min={0}
-                onChange={(v) => setGuests({ ...guests, infant: v })}
-              />
+                <GuestRow
+                  title="어린이"
+                  desc="2~12세"
+                  value={guests.child}
+                  min={0}
+                  onChange={(v) => setGuests({ ...guests, child: v })}
+                />
 
-              <GuestRow
-                title="반려동물"
-                desc="보조동물을 동반하시나요?"
-                value={guests.pet}
-                min={0}
-                disabled
-                onChange={() => {}}
-              />
+                <GuestRow
+                  title="유아"
+                  desc="2세 미만"
+                  value={guests.infant}
+                  min={0}
+                  onChange={(v) => setGuests({ ...guests, infant: v })}
+                />
 
-              <p className="text-xs text-gray-500 mt-4 leading-relaxed">
-                이 숙소의 최대 숙박 인원은 1명(유아 제외)입니다. 반려동물 동반은
-                허용되지 않습니다.
-              </p>
+                <GuestRow
+                  title="반려동물"
+                  desc="보조동물을 동반하시나요?"
+                  value={guests.pet}
+                  min={0}
+                  disabled
+                  onChange={() => {}}
+                />
 
-              <div className="flex justify-end mt-4">
-                <button
-                  className="font-semibold underline"
-                  onClick={() => setGuestOpen(false)}
-                >
-                  닫기
-                </button>
+                <p className="text-xs text-gray-500 mt-4 leading-relaxed">
+                  이 숙소의 최대 숙박 인원은 1명(유아 제외)입니다. 반려동물
+                  동반은 허용되지 않습니다.
+                </p>
+
+                <div className="flex justify-end mt-4">
+                  <button
+                    className="font-semibold underline"
+                    onClick={() => setGuestOpen(false)}
+                  >
+                    닫기
+                  </button>
+                </div>
               </div>
-            </div>
+            </>
           )}
         </div>
 
@@ -566,6 +580,41 @@ export default function RoomDetail() {
             >
               닫기
             </button>
+          </div>
+        </div>
+      )}
+      {/* ================= 숙소 설명 모달 ================= */}
+      {openDescription && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* 배경 */}
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setOpenDescription(false)}
+          />
+
+          {/* 모달 박스 */}
+          <div className="relative bg-white w-full max-w-[600px] max-h-[80vh] rounded-xl p-6 overflow-y-auto">
+            {/* 헤더 */}
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold">숙소 설명</h2>
+              <button
+                className="text-xl font-bold"
+                onClick={() => setOpenDescription(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* 전체 설명 */}
+            <p className="text-sm leading-relaxed text-gray-700 whitespace-pre-line">
+              {room.description}
+              {"\n"}⭐️합정역(2호선,6호선)에서 도보7분 거리에 위치하여 어디로든
+              이동이 편리합니다.
+              {"\n"}⭐️최고의 가성비를 자랑하는 프라이빗 숙소입니다.
+              {"\n"}⭐️숙소 근처에 홍대 메인거리가 있어 버스킹, 맛집, 쇼핑,
+              놀거리, 볼거리가 다양합니다.
+              {"\n"}⭐️여성외국인전용 쉐어하우스 입니다. (Women only)
+            </p>
           </div>
         </div>
       )}
