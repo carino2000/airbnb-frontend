@@ -174,6 +174,9 @@ export const useRoom = create(
             bed: 0,
             bathroom: 0,
             images: [],
+            tags: [],
+            likes: 0,
+            amenities: [],
           },
         });
       },
