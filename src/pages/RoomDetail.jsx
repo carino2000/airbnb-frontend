@@ -7,6 +7,90 @@ import {
   useAccommodation,
   useRoom,
 } from "../stores/account-store";
+import { Star } from "lucide-react";
+
+// 반드시 추가 (Lucide Icons)
+import {
+  Moon,
+  Sparkles,
+  Users,
+  Home,
+  Building2,
+  Maximize,
+  CheckCircle,
+  Zap,
+  Train,
+  DollarSign,
+  Waves,
+  MapPin,
+  Plane,
+  Camera,
+  Coffee,
+} from "lucide-react";
+// 태그별 아이콘 매핑
+const TAG_ICON_MAP = {
+  "조용한 주변 환경": Moon,
+  독특함: Sparkles,
+  "가족이 지내기에 적합": Users,
+  세련됨: Home,
+  "도심부에 위치": Building2,
+  "넓은 공간": Maximize,
+  "깨끗한 숙소": CheckCircle,
+  "신속한 응답": Zap,
+  "편리한 대중교통": Train,
+  "가성비 좋은 숙소": DollarSign,
+  "역 근처": Train,
+  "편안한 침대": BedDouble,
+  "바다 근처": Waves,
+  "관광지 근처": MapPin,
+  "공항 근처": Plane,
+  오션뷰: Waves,
+  "아늑한 분위기": Moon,
+  "사진과 동일함": Camera,
+  "TV/프로젝터 있음": Tv,
+  "맛있는 조식": Coffee,
+};
+import {
+  Wifi,
+  Tv,
+  BedDouble,
+  Utensils,
+  ShowerHead,
+  Bath,
+  ParkingCircle,
+  Wind,
+  Flame,
+  HeartPulse,
+  WashingMachine,
+} from "lucide-react";
+
+const AMENITY_ICON_MAP = {
+  wifi: Wifi,
+  tv: Tv,
+  bed: BedDouble,
+  kitchen: Utensils,
+  shower: ShowerHead,
+  bath: Bath,
+  parking: ParkingCircle,
+  ac: Wind,
+  fire: Flame,
+  aid: HeartPulse,
+  washing: WashingMachine,
+};
+
+const AMENITY_LABEL_MAP = {
+  wifi: "와이파이",
+  tv: "티비",
+  bed: "침대",
+  kitchen: "주방",
+  shower: "샤워기",
+  bath: "욕조",
+  parking: "주차",
+  ac: "에어컨",
+  fire: "소화기",
+  aid: "구급 상자",
+  washing: "세탁기",
+};
 
 import SearchHeader from "../components/SearchHeader";
 import SearchOverlay from "../components/SearchOverlay";
@@ -18,6 +102,7 @@ import {
   getAccommodationReview,
   getDetailAccommodation,
 } from "../util/DatabaseUtil";
+import { useTags } from "../stores/account-store";
 
 export default function RoomDetail() {
   const { token, setToken, clearToken } = useToken();
@@ -48,10 +133,16 @@ export default function RoomDetail() {
     infant: 0,
     pet: 0,
   });
-
-  const totalGuests = guests.adult + guests.child;
-
+  // 1. 먼저 room 가져오기
   const { room, setRoom } = useRoom();
+
+  // 2. 안전하게 기본값 처리
+  const maxCapacity = room?.maxCapacity ?? 0;
+
+  // 3. 파생 값 계산
+  const totalGuests = guests.adult + guests.child;
+  const isMaxReached = totalGuests >= maxCapacity;
+
   const { accommodationId } = useParams();
 
   // 설명 더보기 모달
@@ -63,6 +154,7 @@ export default function RoomDetail() {
   });
 
   const [review, setReview] = useState([]);
+  const selectedTags = useTags((s) => s.tags);
 
   // ================= 예약 카드 스크롤 =================
   useEffect(() => {
@@ -157,6 +249,10 @@ export default function RoomDetail() {
       }
     });
   }
+
+  const renderStars = (rating) => {
+    return "⭐".repeat(rating);
+  };
 
   return (
     <>
@@ -351,7 +447,7 @@ export default function RoomDetail() {
         <section className="grid grid-cols-[1fr_360px] gap-16 items-start">
           <div className="space-y-10">
             <section>
-              <h3 ref={roomTitleRef} className="text-xl font-semibold">
+              <h3 ref={roomTitleRef} className="text-2xl font-semibold">
                 {room.address.split(" ")[0]}의 집
               </h3>
               <p className="text-sm text-gray-600 mt-1">
@@ -367,39 +463,47 @@ export default function RoomDetail() {
                 </span>
               </div>
             </section>
+            {/* 태그 */}
+            <section className="grid grid-cols-2 gap-y-4 text-sm border-t border-t-neutral-300 pt-6">
+              {room.tags.length === 0 ? (
+                <p className="col-span-2 text-gray-400 text-sm">
+                  등록된 숙소 태그가 없습니다.
+                </p>
+              ) : (
+                room.tags.map((item) => {
+                  const tag = item.tag; // 서버에서 내려온 실제 태그명
+                  const Icon = TAG_ICON_MAP[tag];
 
-            <section className="grid grid-cols-2 gap-y-4 text-sm border-t pt-6">
-              {room.tags.map((item) => {
-                return (
-                  <div key={item.id} className="flex items-center gap-3">
-                    🧳 {item.tag}
-                  </div>
-                );
-              })}
-
-              <div className="flex items-center gap-3">❄️ 에어컨</div>
-              <div className="flex items-center gap-3">🧺 세탁기</div>
-              <div className="flex items-center gap-3">🔥 난방</div>
+                  return (
+                    <div key={item.id} className="flex items-center gap-3">
+                      {Icon && (
+                        <Icon className="w-5 h-5 text-gray-700 shrink-0" />
+                      )}
+                      <span className="text-sm">{tag}</span>
+                    </div>
+                  );
+                })
+              )}
             </section>
 
-            <section className="flex items-center gap-4 border-t pt-6">
+            <section className="flex items-center gap-4 border-t border-t-neutral-300 pt-6">
               <div className="w-12 h-12 rounded-full bg-gray-300" />
               <div>
-                <p className="font-semibold">호스트: {room.hostId}님</p>
-                <p className="text-sm text-gray-500">
+                <p className="font-medium">
+                  호스트:{" "}
+                  <span className="font-bold">
+                    {room.hostId} <span className="font-medium">님</span>
+                  </span>
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
                   슈퍼호스트 · 호스팅 경력 3년
                 </p>
               </div>
             </section>
 
-            <section className="border-t pt-6">
-              <p className="text-sm leading-relaxed text-gray-700 line-clamp-5">
+            <section className="border-t border-t-neutral-300 pt-6">
+              <p className="text-sm leading-relaxed text-neutral-700 line-clamp-5">
                 {room.description}
-                ⭐️합정역(2호선,6호선)에서 도보7분 거리에 위치하여 어디로든
-                이동이 편리합니다. ⭐️최고의 가성비를 자랑하는 프라이빗
-                숙소입니다. ⭐️숙소 근처에 홍대 메인거리가 있어 버스킹, 맛집,
-                쇼핑, 놀거리, 볼거리가 다양합니다. ⭐️여성외국인전용 쉐어하우스
-                입니다. (Women only)
               </p>
               <button
                 className="mt-10 underline text-sm font-semibold"
@@ -414,45 +518,91 @@ export default function RoomDetail() {
         </section>
 
         {/*  전체 폭 영역  */}
-        <section ref={reviewRef} className=" mt-30">
-          <h2 className="text-xl font-bold mb-4">후기</h2>
-          <div className="h-[420px] bg-gray-100 rounded-md w-full" />
-        </section>
+        {/*후기 */}
+        <section ref={reviewRef} className="mt-30">
+          <h2 className="text-2xl font-bold mb-7">후기</h2>
 
-        <section className="pt-16">
-          <h2 className="text-xl font-bold mb-4">리뷰</h2>
-          <div className="h-[420px] bg-gray-100 rounded-md w-full">
+          {/* 후기 그리드 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-10 bg-amber-100">
             {review.length > 0 &&
-              review.map((item) => {
-                return (
-                  <div key={item.id}>
+              review.map((item) => (
+                <div
+                  key={item.id}
+                  className="space-y-3 h-[250px] flex flex-col"
+                >
+                  {/* 상단: 프로필 + 이름 */}
+                  <div className="flex items-center gap-3">
+                    {/* 프로필 이미지 (없으면 기본 원형) */}
+                    <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-sm font-semibold">
+                      {item.accountId.charAt(0)}
+                    </div>
+
                     <div>
-                      <span>아이디: {item.accountId}</span>
-                      <span>별점: {item.rating}</span>
-                      <span>작성일자: {item.writeAt}</span>
-                      <span>내용: {item.content}</span>
+                      <p className="leading-relaxed line-clamp-4 text-sm">
+                        {item.accountId}
+                      </p>
                     </div>
                   </div>
-                );
-              })}
-          </div>
-        </section>
 
-        <section className="pt-16">
-          <h2 className="text-xl font-bold mb-4">숙소 편의시설</h2>
-          <div className="h-[420px] bg-gray-200 rounded-md w-full">
+                  {/* 별점 + 날짜 */}
+                  <div className="flex items-center gap-2 text-sm">
+                    <div className="flex">
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <Star
+                          key={n}
+                          className={`w-4 h-4 ${
+                            n <= item.rating
+                              ? "fill-black text-black"
+                              : "text-gray-300"
+                          }`}
+                        />
+                      ))}
+                    </div>
+
+                    <span className="text-gray-400">·</span>
+                    <span className="text-gray-400">
+                      {item.writeAt?.slice(0, 10)}
+                    </span>
+                  </div>
+
+                  {/* 후기 내용 */}
+                  <p className="leading-relaxed line-clamp-4 text-sm">
+                    {item.content}
+                  </p>
+                </div>
+              ))}
+          </div>
+
+          {/* 하단 버튼 */}
+          {/* <div className="mt-10">
+            <button className="px-6 py-2 border rounded-full text-sm font-semibold hover:bg-gray-100">
+              후기 {review.length}개 모두 보기
+            </button>
+          </div> */}
+        </section>
+        {/*편의시설 */}
+        <section className="pt-20">
+          <h2 className="text-2xl font-bold mb-7">숙소 편의시설</h2>
+
+          <div className="grid grid-cols-3 gap-y-7 bg-amber-200 py-2">
             {room.amenities.map((item) => {
+              const Icon = AMENITY_ICON_MAP[item.amenity];
+              const label = AMENITY_LABEL_MAP[item.amenity];
+
+              if (!Icon || !label) return null;
+
               return (
                 <div key={item.id} className="flex items-center gap-3">
-                  🧳 {item.amenity}
+                  <Icon className="w-7 h-7 text-gray-700" />
+                  <span className="text-base">{label}</span>
                 </div>
               );
             })}
           </div>
         </section>
 
-        <section className="pt-16">
-          <h2 className="text-xl font-bold mb-4">체크인 날짜 선택</h2>
+        <section className="pt-20">
+          <h2 className="text-2xl font-bold mb-7">체크인 날짜 선택</h2>
           <div className="h-[420px] bg-gray-200 rounded-md w-full" />
         </section>
       </main>
@@ -488,10 +638,11 @@ export default function RoomDetail() {
 
         {/* 가격 */}
         <div className="mb-5">
-          <span className="text-2xl font-bold">₩{reservation.totalPrice}</span>
+          <span className="text-3xl font-bold">
+            ₩{reservation.totalPrice?.toLocaleString()}
+          </span>
           <span className="text-sm text-gray-500"> · 1박</span>
         </div>
-
         {/* 날짜 선택 박스 */}
         <div className="border rounded-xl overflow-hidden text-sm mb-5">
           <div className="grid grid-cols-2 border-b">
@@ -569,14 +720,17 @@ export default function RoomDetail() {
                   value={guests.adult}
                   min={1}
                   onChange={(v) => setGuests({ ...guests, adult: v })}
+                  disableIncrease={isMaxReached}
+                  maxCapacity={room.maxCapacity}
                 />
-
                 <GuestRow
                   title="어린이"
                   desc="2~12세"
                   value={guests.child}
                   min={0}
                   onChange={(v) => setGuests({ ...guests, child: v })}
+                  disableIncrease={isMaxReached}
+                  maxCapacity={room.maxCapacity}
                 />
 
                 <GuestRow
@@ -586,7 +740,6 @@ export default function RoomDetail() {
                   min={0}
                   onChange={(v) => setGuests({ ...guests, infant: v })}
                 />
-
                 <GuestRow
                   title="반려동물"
                   desc="보조동물을 동반하시나요?"
@@ -595,12 +748,10 @@ export default function RoomDetail() {
                   disabled
                   onChange={() => {}}
                 />
-
                 <p className="text-xs text-gray-500 mt-4 leading-relaxed">
                   이 숙소의 최대 숙박 인원은 1명(유아 제외)입니다. 반려동물
                   동반은 허용되지 않습니다.
                 </p>
-
                 <div className="flex justify-end mt-4">
                   <button
                     className="font-semibold underline"
@@ -676,7 +827,7 @@ export default function RoomDetail() {
           {/* 모달 박스 */}
           <div className="relative bg-white w-full max-w-[600px] max-h-[80vh] rounded-xl p-6 overflow-y-auto">
             {/* 헤더 */}
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center mb-5">
               <h2 className="text-lg font-semibold">숙소 설명</h2>
               <button
                 className="text-xl font-bold"

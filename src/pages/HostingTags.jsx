@@ -3,6 +3,7 @@ import { useState } from "react";
 import logo from "../assets/arbnb_logo-b.png";
 import { useTags } from "../stores/account-store";
 
+
 export default function HostingTags() {
   const navigate = useNavigate();
   const [selectedTags, setSelectedTags] = useState([]);
