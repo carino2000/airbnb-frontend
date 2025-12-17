@@ -123,6 +123,38 @@ function createAmenities(accommodationId, data, token) {
   }).then((response) => response.json());
 }
 
+// 메시지 작성
+function createMessage(data, token) {
+  return fetch(serverAddr + "/reservations/messages", {
+    method: "POST",
+    body: JSON.stringify(data),
+    header: {
+      Token: token,
+      "Content-type": "application/json",
+    },
+  }).then((response) => response.json());
+}
+
+// 메시지 삭제
+function deleteMessage(messageId, token) {
+  return fetch(`${serverAddr}/reservations/messages/${messageId}`, {
+    method: "DELETE",
+    headers: {
+      Token: token,
+    },
+  }).then((res) => res.json());
+}
+
+// 메시지 조회(받은 쪽지)
+function getMessage(recipientId, token) {
+  return fetch(`${serverAddr}/reservations/messages/${recipientId}`, {
+    method: "GET",
+    headers: {
+      Token: token,
+    },
+  }).then((res) => res.json());
+}
+
 export {
   idCheck,
   emailCheck,
@@ -134,4 +166,7 @@ export {
   createImages,
   createTags,
   createAmenities,
+  createMessage,
+  deleteMessage,
+  getMessage,
 };

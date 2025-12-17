@@ -1,45 +1,38 @@
 import { useEffect, useRef, useState } from "react";
+import { useToken, useAccount } from "../stores/account-store";
+import { createMessage, getMessage } from "../util/DatabaseUtil";
 
 export default function MessageList() {
-  // ================== 메시지 더미 데이터 ==================
-  const [conversations, setConversations] = useState([
-    {
-      id: 1,
-      name: "김민지",
-      last: "체크인 시간 몇 시에 가능할까요?",
-      unread: 2,
-      updatedAt: "방금",
-      messages: [
-        { id: "m1", from: "them", text: "안녕하세요! 예약 관련 문의드려요." },
-        { id: "m2", from: "me", text: "안녕하세요 😊 어떤 점 도와드릴까요?" },
-        { id: "m3", from: "them", text: "체크인 시간 몇 시에 가능할까요?" },
-      ],
-    },
-    {
-      id: 2,
-      name: "박지훈",
-      last: "네 확인했습니다!",
-      unread: 0,
-      updatedAt: "1시간 전",
-      messages: [
-        { id: "a1", from: "them", text: "주차 가능할까요?" },
-        { id: "a2", from: "me", text: "네! 1대 무료 주차 가능합니다." },
-        { id: "a3", from: "them", text: "네 확인했습니다!" },
-      ],
-    },
-  ]);
+  const token = useToken((s) => s.token);
+  const { account } = useAccount(); // 로그인 유저
 
-  const [activeId, setActiveId] = useState(conversations[0].id);
+  const [conversations, setConversations] = useState([]);
+  const [activeId, setActiveId] = useState(null);
   const [input, setInput] = useState("");
 
   const activeChat = conversations.find((c) => c.id === activeId);
-
   const bottomRef = useRef(null);
 
-  // ================== 전송 ==================
-  const handleSend = () => {
+  // ================== 메시지 전송 ==================
+  const handleSend = async () => {
     if (!input.trim()) return;
+    if (!token || !activeChat) return;
 
+    const payload = {
+      writerId: account.accountId,
+      recipientId: activeChat.recipientId,
+      content: input,
+      reservationCode: "",
+    };
+
+    const result = await createMessage(payload, token);
+
+    if (!result.success) {
+      alert(result.message);
+      return;
+    }
+
+    // 서버 성공 후 UI 상태 업데이트
     setConversations((prev) =>
       prev.map((c) =>
         c.id === activeId
@@ -47,9 +40,13 @@ export default function MessageList() {
               ...c,
               messages: [
                 ...c.messages,
-                { id: Date.now(), from: "me", text: input },
+                {
+                  id: result.messageData.id,
+                  from: "me",
+                  text: result.messageData.content,
+                },
               ],
-              last: input,
+              last: result.messageData.content,
               unread: 0,
             }
           : c
@@ -70,11 +67,81 @@ export default function MessageList() {
   // ================== 스크롤 자동 ==================
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [activeChat.messages]);
+  }, [activeChat?.messages]);
 
+  // ================== 메시지 조회 ==================
+  useEffect(() => {
+    if (!token || !account) return;
+
+    getMessage(account.accountId, token).then((res) => {
+      if (!res || !res.success) {
+        alert(res?.message || "메시지 조회 실패");
+        return;
+      }
+
+      const messageList = Array.isArray(res.messages) ? res.messages : [];
+
+      const grouped = {};
+
+      messageList.forEach((msg) => {
+        const otherId =
+          msg.writerId === account.accountId ? msg.recipientId : msg.writerId;
+
+        if (!grouped[otherId]) {
+          grouped[otherId] = {
+            id: otherId,
+            name: otherId,
+            recipientId: otherId,
+            last: msg.content,
+            unread: 0,
+            updatedAt: msg.createdAt,
+            messages: [],
+          };
+        }
+
+        grouped[otherId].messages.push({
+          id: msg.id,
+          from: msg.writerId === account.accountId ? "me" : "them",
+          text: msg.content,
+        });
+
+        grouped[otherId].last = msg.content;
+      });
+
+      const list = Object.values(grouped);
+      setConversations(list);
+      if (list.length > 0) setActiveId(list[0].id);
+    });
+  }, [token, account]);
+
+  // ====================================
+  if (!activeChat) {
+    return (
+      <section className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 h-[600px]">
+        <aside className="border rounded-xl overflow-y-auto bg-white">
+          {conversations.map((c) => (
+            <div
+              key={c.id}
+              onClick={() => setActiveId(c.id)}
+              className="px-4 py-3 cursor-pointer border-b hover:bg-neutral-50"
+            >
+              <p className="font-semibold text-sm">{c.name}</p>
+              <p className="text-xs text-neutral-500 truncate">{c.last}</p>
+            </div>
+          ))}
+        </aside>
+
+        <div className="border rounded-xl flex items-center justify-center text-sm text-neutral-400 bg-white">
+          대화를 선택해주세요
+        </div>
+      </section>
+    );
+  }
+
+  // ================== UI ==================
   return (
     <section className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 h-[600px]">
-      {/* 왼쪽: 대화 목록 */}
+      {/* 왼쪽 */}
       <aside className="border rounded-xl overflow-y-auto bg-white">
         {conversations.map((c) => (
           <div
@@ -88,23 +155,16 @@ export default function MessageList() {
               <p className="font-semibold text-sm">{c.name}</p>
               <span className="text-xs text-neutral-400">{c.updatedAt}</span>
             </div>
-
             <div className="flex justify-between mt-1">
               <p className="text-xs text-neutral-500 truncate max-w-[220px]">
                 {c.last}
               </p>
-
-              {c.unread > 0 && (
-                <span className="bg-rose-500 text-white text-[10px] px-2 rounded-full">
-                  {c.unread}
-                </span>
-              )}
             </div>
           </div>
         ))}
       </aside>
 
-      {/* 오른쪽: 채팅 */}
+      {/* 오른쪽 */}
       <div className="border rounded-xl flex flex-col bg-white">
         <div className="px-5 py-4 border-b font-semibold">
           {activeChat.name}
