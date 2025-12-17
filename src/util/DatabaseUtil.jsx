@@ -123,6 +123,15 @@ function createAmenities(accommodationId, data, token) {
   }).then((response) => response.json());
 }
 
+function getDetailAccommodation(accommodationId) {
+  return fetch(`${serverAddr}/accommodations/${accommodationId}`, {
+    method: "get",
+    headers: {
+      "Content-type": "application/json",
+    },
+  }).then((response) => response.json());
+}
+
 export {
   idCheck,
   emailCheck,
@@ -134,4 +143,5 @@ export {
   createImages,
   createTags,
   createAmenities,
+  getDetailAccommodation,
 };

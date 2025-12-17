@@ -137,3 +137,57 @@ export const useTags = create(
     }
   )
 );
+
+export const useRoom = create(
+  function (set) {
+    return {
+      room: {
+        id: "",
+        hostId: "",
+        name: "",
+        description: "",
+        price: 0,
+        address: "",
+        extraRate: 0.0,
+        maxCapacity: 0,
+        bedroom: 0,
+        bed: 0,
+        bathroom: 0,
+        images: [],
+        tags: [],
+        likes: 0,
+        amenities: [],
+      },
+
+      clearRoom: function () {
+        set({
+          room: {
+            id: "",
+            hostId: "",
+            name: "",
+            description: "",
+            price: 0,
+            address: "",
+            extraRate: 0.0,
+            maxCapacity: 0,
+            bedroom: 0,
+            bed: 0,
+            bathroom: 0,
+            images: [],
+          },
+        });
+      },
+
+      setRoom: (room) => set({ room }),
+
+      updateRoom: function (func) {
+        set((state) => ({
+          room: func(state.room),
+        }));
+      },
+    };
+  },
+  {
+    name: "room",
+  }
+);
