@@ -16,7 +16,7 @@ export default function HostingLocation() {
   const setAccommodation = useAccommodation((s) => s.setAccommodation);
 
   function locationSubmit() {
-    const address = `${city} ${road} ${detail} ${zipcode}`;
+    const address = `${province} ${city} ${road} ${detail} ${zipcode}`;
     setAccommodation((old) => ({
       ...old,
       address,
