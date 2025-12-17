@@ -12,8 +12,8 @@ export default function GuestRow({
     <div className="py-2 border-b last:border-none">
       <div className="flex items-center justify-between">
         <div>
-          <p className="font-medium">{title}</p>
-          <p className="text-xs text-gray-500">{desc}</p>
+          <p className="font-semibold text-sm mb-1">{title}</p>
+          <p className="text-xs text-neutral-400">{desc}</p>
         </div>
 
         <div className="flex items-center gap-3">

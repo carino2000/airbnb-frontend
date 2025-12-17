@@ -183,7 +183,7 @@ export default function RoomDetail() {
       const TOP_MIN = Math.max(titleRect.top, 130);
       const TOP_MAX = reviewRect.top - cardHeight - 20;
 
-      const SPEED = 0.2;
+      const SPEED = 0.08;
       const rawMove = titleRect.top - TOP_MIN;
       const nextTop = TOP_MIN + rawMove * SPEED;
 
@@ -516,7 +516,7 @@ export default function RoomDetail() {
             </section>
 
             <section className="border-t border-t-neutral-300 pt-6">
-              <p className="text-sm leading-relaxed text-neutral-700 line-clamp-5">
+              <p className="text-sm leading-7 text-neutral-700 line-clamp-5">
                 {room.description}
               </p>
               <button
@@ -580,7 +580,7 @@ export default function RoomDetail() {
                   </div>
 
                   {/* 후기 내용 */}
-                  <p className="leading-relaxed line-clamp-4 text-sm">
+                  <p className="leading-relaxed line-clamp-4 text-sm ">
                     {item.content}
                   </p>
                 </div>
@@ -660,8 +660,8 @@ export default function RoomDetail() {
 
         <div>
           {/* 날짜 선택 박스 */}
-          <div className="border rounded-xl text-sm mb-5 relative">
-            <div className="grid grid-cols-2 border-b">
+          <div className="rounded-xl text-sm mb-2 relative">
+            <div className="grid grid-cols-2">
               {/* 체크인 */}
               <div
                 className="p-3 hover:bg-neutral-100 cursor-pointer"
@@ -685,7 +685,7 @@ export default function RoomDetail() {
 
               {/* 체크아웃 */}
               <div
-                className="p-3 border-l hover:bg-neutral-100 cursor-pointer"
+                className="p-3 hover:bg-neutral-100 cursor-pointer"
                 onClick={() => setOpenCal(true)}
               >
                 <p className="text-[11px] text-gray-500 font-semibold">
@@ -705,53 +705,63 @@ export default function RoomDetail() {
                 />
               </div>
             </div>
-
             {/* 아래로 펼쳐지는 달력 영역 */}
             {openCal && (
-              <div className="absolute -left-40 top-10 mt-2 z-50  max-w-[calc(100vw-24px)] z-90">
+              <>
+                {/* ✅ [추가] 바탕화면 클릭 감지용 오버레이 */}
                 <div
-                  className="rounded-xl border bg-white shadow-xl p-3"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Calendar
-                    locale={ko}
-                    mode="range"
-                    disabled={blockedDays.map((d) => new Date(d))}
-                    defaultMonth={dateRange?.from}
-                    selected={dateRange}
-                    numberOfMonths={2}
-                    onSelect={setDateRange}
-                    className="rounded-lg"
-                  />
-                  <div className="mt-3 flex items-center justify-end border-t pt-3 gap-5">
-                    <button
-                      onClick={() => {
-                        setDateRange(undefined);
-                        setCheckin("");
-                        setCheckout("");
-                      }}
-                      className="text-sm text-gray-500 hover:text-black "
-                    >
-                      초기화
-                    </button>
-                    <button
-                      onClick={() => {
-                        setCheckin(format(dateRange.from, "yyyy-MM-dd"));
-                        setCheckout(format(dateRange.to, "yyyy-MM-dd"));
-                        setOpenCal(false);
-                      }}
-                      className={[
-                        "text-sm font-medium",
-                        dateRange?.from && dateRange?.to
-                          ? "text-black hover:underline "
-                          : "text-gray-300 cursor-not-allowed",
-                      ].join(" ")}
-                    >
-                      적용
-                    </button>
+                  className="fixed inset-0 z-40"
+                  onClick={() => setOpenCal(false)} // 바탕화면 클릭 시 닫힘
+                />
+
+                {/* 달력 본체 */}
+                <div className="absolute -left-50 top-full mt-2 z-50 max-w-[calc(100vw-24px)]">
+                  <div
+                    className="rounded-xl border bg-white shadow-xl p-3"
+                    onClick={(e) => e.stopPropagation()} // 달력 클릭은 닫히지 않게
+                  >
+                    <Calendar
+                      locale={ko}
+                      mode="range"
+                      disabled={blockedDays.map((d) => new Date(d))}
+                      defaultMonth={dateRange?.from}
+                      selected={dateRange}
+                      numberOfMonths={2}
+                      onSelect={setDateRange}
+                      className="rounded-lg"
+                    />
+
+                    <div className="mt-3 flex items-center justify-end border-t pt-3 gap-5">
+                      <button
+                        onClick={() => {
+                          setDateRange(undefined);
+                          setCheckin("");
+                          setCheckout("");
+                        }}
+                        className="text-sm text-gray-500 hover:text-black"
+                      >
+                        초기화
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setCheckin(format(dateRange.from, "yyyy-MM-dd"));
+                          setCheckout(format(dateRange.to, "yyyy-MM-dd"));
+                          setOpenCal(false);
+                        }}
+                        className={[
+                          "text-sm font-medium",
+                          dateRange?.from && dateRange?.to
+                            ? "text-black hover:underline"
+                            : "text-gray-300 cursor-not-allowed",
+                        ].join(" ")}
+                      >
+                        적용
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </>
             )}
           </div>
 
@@ -764,7 +774,7 @@ export default function RoomDetail() {
             >
               <div>
                 <p className="text-[11px] text-gray-500 font-semibold">인원</p>
-                <p className="font-medium">게스트 {totalGuests}명</p>
+                <p className="font-medium text-sm">게스트 {totalGuests}명</p>
               </div>
               <span className="text-gray-500">⌄</span>
             </div>
@@ -780,7 +790,7 @@ export default function RoomDetail() {
               />
 
               {/* ===== 게스트 패널 ===== */}
-              <div className="absolute left-6 w-78 mt-3 bg-white rounded-2xl shadow-lg p-6 z-50">
+              <div className="absolute left-6 w-78  bg-white rounded-2xl shadow-lg border p-6 z-50">
                 <GuestRow
                   title="성인"
                   desc="13세 이상"
@@ -821,7 +831,7 @@ export default function RoomDetail() {
                 </p>
                 <div className="flex justify-end mt-4">
                   <button
-                    className="font-semibold underline"
+                    className="font-semibold text-sm underline"
                     onClick={() => setGuestOpen(false)}
                   >
                     닫기
@@ -835,7 +845,7 @@ export default function RoomDetail() {
         {/* 예약 버튼 */}
         <button
           onClick={confirmReservation}
-          className="w-full h-[35px] rounded-full bg-rose-500 text-white font-medium text-sm hover:bg-rose-700 cursor-pointer"
+          className="w-full h-[40px] mt-4 rounded-full bg-rose-500 text-white font-medium text-sm hover:bg-rose-700 cursor-pointer"
           disabled={!reservation.reservationAvailable}
         >
           예약하기
@@ -905,7 +915,7 @@ export default function RoomDetail() {
             </div>
 
             {/* 전체 설명 */}
-            <p className="text-sm leading-relaxed text-gray-700 whitespace-pre-line">
+            <p className="text-sm leading-6 text-gray-700 whitespace-pre-line">
               {room.description}
               {"\n"}⭐️합정역(2호선,6호선)에서 도보7분 거리에 위치하여 어디로든
               이동이 편리합니다.
