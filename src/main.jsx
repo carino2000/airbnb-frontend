@@ -33,6 +33,8 @@ import HostingFinishSetUp from "./pages/HostingFinishSetUp";
 import HostingBaseRate from "./pages/HostingBaseRate";
 import HostingComplete from "./pages/HostingComplete";
 
+//test
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -165,9 +167,7 @@ const router = createBrowserRouter([
 
   //---------------------------------------------------
 
-  
- 
-    {
+  {
     path: "/hosting/listings",
     element: <HostingList />, // 내가 호스팅한 숙소 목록 노출
   },
