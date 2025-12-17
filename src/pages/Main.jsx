@@ -328,8 +328,8 @@ export default function Main() {
       <main className="mt-[250px] w-5/6 mx-auto lg:px-10">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-1">
-            <h3 className="font-semibold text-lg sm:text-xl">부산 인기 숙소</h3>
-
+            {/* 슬라이드 타이틀 */}
+            <h3 className="font-semibold text-lg sm:text-xl">인기 숙소</h3>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -395,13 +395,13 @@ export default function Main() {
         {/* 슬라이드 */}
         <div className="overflow-hidden mt-3 cursor-pointer">
           <div
-            className="flex transition-transform duration-300"
+            className="flex transition-transform duration-300 "
             style={{ transform: `translateX(-${index * CARD_PERCENT}%)` }}
           >
             {item.map((one) => (
               <div
                 key={one.id}
-                className="shrink-0"
+                className="shrink-0 px-2"
                 style={{ width: `${CARD_PERCENT}%` }}
                 onClick={() => navigate(`/room/${one.id}`)}
               >

@@ -1,13 +1,15 @@
 import logo from "../assets/Airbnb_Logo.png";
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { useToken, useAccount } from "../stores/account-store";
 import MessageList from "./MessageList";
 
 export default function HostingList() {
   const navigate = useNavigate();
 
-  const [tab, setTab] = useState("listings"); // listings | messages
+  // const [tab, setTab] = useState("listings"); // listings | messages
+  let [searchParams, setSearchParams] = useSearchParams("?tab=listings");
+
   const [openMenu, setOpenMenu] = useState(false);
 
   const { clearToken } = useToken();
@@ -19,6 +21,8 @@ export default function HostingList() {
     setItems((prev) => [...prev, prev.length + 1]);
   };
 
+  const tab = searchParams.get("tab") ?? "listings";
+  // console.log(tab);
   return (
     <>
       {/* ================= 헤더 ================= */}
@@ -38,7 +42,7 @@ export default function HostingList() {
                   ? "text-black underline underline-offset-6"
                   : "text-neutral-500 hover:underline hover:underline-offset-6"
               }`}
-              onClick={() => setTab("listings")}
+              onClick={() => setSearchParams("?tab=listings")}
             >
               리스팅
             </button>
@@ -48,7 +52,7 @@ export default function HostingList() {
                   ? "text-black underline underline-offset-6"
                   : "text-neutral-500 hover:underline hover:underline-offset-6"
               }`}
-              onClick={() => setTab("messages")}
+              onClick={() => setSearchParams("?tab=messages")}
             >
               메시지
             </button>
@@ -77,7 +81,20 @@ export default function HostingList() {
               className="rounded-full px-2 py-2 bg-gray-100 hover:bg-gray-200 cursor-pointer"
               onClick={() => setOpenMenu((prev) => !prev)}
             >
-              ☰
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="2"
+                stroke="currentColor"
+                className="size-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                />
+              </svg>
             </div>
 
             {openMenu && (
