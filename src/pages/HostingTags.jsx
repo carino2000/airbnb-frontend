@@ -80,7 +80,7 @@ export default function HostingTags() {
         "
       >
         <div className="w-full max-w-[700px]">
-          <h1 className="text-2xl lg:text-[35px] font-bold mb-4">
+          <h1 className="text-2xl lg:text-[35px] font-bold mb-3">
             주택에 대해 설명해주세요
           </h1>
 
@@ -117,11 +117,11 @@ export default function HostingTags() {
       </main>
 
       {/* 푸터 */}
-      <footer className="fixed bottom-0 left-0 w-full h-[95px] bg-white border-t z-40">
+      <footer className="fixed bottom-0 left-0 w-full h-[95px] bg-white z-40">
         <div className="grid grid-cols-3 h-1.5 w-full">
           <div className="bg-neutral-950" />
           <div className="bg-neutral-950" />
-          <div className="bg-neutral-950" />
+          <div className="bg-neutral-300" />
         </div>
 
         <div className="md:px-11 flex items-center justify-between h-[calc(100%-6px)]">
