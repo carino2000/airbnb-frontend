@@ -2,27 +2,40 @@ import logo from "../assets/Airbnb_Logo.png";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useToken, useAccount } from "../stores/account-store";
+import { getLikedAccommodationList } from "@/util/DatabaseUtil";
 
 export default function Wishlist() {
   const navigate = useNavigate();
 
   const [openMenu, setOpenMenu] = useState(false);
-
-  const { account, clearAccount } = useAccount();
-  const { clearToken } = useToken();
-
-  const items = [1, 2, 3, 4];
   const [accommodation, setAccommodation] = useState([]);
 
-  const addItem = () => {};
+  const { account, clearAccount } = useAccount();
+  const { token, clearToken } = useToken();
 
+  /** ================= 유틸 함수 ================= */
+  const formatPrice = (price) => {
+    if (!price) return "0";
+    return price.toLocaleString();
+  };
+
+  const onCardClick = (accommodationId) => {
+    navigate(`/room/${accommodationId}`);
+  };
+
+  /** ================= 데이터 로딩 ================= */
   useEffect(() => {
-    getWishlist().then((obj) => {
-      if (obj.success) {
-        setAccommodation([...obj.accommodation]);
+    if (!account?.id || !token) return;
+    getLikedAccommodationList(account.id, token).then((obj) => {
+      if (obj?.success) {
+        console.log(obj);
+        setAccommodation(obj.accommodations);
+      } else {
+        window.alert("좋아요 목록 불러오기 오류");
+        setAccommodation([]);
       }
     });
-  }, []);
+  }, [account?.id, token]);
 
   return (
     <>
@@ -32,13 +45,13 @@ export default function Wishlist() {
           {/* 로고 */}
           <img
             src={logo}
+            alt="logo"
             className="w-[100px] cursor-pointer"
             onClick={() => navigate("/")}
           />
 
           {/* 우측 메뉴 */}
           <div className="flex gap-2 items-center shrink-0 relative">
-            {/* 게스트 모드 전환 */}
             <div className="hidden sm:block rounded-full px-3 py-2 hover:bg-gray-200 cursor-pointer">
               <p
                 className="text-xs font-bold whitespace-nowrap"
@@ -48,18 +61,15 @@ export default function Wishlist() {
               </p>
             </div>
 
-            {/* 프로필 원형 */}
+            {/* 프로필 */}
             <div
-              className="
-                w-8 h-8 rounded-full bg-neutral-800 text-white
-                flex items-center justify-center text-xs font-bold cursor-pointer
-              "
+              className="w-8 h-8 rounded-full bg-neutral-800 text-white flex items-center justify-center text-xs font-bold cursor-pointer"
               onClick={() => setOpenMenu((prev) => !prev)}
             >
-              {account?.name?.charAt(0)}
+              {account?.name?.charAt(0) ?? "?"}
             </div>
 
-            {/* 햄버거 버튼 */}
+            {/* 햄버거 */}
             <div
               className="rounded-full px-2 py-2 bg-gray-100 hover:bg-gray-200 cursor-pointer"
               onClick={() => setOpenMenu((prev) => !prev)}
@@ -70,7 +80,7 @@ export default function Wishlist() {
                 viewBox="0 0 24 24"
                 strokeWidth="2"
                 stroke="currentColor"
-                className="size-5"
+                className="w-5 h-5"
               >
                 <path
                   strokeLinecap="round"
@@ -80,7 +90,7 @@ export default function Wishlist() {
               </svg>
             </div>
 
-            {/* 햄버거 메뉴 */}
+            {/* 메뉴 */}
             {openMenu && (
               <div className="absolute top-12 right-0 w-[150px] bg-white rounded-md shadow-xl z-50">
                 <div
@@ -92,9 +102,8 @@ export default function Wishlist() {
                 >
                   프로필 수정
                 </div>
-
                 <div
-                  className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-xs  text-red-500"
+                  className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-xs text-red-500"
                   onClick={() => {
                     clearToken();
                     clearAccount();
@@ -111,48 +120,40 @@ export default function Wishlist() {
 
       {/* ================= 본문 ================= */}
       <main className="mt-[120px] max-w-[1350px] mx-auto px-6">
-        <div className="flex justify-between items-start">
-          <h1 className="text-2xl font-bold mb-6 mt-5 ">위시리스트</h1>
-          <button
-            onClick={() => {
-              addItem();
-              navigate("/");
-            }}
-            className="flex items-centr gap-2 cursor-pointer text-sm mt-7"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1"
-              stroke="currentColor"
-              className="W-5 w-5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 4.5v15m7.5-7.5h-15"
-              />
-            </svg>
-            추가하기
-          </button>
-        </div>
-        <div className="rounded-xl">
-          <div className="grid grid-cols-4 gap-4">
-            {/* 수정중!! */}
-            {accommodation.length != 0 &&
-              accommodation.map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-green-100 rounded-lg flex items-center justify-center aspect-square"
-                >
-                  {item}
+        <h1 className="text-2xl font-bold mb-6 mt-5">위시리스트</h1>
+
+        <div className="grid grid-cols-4 gap-4">
+          {accommodation &&
+            accommodation.map((one) => (
+              <div
+                key={one.id}
+                className="cursor-pointer"
+                onClick={() => onCardClick(one.id)}
+              >
+                <div>
+                  <img
+                    src={`http://192.168.0.17:8080${one.uri}`}
+                    className="w-full h-full object-cover rounded-xl"
+                    alt=""
+                  />
                 </div>
-              ))}
-          </div>
+                <div className="mt-3 space-y-1">
+                  <div className="font-medium truncate">
+                    {one.address?.split(" ")[0]}의 집
+                  </div>
+                  <div className="text-xs text-neutral-500">
+                    1월 1일 ~ 12월 31일
+                  </div>
+                  <div className="text-xs text-neutral-500">
+                    ₩{formatPrice(one.price)} · 평점 5.0
+                  </div>
+                </div>
+              </div>
+            ))}
         </div>
       </main>
-      <footer></footer>
+
+      <footer />
     </>
   );
 }
