@@ -1,5 +1,5 @@
 import logo from "../assets/Airbnb_Logo.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useToken, useAccount } from "../stores/account-store";
 
@@ -12,8 +12,17 @@ export default function Wishlist() {
   const { clearToken } = useToken();
 
   const items = [1, 2, 3, 4];
+  const [accommodation, setAccommodation] = useState([]);
 
   const addItem = () => {};
+
+  useEffect(() => {
+    getWishlist().then((obj) => {
+      if (obj.success) {
+        setAccommodation([...obj.accommodation]);
+      }
+    });
+  }, []);
 
   return (
     <>
@@ -73,7 +82,7 @@ export default function Wishlist() {
 
             {/* 햄버거 메뉴 */}
             {openMenu && (
-              <div className="absolute top-[48px] right-0 w-[150px] bg-white rounded-md shadow-xl z-50">
+              <div className="absolute top-12 right-0 w-[150px] bg-white rounded-md shadow-xl z-50">
                 <div
                   className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-xs"
                   onClick={() => {
@@ -130,14 +139,16 @@ export default function Wishlist() {
         </div>
         <div className="rounded-xl">
           <div className="grid grid-cols-4 gap-4">
-            {items.map((item) => (
-              <div
-                key={item}
-                className="bg-green-100 rounded-lg flex items-center justify-center aspect-square"
-              >
-                {item}
-              </div>
-            ))}
+            {/* 수정중!! */}
+            {accommodation.length != 0 &&
+              accommodation.map((item) => (
+                <div
+                  key={item.id}
+                  className="bg-green-100 rounded-lg flex items-center justify-center aspect-square"
+                >
+                  {item}
+                </div>
+              ))}
           </div>
         </div>
       </main>
