@@ -1,21 +1,65 @@
-import { useState } from "react";
-import { Heart } from "lucide-react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Heart, ChevronLeft, ChevronRight } from "lucide-react";
+import { useToken, useAccount } from "../stores/account-store";
+import {
+  getLikedAccommodationList,
+  likeAccommodation,
+  unlikeAccommodation,
+} from "../util/DatabaseUtil";
 
-function PopularSlider({ title, data, onCardClick }) {
+function PopularSlider({ title, data, onCardClick, alreadyLiked = [] }) {
   const [index, setIndex] = useState(0);
   const [liked, setLiked] = useState(new Set());
+
+  const { token } = useToken();
+  const { account } = useAccount();
 
   const VISIBLE = 4;
   const CARD_PERCENT = 100 / VISIBLE;
 
+  /* ===============================
+   * ⭐ 서버 좋아요 목록으로 초기화
+   * =============================== */
+  useEffect(() => {
+    if (!Array.isArray(alreadyLiked)) return;
+    setLiked(new Set(alreadyLiked));
+  }, [alreadyLiked.length]); // ✅ length만 의존
+
   const prev = () => setIndex((i) => Math.max(i - 1, 0));
   const next = () => setIndex((i) => Math.min(i + 1, data.length - VISIBLE));
+  /* ===============================
+   * ❤️ 좋아요 불러오기
+   * =============================== */
 
-  const toggleLike = (id) => {
+  /* ===============================
+   * ❤️ 좋아요 토글
+   * =============================== */
+  const toggleLike = async (accommodationId) => {
+    if (!token || !account) {
+      alert("로그인 후 이용 가능합니다.");
+      return;
+    }
+
+    const accountId = account.id;
+    let res;
+
+    if (liked.has(accommodationId)) {
+      res = await unlikeAccommodation(accommodationId, accountId, token);
+    } else {
+      res = await likeAccommodation(accommodationId, accountId, token);
+    }
+
+    console.log("like/unlike res:", res); // 🔍 꼭 확인
+    if (!res?.success) {
+      alert(res?.message || "처리 실패");
+      return;
+    }
+
     setLiked((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      next.has(accommodationId)
+        ? next.delete(accommodationId)
+        : next.add(accommodationId);
       return next;
     });
   };
@@ -34,9 +78,8 @@ function PopularSlider({ title, data, onCardClick }) {
             onClick={prev}
             disabled={index === 0}
             className="w-8 h-8 flex items-center justify-center
-             rounded-full border bg-white shadow
-             disabled:opacity-30 hover:shadow-md
-             hover:bg-neutral-100"
+              rounded-full border bg-white shadow
+              disabled:opacity-30 hover:shadow-md hover:bg-neutral-100"
           >
             <ChevronLeft size={18} />
           </button>
@@ -45,9 +88,8 @@ function PopularSlider({ title, data, onCardClick }) {
             onClick={next}
             disabled={index >= data.length - VISIBLE}
             className="w-8 h-8 flex items-center justify-center
-             rounded-full border bg-white shadow
-             disabled:opacity-30 hover:shadow-md
-                 hover:bg-neutral-100"
+              rounded-full border bg-white shadow
+              disabled:opacity-30 hover:shadow-md hover:bg-neutral-100"
           >
             <ChevronRight size={18} />
           </button>
@@ -60,55 +102,59 @@ function PopularSlider({ title, data, onCardClick }) {
           className="flex transition-transform duration-300"
           style={{ transform: `translateX(-${index * CARD_PERCENT}%)` }}
         >
-          {data.map((one) => (
-            <div
-              key={one.id}
-              className="shrink-0 px-2 cursor-pointer"
-              style={{ width: `${CARD_PERCENT}%` }}
-              onClick={() => onCardClick(one.id)}
-            >
-              {/* 이미지 + 하트 */}
-              <div className="relative aspect-square">
-                {one.images?.length > 0 && (
-                  <img
-                    src={`http://192.168.0.17:8080${one.images[0].uri}`}
-                    className="w-full h-full object-cover rounded-xl"
-                    alt=""
-                  />
-                )}
+          {data.map((one) => {
+            const isLiked = liked.has(one.id);
 
-                <button
-                  className="absolute top-5 right-5 "
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleLike(one.id);
-                  }}
-                >
-                  <Heart
-                    size={33}
-                    className={
-                      liked.has(one.id)
-                        ? "fill-rose-500 text-rose-500"
-                        : "text-white fill-black/20"
-                    }
-                  />
-                </button>
-              </div>
+            return (
+              <div
+                key={one.id}
+                className="shrink-0 px-2 cursor-pointer"
+                style={{ width: `${CARD_PERCENT}%` }}
+                onClick={() => onCardClick(one.id)}
+              >
+                {/* 이미지 + 하트 */}
+                <div className="relative aspect-square">
+                  {one.images?.length > 0 && (
+                    <img
+                      src={`http://192.168.0.17:8080${one.images[0].uri}`}
+                      className="w-full h-full object-cover rounded-xl"
+                      alt=""
+                    />
+                  )}
 
-              {/* 텍스트 */}
-              <div className="mt-3 space-y-1">
-                <div className="font-medium truncate">
-                  {one.address?.split(" ")[0]}의 집
+                  <button
+                    className="absolute top-4 right-5"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleLike(one.id);
+                    }}
+                  >
+                    <Heart
+                      size={32}
+                      className={
+                        isLiked
+                          ? "fill-rose-500 text-rose-500"
+                          : "text-white fill-black/30"
+                      }
+                    />
+                  </button>
                 </div>
-                <div className="text-xs text-neutral-500">
-                  1월 1일 ~ 12월 31일
-                </div>
-                <div className="text-xs text-neutral-500">
-                  ₩{formatPrice(one.price)} · 평점 5.0
+
+                {/* 텍스트 */}
+                <div className="mt-3 space-y-1">
+                  <div className="font-medium truncate">
+                    {one.address?.split(" ")[0]}의 집
+                  </div>
+                  <div className="text-xs text-neutral-500">
+                    1월 1일 ~ 12월 31일
+                  </div>
+                  <div className="text-xs text-neutral-500">
+                    ₩{formatPrice(one.price)} · 평점 5.0
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

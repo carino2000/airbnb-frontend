@@ -269,6 +269,40 @@ function createReview(data, token, reservationCode) {
   }).then((res) => res.json());
 }
 
+// 좋아요 등록
+function likeAccommodation(accommodationId, accountId, token) {
+  return fetch(`${serverAddr}/accommodations/${accommodationId}/likes`, {
+    method: "POST",
+    body: JSON.stringify({ accountId: accountId }),
+    headers: {
+      Token: token,
+      "Content-type": "application/json",
+    },
+  }).then((res) => res.json());
+}
+
+// 좋아요 삭제
+function unlikeAccommodation(accommodationId, accountId, token) {
+  return fetch(`${serverAddr}/accommodations/${accommodationId}/likes`, {
+    method: "DELETE",
+    body: JSON.stringify({ accountId: accountId }),
+    headers: {
+      Token: token,
+      "Content-type": "application/json",
+    },
+  }).then((res) => res.json());
+}
+
+// 아이디별 좋아요 목록 조회
+function getLikedAccommodationList(accountId, token) {
+  return fetch(`${serverAddr}/accommodations/${accountId}/likes/list`, {
+    method: "GET",
+    headers: {
+      Token: token,
+      "Content-type": "application/json",
+    },
+  }).then((res) => res.json());
+}
 
 export {
   idCheck,
@@ -295,4 +329,7 @@ export {
   getMyHosting,
   getReservation,
   createReview,
+  likeAccommodation,
+  unlikeAccommodation,
+  getLikedAccommodationList,
 };
