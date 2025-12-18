@@ -46,12 +46,19 @@ export default function Main() {
 
   const totalGuests = guests.adult + guests.child;
 
+  const MENU = [
+    { label: "찜", path: "/profile/wishlists" },
+    { label: "리스트", path: "/hosting/listings" },
+    { label: "메시지", path: "/hosting/listings?tab=messages" },
+    { label: "내 프로필", path: "/profile" },
+  ];
+
   function handleModalLogin() {
     loginCheck(loginId, loginPw).then((obj) => {
       if (!obj.success) {
         setLoginError(true);
       } else {
-        // ✅ 여기!!!!!
+        // 여기!!!!!
         setToken(obj.token);
         setAccount(obj.data);
         setShowLogin(false); // 모달 닫기
@@ -217,20 +224,26 @@ export default function Main() {
 
                   {token && (
                     <>
-                      {["찜", "리스트", "메시지", "내 프로필"].map((v) => (
+                      {MENU.map((item) => (
                         <div
-                          key={v}
+                          key={item.path}
                           className="px-4 py-3 hover:bg-gray-100 text-xs cursor-pointer"
+                          onClick={() => {
+                            navigate(item.path);
+                            setOpenMenu(false);
+                          }}
                         >
-                          {v}
+                          {item.label}
                         </div>
                       ))}
+
                       <div
                         className="px-4 py-3 hover:bg-gray-100 text-xs text-red-500 cursor-pointer"
                         onClick={() => {
                           clearToken();
                           clearAccount();
                           setOpenMenu(false);
+                          navigate("/");
                         }}
                       >
                         로그아웃
@@ -456,11 +469,11 @@ export default function Main() {
               placeholder="비밀번호"
               value={loginPw}
               onChange={(e) => setLoginPw(e.target.value)}
-              className="border border-gray-400 w-full p-2.5 rounded-md mb-3 placeholder:text-xs text-sm"
+              className="border border-gray-400 w-full p-2.5 rounded-md mb-2 placeholder:text-xs text-sm"
             />
 
             {loginError && (
-              <p className="text-red-500 text-xs mt-4">
+              <p className="text-red-500 text-xs mt-1 mb-2">
                 아이디 또는 비밀번호가 일치하지 않습니다.
               </p>
             )}

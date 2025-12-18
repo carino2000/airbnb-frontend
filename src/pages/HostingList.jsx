@@ -141,7 +141,7 @@ export default function HostingList() {
 
       {/* ================= 본문 ================= */}
       <main className="mt-[120px] max-w-[1350px] mx-auto px-6">
-        {/* 🔥 Wishlist와 동일한 상단 구조 */}
+        {/* Wishlist와 동일한 상단 */}
         <div className="flex justify-between items-start">
           <h1 className="text-2xl font-bold mb-6 mt-5">
             {tab === "listings" ? "내 리스팅" : "메시지"}
