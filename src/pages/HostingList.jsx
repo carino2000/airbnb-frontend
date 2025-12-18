@@ -1,8 +1,9 @@
 import logo from "../assets/Airbnb_Logo.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { useToken, useAccount } from "../stores/account-store";
 import MessageList from "./MessageList";
+import { getMyHosting } from "@/util/DatabaseUtil";
 
 export default function HostingList() {
   const navigate = useNavigate();
@@ -23,6 +24,20 @@ export default function HostingList() {
 
   const tab = searchParams.get("tab") ?? "listings";
   // console.log(tab);
+  function editHostingHandle(accommodationId) {
+    navigate(`/hosting/listing/${accommodationId}/edit`);
+  }
+
+  useEffect(() => {
+    getMyHosting(account.id).then((obj) => {
+      if (obj.success) {
+        setItems([...obj.accommodations]);
+      } else {
+        window.alert("숙소 가져오기 오류!");
+        navigate("/");
+      }
+    });
+  }, []);
   return (
     <>
       {/* ================= 헤더 ================= */}
@@ -149,12 +164,32 @@ export default function HostingList() {
         {/* 콘텐츠 */}
         {tab === "listings" && (
           <div className="grid grid-cols-4 gap-4">
-            {items.map((item) => (
+            {items.map((item, index) => (
               <div
-                key={item}
+                onClick={() => editHostingHandle(item.id)}
+                key={index}
                 className="bg-green-100 rounded-lg flex items-center justify-center aspect-square"
               >
-                {item}
+                {item.uri && (
+                  <img
+                    className="w-full h-full rounded-xl object-cover"
+                    src={`http://192.168.0.17:8080${item.uri}`}
+                    alt=""
+                  />
+                )}
+                <div className="mt-2 text-left">
+                  {item.address && (
+                    <div className="font-medium text-sm truncate">
+                      {item.address.split(" ")[0]}의 집
+                    </div>
+                  )}
+                  <div className="text-xs text-gray-500 truncate">
+                    1월 1일 ~ 12월 31일
+                  </div>
+                  <div className="text-xs text-gray-500 truncate">
+                    ₩{item.price}
+                  </div>
+                </div>
               </div>
             ))}
           </div>

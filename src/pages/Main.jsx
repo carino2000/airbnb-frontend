@@ -94,6 +94,11 @@ export default function Main() {
     });
   }, []);
 
+  function reloadingPage() {
+    window.location.reload();
+    navigate("/");
+  }
+
   return (
     <>
       <header className="fixed top-0 left-0 w-full h-40 md:h-[200px] bg-neutral-100 border-b-2 z-50 border-b-neutral-200">
@@ -105,7 +110,7 @@ export default function Main() {
                 src={logo}
                 alt=""
                 className="w-[100px] h-auto cursor-pointer"
-                onClick={() => navigate("/")}
+                onClick={() => reloadingPage}
               />
             </div>
 
