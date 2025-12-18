@@ -192,7 +192,7 @@ function deleteMessage(messageId, token) {
 
 // 메시지 조회
 function getMessage(reservationCode, token) {
-  return fetch(`${serverAddr}/reservations/messages/${reservationCode}`, {
+  return fetch(`${serverAddr}/reservations/message/${reservationCode}`, {
     method: "GET",
     headers: {
       Token: token,

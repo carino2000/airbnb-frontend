@@ -1,102 +1,139 @@
 import { useEffect, useState } from "react";
 import { useAccount, useToken } from "../stores/account-store";
-import { getMyMessageList } from "../util/DatabaseUtil";
+import {
+  createMessage,
+  getMessage,
+  getMyMessageList,
+} from "../util/DatabaseUtil";
 
 export default function MessageList() {
-  const { token, setToken, clearToken } = useToken();
-  const { account, setAccount, clearAccount } = useAccount();
+  const { token } = useToken();
+  const { account } = useAccount();
 
   const [messageList, setMessageList] = useState([]);
-  const [message, setMessage] = useState([]);
+  const [message, setMessage] = useState({
+    recipientId: null,
+    reservationCode: null,
+    data: [],
+  });
 
   useEffect(() => {
+    if (!account?.id || !token) return;
+
     getMyMessageList(account.id, token).then((obj) => {
       if (obj.success) {
-        setMessageList([...obj.messageRooms]);
+        setMessageList(obj.messageRooms);
       } else {
         window.alert("메시지 방 불러오기 실패!");
       }
     });
-  }, []);
+  }, [account?.id, token]);
 
-  function selectMessageRoom() {
-    // 예약 번호 보내주고.. 수정중!
-    getMessage().then((obj) => {
+  function selectMessageRoom(reservationCode, recipientId) {
+    getMessage(reservationCode, token).then((obj) => {
       if (obj.success) {
-        setMessage([...obj.messages]);
+        setMessage({
+          recipientId,
+          reservationCode,
+          data: obj.messages,
+        });
       } else {
         window.alert("대화 내용 불러오기 실패!");
       }
     });
   }
 
+  function messageSendHandle(evt) {
+    evt.preventDefault();
+    if (!message.reservationCode) return;
+
+    const data = {
+      reservationCode: message.reservationCode,
+      writerId: account.id,
+      recipientId: message.recipientId,
+      content: evt.target.messageInput.value,
+    };
+
+    createMessage(data, token).then((obj) => {
+      if (obj.success) {
+        evt.target.messageInput.value = "";
+        selectMessageRoom(data.reservationCode, data.recipientId);
+      } else {
+        window.alert("메시지 전송 오류!");
+      }
+    });
+  }
+
   return (
     <section className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 h-[600px]">
-      {/* ================= 왼쪽: 대화 목록 ================= */}
+      {/* 왼쪽: 대화 목록 */}
       <aside className="border rounded-xl overflow-y-auto bg-white">
-        {/* 대화 아이템 (반복될 자리) */}
-        {messageList.length > 0 &&
-          messageList.map((messageRoom) => {
-            return (
-              <div key={messageRoom.reservationCode}>
-                <div className="px-4 py-3 border-b">
-                  <div className="flex justify-between">
-                    <p className="font-semibold text-sm text-neutral-800">
-                      {messageRoom.recipientId} 님
-                    </p>
-                    <span className="text-xs text-neutral-400">
-                      {messageRoom.lastReceiveTime}
-                    </span>
-                  </div>
+        {messageList.map((room) => (
+          <div
+            key={room.reservationCode}
+            onClick={() =>
+              selectMessageRoom(room.reservationCode, room.recipientId)
+            }
+            className="px-4 py-3 border-b cursor-pointer hover:bg-neutral-50"
+          >
+            <div className="flex justify-between">
+              <p className="font-semibold text-sm">{room.recipientId} 님</p>
+              <span className="text-xs text-neutral-400">
+                {room.lastReceiveTime}
+              </span>
+            </div>
 
-                  <div className="flex justify-between mt-1">
-                    <p className="text-xs text-neutral-500 truncate max-w-[220px]">
-                      {messageRoom.lastMessage}
-                    </p>
-
-                    {/* 읽지 않은 메시지 뱃지 */}
-                    <span className="bg-rose-500 text-white text-[10px] px-2 rounded-full">
-                      {messageRoom.unReadCount}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+            <div className="flex justify-between mt-1">
+              <p className="text-xs text-neutral-500 truncate max-w-[220px]">
+                {room.lastMessage}
+              </p>
+              {room.unReadCount > 0 && (
+                <span className="bg-rose-500 text-white text-[10px] px-2 rounded-full">
+                  {room.unReadCount}
+                </span>
+              )}
+            </div>
+          </div>
+        ))}
       </aside>
 
-      {/* ================= 오른쪽: 채팅 영역 ================= */}
+      {/* 오른쪽: 채팅 영역 */}
       <div className="border rounded-xl flex flex-col bg-white">
-        {/* 상단: 상대 이름 */}
-        <div className="px-5 py-4 border-b font-semibold">사용자 이름</div>
-
-        {/* 메시지 영역 */}
-        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
-          {/* 상대 메시지 */}
-          <div className="flex justify-start">
-            <div className="max-w-[60%] px-4 py-2 rounded-2xl text-sm bg-neutral-100 rounded-bl-md">
-              상대방 메시지
-            </div>
-          </div>
-
-          {/* 내 메시지 */}
-          <div className="flex justify-end">
-            <div className="max-w-[60%] px-4 py-2 rounded-2xl text-sm bg-neutral-900 text-white rounded-br-md">
-              내 메시지
-            </div>
-          </div>
+        <div className="px-5 py-4 border-b font-semibold">
+          {message.recipientId}
         </div>
 
-        {/* 입력창 */}
-        <div className="border-t px-4 py-3 flex gap-2">
+        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
+          {message.data.map((item) =>
+            item.writerId === message.recipientId ? (
+              <div key={item.id} className="flex justify-start">
+                <div className="bg-neutral-100 px-4 py-2 rounded-2xl text-sm">
+                  {item.content}
+                </div>
+              </div>
+            ) : (
+              <div key={item.id} className="flex justify-end">
+                <div className="bg-neutral-900 text-white px-4 py-2 rounded-2xl text-sm">
+                  {item.content}
+                </div>
+              </div>
+            )
+          )}
+        </div>
+
+        <form
+          onSubmit={messageSendHandle}
+          className="border-t px-4 py-3 flex gap-2"
+        >
           <input
+            name="messageInput"
             placeholder="메시지를 입력하세요"
             className="flex-1 border rounded-full px-4 py-2 text-sm"
           />
-          <button className="px-4 py-2 bg-neutral-900 text-white rounded-full text-sm">
+          <button className="bg-neutral-900 text-white px-4 py-2 rounded-full text-sm">
             전송
           </button>
-        </div>
+        </form>
       </div>
     </section>
   );
