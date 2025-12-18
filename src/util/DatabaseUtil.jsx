@@ -304,6 +304,12 @@ function getLikedAccommodationList(accountId, token) {
   }).then((res) => res.json());
 }
 
+function getAccommodationStatsInfo() {
+  return fetch(`${serverAddr}/accommodations/stats-info`, {
+    method: "GET",
+  }).then((res) => res.json());
+}
+
 export {
   idCheck,
   emailCheck,
@@ -332,4 +338,5 @@ export {
   likeAccommodation,
   unlikeAccommodation,
   getLikedAccommodationList,
+  getAccommodationStatsInfo,
 };
