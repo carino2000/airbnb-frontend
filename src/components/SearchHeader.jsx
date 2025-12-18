@@ -18,6 +18,13 @@ export default function SearchHeader({ onClose, onLogin }) {
   const { token } = useToken();
   const { account } = useAccount();
 
+  const MENU = [
+    { label: "찜", path: "/profile/wishlists" },
+    { label: "리스트", path: "/hosting/listings" },
+    { label: "메시지", path: "/hosting/listings?tab=messages" },
+    { label: "내 프로필", path: "/profile" },
+  ];
+
   return (
     <>
       <header className="fixed top-0 left-0 w-full h-40 md:h-[200px] bg-neutral-100 border-b-2 z-50 border-b-neutral-200">
@@ -110,20 +117,20 @@ export default function SearchHeader({ onClose, onLogin }) {
             {/* ================= 햄버거 메뉴 ================= */}
             {openMenu && (
               <>
-                {/* ⬇️ 바깥 클릭 감지용 오버레이 */}
+                {/*  바깥 클릭 감지용 오버레이 */}
                 <div
                   className="fixed inset-0 z-40"
                   onClick={() => setOpenMenu(false)}
                 />
 
-                {/* ⬇️ 기존 메뉴 (그대로) */}
+                {/* 기존 메뉴 (그대로) */}
                 <div className="absolute top-[70px] right-6 md:right-10 w-[180px] bg-white rounded-md shadow-xl border border-gray-200 z-50">
                   {!token && (
                     <>
                       <div
                         className="px-4 py-3 hover:bg-gray-100 text-xs cursor-pointer"
                         onClick={() => {
-                          onLogin?.(); // ✅ 여기
+                          onLogin?.(); // ✅
                           setOpenMenu(false);
                         }}
                       >
@@ -143,20 +150,28 @@ export default function SearchHeader({ onClose, onLogin }) {
 
                   {token && (
                     <>
-                      {["찜", "리스트", "메시지", "내 프로필"].map((v) => (
+                      {MENU.map((item) => (
                         <div
-                          key={v}
+                          key={item.path}
                           className="px-4 py-3 hover:bg-gray-100 text-xs cursor-pointer"
+                          onClick={() => {
+                            navigate(item.path);
+                            setOpenMenu(false);
+                            onClose?.(); // 🔥 SearchOverlay 닫기까지
+                          }}
                         >
-                          {v}
+                          {item.label}
                         </div>
                       ))}
+                      <div className="border-t" />
                       <div
                         className="px-4 py-3 hover:bg-gray-100 text-xs text-red-500 cursor-pointer"
                         onClick={() => {
                           clearToken();
                           clearAccount();
                           setOpenMenu(false);
+                          navigate("/");
+                          onClose?.();
                         }}
                       >
                         로그아웃

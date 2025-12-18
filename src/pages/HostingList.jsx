@@ -38,6 +38,14 @@ export default function HostingList() {
       }
     });
   }, []);
+
+  const MENU = [
+    { label: "찜", path: "/profile/wishlists" },
+    { label: "리스트", path: "/hosting/listings" },
+    { label: "메시지", path: "/hosting/listings?tab=messages" },
+    { label: "내 프로필", path: "/profile/edit" },
+  ];
+
   return (
     <>
       {/* ================= 헤더 ================= */}
@@ -113,27 +121,42 @@ export default function HostingList() {
             </div>
 
             {openMenu && (
-              <div className="absolute top-12 right-0 w-[150px] bg-white rounded-md shadow-xl z-50">
+              <>
+                {/* 바깥 클릭 닫기 */}
                 <div
-                  className="px-4 py-3 hover:bg-gray-100 text-xs cursor-pointer"
-                  onClick={() => {
-                    navigate("/profile/edit");
-                    setOpenMenu(false);
-                  }}
-                >
-                  프로필 수정
+                  className="fixed inset-0 z-40"
+                  onClick={() => setOpenMenu(false)}
+                />
+
+                <div className="absolute top-12 right-0 w-[180px] bg-white rounded-md shadow-xl border border-gray-200 z-50">
+                  {MENU.map((item) => (
+                    <div
+                      key={item.path}
+                      className="px-4 py-3 hover:bg-gray-100 text-xs cursor-pointer"
+                      onClick={() => {
+                        navigate(item.path);
+                        setOpenMenu(false);
+                      }}
+                    >
+                      {item.label}
+                    </div>
+                  ))}
+
+                  <div className="border-t" />
+
+                  <div
+                    className="px-4 py-3 hover:bg-gray-100 text-xs text-red-500 cursor-pointer"
+                    onClick={() => {
+                      clearToken();
+                      clearAccount();
+                      setOpenMenu(false);
+                      navigate("/");
+                    }}
+                  >
+                    로그아웃
+                  </div>
                 </div>
-                <div
-                  className="px-4 py-3 hover:bg-gray-100 text-xs text-red-500 cursor-pointer"
-                  onClick={() => {
-                    clearToken();
-                    clearAccount();
-                    navigate("/");
-                  }}
-                >
-                  로그아웃
-                </div>
-              </div>
+              </>
             )}
           </div>
         </div>
