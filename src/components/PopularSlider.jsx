@@ -27,9 +27,6 @@ function PopularSlider({ title, data, onCardClick, alreadyLiked = [] }) {
 
   const prev = () => setIndex((i) => Math.max(i - 1, 0));
   const next = () => setIndex((i) => Math.min(i + 1, data.length - VISIBLE));
-  /* ===============================
-   * ❤️ 좋아요 불러오기
-   * =============================== */
 
   /* ===============================
    * ❤️ 좋아요 토글
