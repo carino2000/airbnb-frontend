@@ -208,7 +208,38 @@ function getMyMessageList(accountId, token) {
     },
   }).then((res) => res.json());
 }
+// 회원정보수정
+function updateAccountProfile(accountId, data, token) {
+  return fetch(`${serverAddr}/accounts/${accountId}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+    headers: {
+      Token: token,
+      "Content-type": "application/json",
+    },
+  }).then((res) => res.json());
+}
+// 비밀번호 변경
+function updateAccountPassword(accountId, data, token) {
+  return fetch(`${serverAddr}/accounts/${accountId}/password`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+    headers: {
+      Token: token,
+      "Content-type": "application/json",
+    },
+  }).then((res) => res.json());
+}
 
+// 회원탈퇴
+function deleteAccount(accountId ,token) {
+  return fetch(`${serverAddr}/accounts/${accountId}`, {
+    method: "DELETE",
+    headers: {
+      Token: token,
+    },
+  }).then((res) => res.json());
+}
 
 export {
   idCheck,
@@ -229,4 +260,7 @@ export {
   createReservation,
   getAccommodationReview,
   getMyMessageList,
+  updateAccountProfile,
+  updateAccountPassword,
+  deleteAccount,
 };
