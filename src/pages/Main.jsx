@@ -13,6 +13,7 @@ import { getLikedAccommodationList } from "../util/DatabaseUtil";
 import { Calendar } from "@/components/ui/calendar";
 import { ko } from "date-fns/locale";
 import { format } from "date-fns";
+import AccommodationLocationReportPage from "@/components/accommodationChart";
 
 export default function Main() {
   const navigate = useNavigate();
@@ -70,15 +71,25 @@ export default function Main() {
 
   function searchHandle(evt) {
     evt.preventDefault();
+    console.log(evt.target.visitor.value);
     const data = {
       destination: evt.target.destination.value,
       checkInDate: checkinRef.current.value,
       checkOutDate: checkoutRef.current.value,
       guests: evt.target.visitor.value,
     };
+
+    evt.target.destination.value = "";
+    checkinRef.current.value = "";
+    checkoutRef.current.value = "";
+    evt.target.visitor.value = 0;
+
     searchAccommodation(data).then((obj) => {
-      console.log(obj.accommodations[0].name);
       setItem([...obj.accommodations]);
+      if ([...obj.accommodations].length === 0) {
+        window.alert("해당 조건에 대응하는 검색 결과가 없습니다");
+        window.location.reload();
+      }
     });
   }
 
@@ -424,6 +435,7 @@ export default function Main() {
 
       {/* 본문 */}
       <main className="mt-[250px] w-5/6 mx-auto lg:px-10">
+      <AccommodationLocationReportPage/>
         {chunkArray(item, 8).map((group, idx) => (
           <PopularSlider
             key={idx}
