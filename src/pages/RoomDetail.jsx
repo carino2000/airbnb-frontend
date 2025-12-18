@@ -110,6 +110,12 @@ import { useTags } from "../stores/account-store";
 export default function RoomDetail() {
   const { token, setToken, clearToken } = useToken();
   const { account, setAccount, clearAccount } = useAccount();
+  useEffect(() => {
+    if (account == null) {
+      window.alert("로그인이 필요한 기능입니다");
+      navigate("/log-in");
+    }
+  });
 
   const navigate = useNavigate();
 
@@ -171,6 +177,7 @@ export default function RoomDetail() {
   const selectedTags = useTags((s) => s.tags);
 
   // ================= 예약 카드 스크롤 =================
+
   useEffect(() => {
     const onScroll = () => {
       if (!bookingRef.current || !roomTitleRef.current || !reviewRef.current)
@@ -217,6 +224,7 @@ export default function RoomDetail() {
     getDetailAccommodation(accommodationId).then((obj) => {
       if (obj.success) {
         setRoom({ ...obj.accommodation });
+        setBlockDays([...obj.accommodation.reservedDate]);
         setReservation({ totalPrice: obj.accommodation.price });
       } else {
         window.alert("숙소 상세정보 불러오기 오류!");
@@ -238,8 +246,9 @@ export default function RoomDetail() {
         setReservation(() => ({ ...obj }));
         if (!obj.reservationAvailable) {
           window.alert("해당 일자는 예약 불가한 일자입니다");
-          setCheckin();
-          setCheckout();
+          setDateRange(undefined);
+          setCheckin("");
+          setCheckout("");
         }
       }
     });
@@ -471,7 +480,7 @@ export default function RoomDetail() {
 
               <div className="mt-4 flex items-center gap-4 text-sm">
                 <span className="font-semibold">⭐ 4.93</span>
-                <span className="text-gray-500">후기 193개</span>
+                <span className="text-gray-500">후기 · {review.length}개</span>
                 <span className="px-2 py-1 border rounded-full text-xs">
                   게스트 선호
                 </span>
@@ -845,7 +854,7 @@ export default function RoomDetail() {
         {/* 예약 버튼 */}
         <button
           onClick={confirmReservation}
-          className="w-full h-[40px] mt-4 rounded-full bg-rose-500 text-white font-medium text-sm hover:bg-rose-700 cursor-pointer"
+          className="w-full h-10 mt-4 rounded-full bg-rose-500 text-white font-medium text-sm hover:bg-rose-700 cursor-pointer"
           disabled={!reservation.reservationAvailable}
         >
           예약하기

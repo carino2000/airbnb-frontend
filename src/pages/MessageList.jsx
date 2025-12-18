@@ -17,56 +17,77 @@ export default function MessageList() {
     data: [],
   });
 
+  /* =========================
+     내 메시지룸 목록 조회
+  ========================= */
   useEffect(() => {
     if (!account?.id || !token) return;
 
     getMyMessageList(account.id, token).then((obj) => {
-      if (obj.success) {
+      if (obj?.success && Array.isArray(obj.messageRooms)) {
         setMessageList(obj.messageRooms);
       } else {
-        window.alert("메시지 방 불러오기 실패!");
+        setMessageList([]);
       }
     });
   }, [account?.id, token]);
 
+  /* =========================
+     메시지룸 선택
+  ========================= */
   function selectMessageRoom(reservationCode, recipientId) {
+    if (!reservationCode || !recipientId) return;
+
     getMessage(reservationCode, token).then((obj) => {
-      if (obj.success) {
+      if (obj?.success && Array.isArray(obj.messages)) {
         setMessage({
           recipientId,
           reservationCode,
           data: obj.messages,
         });
       } else {
-        window.alert("대화 내용 불러오기 실패!");
+        setMessage({
+          recipientId,
+          reservationCode,
+          data: [],
+        });
       }
     });
   }
 
+  /* =========================
+     메시지 전송
+  ========================= */
   function messageSendHandle(evt) {
     evt.preventDefault();
-    if (!message.reservationCode) return;
+
+    if (!message.reservationCode || !message.recipientId) return;
+
+    const content = evt.target.messageInput.value.trim();
+    if (!content) return;
 
     const data = {
       reservationCode: message.reservationCode,
       writerId: account.id,
       recipientId: message.recipientId,
-      content: evt.target.messageInput.value,
+      content,
     };
 
     createMessage(data, token).then((obj) => {
-      if (obj.success) {
+      if (obj?.success) {
         evt.target.messageInput.value = "";
         selectMessageRoom(data.reservationCode, data.recipientId);
       } else {
-        window.alert("메시지 전송 오류!");
+        window.alert("메시지 전송 오류입니다.");
       }
     });
   }
 
   return (
     <section className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 h-[600px]">
-      {/* 왼쪽: 대화 목록 */}
+      {/* =========================
+          왼쪽: 대화 목록
+      ========================= */}
       <aside className="border rounded-xl overflow-y-auto bg-white">
         {messageList.map((room) => (
           <div
@@ -97,7 +118,9 @@ export default function MessageList() {
         ))}
       </aside>
 
-      {/* 오른쪽: 채팅 영역 */}
+      {/* =========================
+          오른쪽: 채팅 영역
+      ========================= */}
       <div className="border rounded-xl flex flex-col bg-white">
         <div className="px-5 py-4 border-b font-semibold">
           {message.recipientId}
@@ -130,7 +153,10 @@ export default function MessageList() {
             placeholder="메시지를 입력하세요"
             className="flex-1 border rounded-full px-4 py-2 text-sm"
           />
-          <button className="bg-neutral-900 text-white px-4 py-2 rounded-full text-sm">
+          <button
+            type="submit"
+            className="bg-neutral-900 text-white px-4 py-2 rounded-full text-sm"
+          >
             전송
           </button>
         </form>

@@ -269,6 +269,7 @@ function createReview(data, token, reservationCode) {
   }).then((res) => res.json());
 }
 
+
 export {
   idCheck,
   emailCheck,
