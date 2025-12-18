@@ -208,6 +208,7 @@ function getMyMessageList(accountId, token) {
     },
   }).then((res) => res.json());
 }
+
 // 회원정보수정
 function updateAccountProfile(accountId, data, token) {
   return fetch(`${serverAddr}/accounts/${accountId}`, {
@@ -232,11 +233,16 @@ function updateAccountPassword(accountId, data, token) {
 }
 
 // 회원탈퇴
-function deleteAccount(accountId ,token) {
+function deleteAccount(accountId, token) {
   return fetch(`${serverAddr}/accounts/${accountId}`, {
     method: "DELETE",
     headers: {
       Token: token,
+      "Content-type": "application/json",
+    },
+  }).then((res) => res.json());
+}
+
 function getMyHosting(accountId) {
   return fetch(`${serverAddr}/accommodations/${accountId}/hosting`, {
     method: "GET",
