@@ -20,6 +20,7 @@ export default function MessageList() {
   }, []);
 
   function selectMessageRoom() {
+    // 예약 번호 보내주고.. 수정중!
     getMessage().then((obj) => {
       if (obj.success) {
         setMessage([...obj.messages]);

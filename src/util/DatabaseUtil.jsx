@@ -209,6 +209,31 @@ function getMyMessageList(accountId, token) {
   }).then((res) => res.json());
 }
 
+function getMyHosting(accountId) {
+  return fetch(`${serverAddr}/accommodations/${accountId}/hosting`, {
+    method: "GET",
+  }).then((res) => res.json());
+}
+
+function getReservation(code, token) {
+  return fetch(`${serverAddr}/reservations/${code}`, {
+    method: "GET",
+    headers: {
+      Token: token,
+    },
+  }).then((res) => res.json());
+}
+
+function createReview(data, token, reservationCode) {
+  return fetch(`${serverAddr}/reservations/${reservationCode}/reviews`, {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {
+      Token: token,
+      "Content-type": "application/json",
+    },
+  }).then((res) => res.json());
+}
 
 export {
   idCheck,
@@ -229,4 +254,7 @@ export {
   createReservation,
   getAccommodationReview,
   getMyMessageList,
+  getMyHosting,
+  getReservation,
+  createReview,
 };

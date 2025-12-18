@@ -57,11 +57,10 @@ export default function HostingWeekendRate() {
         !amenitiesInsert.success
       ) {
         window.alert("숙소 사진/태그/편의시설 등록 중 오류 발생");
-        navigate("/hosting/complete");
+        navigate("/hosting");
       }
     }
-
-    navigate("/hosting");
+    navigate("/hosting/complete");
   }
 
   return (

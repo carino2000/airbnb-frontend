@@ -1,6 +1,6 @@
 import logo from "../assets/Airbnb_Logo.png";
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useToken, useAccount } from "../stores/account-store";
 
 import SearchHeader from "../components/SearchHeader";
@@ -8,6 +8,11 @@ import SearchOverlay from "../components/SearchOverlay";
 import SearchBarMini from "../components/SearchBarMini";
 import GuestRow from "../components/GuestRow";
 import camera from "../assets/free-icon-camera-5904494.png";
+import {
+  createReview,
+  getDetailAccommodation,
+  getReservation,
+} from "@/util/DatabaseUtil";
 
 export default function Review() {
   const { account, clearAccount } = useAccount();
@@ -38,6 +43,9 @@ export default function Review() {
   const [desc, setDesc] = useState("");
   const MAX_LEN = 1000;
 
+  const [reservation, setReservation] = useState();
+  const [accommodation, setAccommodation] = useState();
+
   useEffect(() => {
     // 스크롤 막기
     document.body.style.overflow = "hidden";
@@ -47,6 +55,44 @@ export default function Review() {
       document.body.style.overflow = "auto";
     };
   }, []);
+  const { reservationCode } = useParams();
+
+  useEffect(() => {
+    getReservation(reservationCode, token).then((obj) => {
+      if (obj.success) {
+        setReservation({ ...obj.data });
+        getDetailAccommodation(obj.data.accommodationId).then((acc) => {
+          if (acc.success) {
+            setAccommodation({ ...acc.accommodation });
+          } else {
+            window.alert("숙소 정보 불러오기 오류!");
+            navigate("/");
+          }
+        });
+      } else {
+        window.alert("예약 조회 오류!");
+        navigate("/");
+      }
+    });
+  }, []);
+
+  function confirmReview() {
+    const data = {
+      accommodationId: accommodation.id,
+      accountId: account.id,
+      rating: rating,
+      content: desc,
+    };
+    createReview(data, token, reservationCode).then((obj) => {
+      if (obj.success) {
+        window.alert("리뷰 등록이 정상 처리되었습니다!");
+        navigate("/");
+      } else {
+        window.alert("리뷰 등록 오류!");
+        navigate("/");
+      }
+    });
+  }
 
   return (
     <>
@@ -115,7 +161,7 @@ export default function Review() {
 
             {/* 햄버거 메뉴 (기존 그대로 사용 가능) */}
             {openMenu && (
-              <div className="absolute top-[48px] right-0 w-[150px] bg-white rounded-md shadow-xl border border-gray-200 z-50">
+              <div className="absolute top-12 right-0 w-[150px] bg-white rounded-md shadow-xl border border-gray-200 z-50">
                 <div
                   className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-xs font-semibold"
                   onClick={() => setShowLogin(true)}
@@ -162,13 +208,22 @@ export default function Review() {
 
           {/* 정보 */}
           <div className="flex items-start gap-4 mb-5">
-            <div className="w-30  h-30 bg-gray-200 rounded-md" />
+            <div className="w-30  h-30 bg-gray-200 rounded-md">
+              {accommodation && (
+                <img
+                  className="w-full h-full rounded-xl object-cover"
+                  src={`http://192.168.0.17:8080${accommodation.images[0].uri}`}
+                  alt=""
+                />
+              )}
+            </div>
             <div>
               <p className="font-medium">
-                INSTAY 1인(싱글)
-                308/력셔리게스트하우스/단독객실+욕실/조식포함/24h무료라운지
+                {accommodation && accommodation.name}
               </p>
-              <p className="text-sm text-gray-500 mt-1">33,500원</p>
+              <p className="text-sm text-gray-500 mt-1">
+                {reservation && reservation.price}원
+              </p>
             </div>
           </div>
 
@@ -266,6 +321,7 @@ export default function Review() {
     `}
         >
           <button
+            onClick={confirmReview}
             disabled={rating === 0}
             className="w-full h-full px-6 py-2 cursor-pointer"
           >
@@ -277,7 +333,7 @@ export default function Review() {
       {/* ================= 로그인 모달 ================= */}
       {showLogin && (
         <div
-          className="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999]"
+          className="fixed inset-0 bg-black/40 flex items-center justify-center z-9999"
           onClick={() => setShowLogin(false)} // 배경 클릭 닫기
         >
           <div
