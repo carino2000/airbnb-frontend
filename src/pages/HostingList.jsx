@@ -16,7 +16,7 @@ export default function HostingList() {
   const { clearToken } = useToken();
   const { account, clearAccount } = useAccount();
 
-  const [items, setItems] = useState([1, 2, 3, 4]);
+  const [items, setItems] = useState([]);
 
   const addItem = () => {
     setItems((prev) => [...prev, prev.length + 1]);
@@ -164,34 +164,38 @@ export default function HostingList() {
         {/* 콘텐츠 */}
         {tab === "listings" && (
           <div className="grid grid-cols-4 gap-4">
-            {items.map((item, index) => (
-              <div
-                onClick={() => editHostingHandle(item.id)}
-                key={index}
-                className="bg-green-100 rounded-lg flex items-center justify-center aspect-square"
-              >
-                {item.uri && (
-                  <img
-                    className="w-full h-full rounded-xl object-cover"
-                    src={`http://192.168.0.17:8080${item.uri}`}
-                    alt=""
-                  />
-                )}
-                <div className="mt-2 text-left">
-                  {item.address && (
-                    <div className="font-medium text-sm truncate">
-                      {item.address.split(" ")[0]}의 집
-                    </div>
+            {items.length === 0 ? (
+              <div>리스팅 정보 없음</div>
+            ) : (
+              items.map((item, index) => (
+                <div
+                  onClick={() => editHostingHandle(item.id)}
+                  key={index}
+                  className="bg-green-100 rounded-lg flex items-center justify-center aspect-square"
+                >
+                  {item.uri && (
+                    <img
+                      className="w-full h-full rounded-xl object-cover"
+                      src={`http://192.168.0.17:8080${item.uri}`}
+                      alt=""
+                    />
                   )}
-                  <div className="text-xs text-gray-500 truncate">
-                    1월 1일 ~ 12월 31일
-                  </div>
-                  <div className="text-xs text-gray-500 truncate">
-                    ₩{item.price}
+                  <div className="mt-2 text-left">
+                    {item.address && (
+                      <div className="font-medium text-sm truncate">
+                        {item.address.split(" ")[0]}의 집
+                      </div>
+                    )}
+                    <div className="text-xs text-gray-500 truncate">
+                      1월 1일 ~ 12월 31일
+                    </div>
+                    <div className="text-xs text-gray-500 truncate">
+                      ₩{item.price}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         )}
         {tab === "messages" && <MessageList />}
