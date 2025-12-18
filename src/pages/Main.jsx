@@ -9,6 +9,7 @@ import { loginCheck, searchAccommodation } from "../util/DatabaseUtil";
 import { useAccount, useRoom, useToken } from "../stores/account-store";
 import { useNavigate } from "react-router";
 import { PopularSlider } from "../components/PopularSlider";
+import { getLikedAccommodationList } from "../util/DatabaseUtil";
 
 export default function Main() {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ export default function Main() {
   const [openMenu, setOpenMenu] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [item, setItem] = useState([]);
+  const [likedIdx, setLikedIdx] = useState([]);
 
   const clearRoom = useRoom((s) => s.clearRoom);
 
@@ -86,6 +88,23 @@ export default function Main() {
     });
   }, []);
 
+  //  서버 좋아요 목록 불러오기
+  useEffect(() => {
+    if (!token || !account) {
+      setLikedIdx([]); // 로그아웃 시 초기화
+      return;
+    }
+
+    const accountId = account.id;
+    getLikedAccommodationList(accountId, token).then((res) => {
+      if (res?.success && Array.isArray(res.accommodationId)) {
+        setLikedIdx([...res.accommodationId]); // ID 배열임
+      } else {
+        setLikedIdx([]);
+      }
+    });
+  }, [token, account]);
+
   function reloadingPage() {
     window.location.reload();
     navigate("/");
@@ -102,7 +121,7 @@ export default function Main() {
                 src={logo}
                 alt=""
                 className="w-[100px] h-auto cursor-pointer"
-                onClick={() => reloadingPage}
+                onClick={reloadingPage}
               />
             </div>
 
@@ -341,6 +360,12 @@ export default function Main() {
             key={idx}
             title="인기 숙소"
             data={group}
+            alreadyLiked={likedIdx}
+            onToggleLike={(id, liked) => {
+              setLikedIdx((prev) =>
+                liked ? [...prev, id] : prev.filter((v) => v !== id)
+              );
+            }}
             onCardClick={(id) => navigate(`/room/${id}`)}
           />
         ))}
