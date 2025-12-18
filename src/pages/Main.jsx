@@ -8,6 +8,7 @@ import { loginCheck, searchAccommodation } from "../util/DatabaseUtil";
 
 import { useAccount, useRoom, useToken } from "../stores/account-store";
 import { useNavigate } from "react-router";
+import { PopularSlider } from "../components/PopularSlider";
 
 export default function Main() {
   const navigate = useNavigate();
@@ -19,7 +20,6 @@ export default function Main() {
   const [loginPw, setLoginPw] = useState("");
   const [loginError, setLoginError] = useState(false);
 
-  const [index, setIndex] = useState(0);
   const checkinRef = useRef(null);
   const checkoutRef = useRef(null);
 
@@ -29,22 +29,14 @@ export default function Main() {
 
   const clearRoom = useRoom((s) => s.clearRoom);
 
-  const items = [1, 2, 3, 4, 5, 6, 7, 8];
-  const VISIBLE = 4;
-  const CARD_PERCENT = 100 / VISIBLE;
-
-  const prev = () => setIndex((i) => Math.max(i - 1, 0));
-  const next = () => setIndex((i) => Math.min(i + 1, items.length - VISIBLE));
-
-  const [guestOpen, setGuestOpen] = useState(false);
-  const [guests, setGuests] = useState({
-    adult: 1,
-    child: 0,
-    infant: 0,
-    pet: 0,
-  });
-
-  const totalGuests = guests.adult + guests.child;
+  // ===== 유틸 =====
+  const chunkArray = (arr, size) => {
+    const result = [];
+    for (let i = 0; i < arr.length; i += size) {
+      result.push(arr.slice(i, i + size));
+    }
+    return result;
+  };
 
   const MENU = [
     { label: "찜", path: "/profile/wishlists" },
@@ -344,110 +336,14 @@ export default function Main() {
 
       {/* 본문 */}
       <main className="mt-[250px] w-5/6 mx-auto lg:px-10">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-1">
-            {/* 슬라이드 타이틀 */}
-            <h3 className="font-semibold text-lg sm:text-xl">인기 숙소</h3>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="3"
-              stroke="currentColor"
-              className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2 translate-y-0.5"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="m8.25 4.5 7.5 7.5-7.5 7.5"
-              />
-            </svg>
-          </div>
-
-          {/* 슬라이드 버튼 */}
-          <div className="flex gap-3">
-            <button
-              onClick={prev}
-              disabled={index === 0}
-              className="rounded-full bg-neutral-200 px-2 py-2 text-neutral-400 disabled:opacity-30 cursor-pointer"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                stroke="currentColor"
-                className="size-4"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15.75 19.5 8.25 12l7.5-7.5"
-                />
-              </svg>
-            </button>
-
-            <button
-              onClick={next}
-              disabled={index === items.length - VISIBLE}
-              className="rounded-full bg-neutral-200 px-2 py-2 text-neutral-400 disabled:opacity-30 cursor-pointer"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                stroke="currentColor"
-                className="size-4"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="m8.25 4.5 7.5 7.5-7.5 7.5"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        {/* 슬라이드 */}
-        <div className="overflow-hidden mt-3 cursor-pointer">
-          <div
-            className="flex transition-transform duration-300 "
-            style={{ transform: `translateX(-${index * CARD_PERCENT}%)` }}
-          >
-            {item.map((one) => (
-              <div
-                key={one.id}
-                className="shrink-0 px-2"
-                style={{ width: `${CARD_PERCENT}%` }}
-                onClick={() => navigate(`/room/${one.id}`)}
-              >
-                <div className="aspect-square flex items-center justify-center">
-                  {one.images.length !== 0 && (
-                    <img
-                      className="w-full h-full rounded-xl object-cover"
-                      src={`http://192.168.0.17:8080${one.images[0].uri}`}
-                      alt=""
-                    />
-                  )}
-                </div>
-
-                <div className="mt-2 text-left">
-                  <div className="font-medium text-sm truncate">
-                    {one.address.split(" ")[0]}의 집
-                  </div>
-                  <div className="text-xs text-gray-500 truncate">
-                    1월 1일 ~ 12월 31일
-                  </div>
-                  <div className="text-xs text-gray-500 truncate">
-                    ₩{one.price} · 평점 5.0
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        {chunkArray(item, 8).map((group, idx) => (
+          <PopularSlider
+            key={idx}
+            title="인기 숙소"
+            data={group}
+            onCardClick={(id) => navigate(`/room/${id}`)}
+          />
+        ))}
       </main>
 
       {/* 로그인 모달 */}
