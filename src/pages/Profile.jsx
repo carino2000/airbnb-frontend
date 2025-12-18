@@ -53,8 +53,6 @@ export default function Profile() {
       newPwConfirm: data.newPwConfirm,
     };
 
-    console.log("🔐 비밀번호 변경 payload:", payload);
-
     const res = await updateAccountPassword(account.id, payload, token);
 
     if (res.success) {
@@ -76,6 +74,12 @@ export default function Profile() {
       alert(res.message || "탈퇴 실패");
     }
   };
+  const MENU = [
+    { label: "찜", path: "/profile/wishlists" },
+    { label: "리스트", path: "/hosting/listings" },
+    { label: "메시지", path: "/hosting/listings?tab=messages" },
+    { label: "내 프로필", path: "/profile" },
+  ];
 
   return (
     <>
@@ -98,15 +102,14 @@ export default function Profile() {
                 게스트 모드로 전환
               </p>
             </div>
-
+            {/* 프로필 원형 (메뉴 X) */}
             <div
               className="w-8 h-8 rounded-full bg-neutral-800 text-white
-              flex items-center justify-center text-xs font-bold cursor-pointer"
-              onClick={() => setOpenMenu((prev) => !prev)}
+              flex items-center justify-center text-xs font-bold"
             >
               {account?.name?.charAt(0)}
             </div>
-
+            {/* 햄버거 (메뉴 O) */}
             <div
               className="rounded-full px-2 py-2 bg-gray-100 hover:bg-gray-200 cursor-pointer"
               onClick={() => setOpenMenu((prev) => !prev)}
@@ -128,27 +131,42 @@ export default function Profile() {
             </div>
 
             {openMenu && (
-              <div className="absolute top-12 right-0 w-[150px] bg-white rounded-md shadow-xl z-50">
+              <>
+                {/* 바깥 클릭 닫기 */}
                 <div
-                  className="px-4 py-3 hover:bg-gray-100 text-xs cursor-pointer"
-                  onClick={() => {
-                    navigate("/profile");
-                    setOpenMenu(false);
-                  }}
-                >
-                  프로필 수정
+                  className="fixed inset-0 z-40"
+                  onClick={() => setOpenMenu(false)}
+                />
+
+                <div className="absolute top-12 right-0 w-[180px] bg-white rounded-md shadow-xl border border-gray-200 z-50">
+                  {MENU.map((item) => (
+                    <div
+                      key={item.path}
+                      className="px-4 py-3 hover:bg-gray-100 text-xs cursor-pointer"
+                      onClick={() => {
+                        navigate(item.path);
+                        setOpenMenu(false);
+                      }}
+                    >
+                      {item.label}
+                    </div>
+                  ))}
+
+                  <div className="border-t" />
+
+                  <div
+                    className="px-4 py-3 hover:bg-gray-100 text-xs text-red-500 cursor-pointer"
+                    onClick={() => {
+                      clearToken();
+                      clearAccount();
+                      setOpenMenu(false);
+                      navigate("/");
+                    }}
+                  >
+                    로그아웃
+                  </div>
                 </div>
-                <div
-                  className="px-4 py-3 hover:bg-gray-100 text-xs text-red-500 cursor-pointer"
-                  onClick={() => {
-                    clearToken();
-                    clearAccount();
-                    navigate("/");
-                  }}
-                >
-                  로그아웃
-                </div>
-              </div>
+              </>
             )}
           </div>
         </div>

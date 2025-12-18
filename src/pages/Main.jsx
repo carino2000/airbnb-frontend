@@ -10,6 +10,9 @@ import { useAccount, useRoom, useToken } from "../stores/account-store";
 import { useNavigate } from "react-router";
 import { PopularSlider } from "../components/PopularSlider";
 import { getLikedAccommodationList } from "../util/DatabaseUtil";
+import { Calendar } from "@/components/ui/calendar";
+import { ko } from "date-fns/locale";
+import { format } from "date-fns";
 
 export default function Main() {
   const navigate = useNavigate();
@@ -28,7 +31,11 @@ export default function Main() {
   const [showLogin, setShowLogin] = useState(false);
   const [item, setItem] = useState([]);
   const [likedIdx, setLikedIdx] = useState([]);
-
+  const [openCal, setOpenCal] = useState(false);
+  const [dateRange, setDateRange] = useState({
+    from: null,
+    to: null,
+  });
   const clearRoom = useRoom((s) => s.clearRoom);
 
   // ===== 유틸 =====
@@ -247,7 +254,7 @@ export default function Main() {
                           {item.label}
                         </div>
                       ))}
-
+                      <div className="border-t" />
                       <div
                         className="px-4 py-3 hover:bg-gray-100 text-xs text-red-500 cursor-pointer"
                         onClick={() => {
@@ -272,7 +279,61 @@ export default function Main() {
           onSubmit={searchHandle}
           className="w-full flex justify-center px-4 mb-4 md:mb-6"
         >
-          <div className="flex items-center w-full max-w-[800px] md:w-[600px] lg:w-[800px] bg-white shadow-md rounded-full overflow-hidden border border-neutral-200">
+          <div className="relative flex items-center w-full max-w-[800px] md:w-[600px] lg:w-[800px] bg-white shadow-md rounded-full border border-neutral-200">
+            {/* 아래로 펼쳐지는 달력 영역 */}
+            {openCal && (
+              <>
+                {/* ✅ [추가] 바탕화면 클릭 감지용 오버레이 */}
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setOpenCal(false)} // 바탕화면 클릭 시 닫힘
+                />
+
+                {/* 달력 본체 */}
+                <div className="absolute left-35 top-13 mt-2 z-50 max-w-[calc(100vw-24px)]">
+                  <div
+                    className="rounded-xl border bg-white shadow-xl p-3"
+                    onClick={(e) => e.stopPropagation()} // 달력 클릭은 닫히지 않게
+                  >
+                    <Calendar
+                      locale={ko}
+                      mode="range"
+                      defaultMonth={dateRange?.from}
+                      selected={dateRange}
+                      numberOfMonths={2}
+                      onSelect={setDateRange}
+                      className="rounded-lg"
+                    />
+
+                    <div className="mt-3 flex items-center justify-end border-t pt-3 gap-5">
+                      <button
+                        onClick={() => {
+                          setDateRange(null);
+                        }}
+                        className="text-sm text-gray-500 hover:text-black"
+                      >
+                        초기화
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setOpenCal(false);
+                        }}
+                        className={[
+                          "text-sm font-medium",
+                          dateRange?.from && dateRange?.to
+                            ? "text-black hover:underline"
+                            : "text-gray-300 cursor-not-allowed",
+                        ].join(" ")}
+                      >
+                        적용
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
             {/* 여행지 */}
             <div className="flex-auto min-w-0 px-6 py-4 hover:bg-neutral-200 rounded-full cursor-pointer">
               <p className="text-xs truncate whitespace-nowrap">여행지</p>
@@ -289,12 +350,16 @@ export default function Main() {
             {/* 체크인 */}
             <div
               className="flex-auto min-w-0 px-6 py-4 hover:bg-neutral-200 rounded-full cursor-pointer"
-              onClick={() => checkinRef.current.showPicker()}
+              onClick={() => setOpenCal(true)}
             >
               <p className="text-xs truncate whitespace-nowrap">체크인</p>
               <input
                 ref={checkinRef}
-                type="date"
+                type="text"
+                placeholder="연도-월-일"
+                defaultValue={
+                  dateRange.from && format(dateRange.from, "yyyy-MM-dd")
+                }
                 onMouseDown={(e) => e.preventDefault()}
                 className="w-full min-w-0 truncate text-xs text-gray-600 bg-transparent focus:outline-none cursor-pointer"
               />
@@ -305,12 +370,16 @@ export default function Main() {
             {/* 체크아웃 */}
             <div
               className="flex-auto min-w-0 px-6 py-4 hover:bg-neutral-200 rounded-full cursor-pointer"
-              onClick={() => checkoutRef.current.showPicker()}
+              onClick={() => setOpenCal(true)}
             >
               <p className="text-xs truncate whitespace-nowrap">체크아웃</p>
               <input
                 ref={checkoutRef}
-                type="date"
+                type="text"
+                placeholder="연도-월-일"
+                defaultValue={
+                  dateRange.to && format(dateRange.to, "yyyy-MM-dd")
+                }
                 onMouseDown={(e) => e.preventDefault()}
                 className="w-full min-w-0 truncate text-xs text-gray-600 bg-transparent focus:outline-none cursor-pointer"
               />

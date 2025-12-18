@@ -8,7 +8,13 @@ import {
   useAccommodation,
   useRoom,
 } from "../stores/account-store";
-import { Star } from "lucide-react";
+import { Star, Heart } from "lucide-react";
+
+import {
+  getLikedAccommodationList,
+  likeAccommodation,
+  unlikeAccommodation,
+} from "../util/DatabaseUtil";
 
 // 반드시 추가 (Lucide Icons)
 import {
@@ -112,10 +118,10 @@ export default function RoomDetail() {
   const { account, setAccount, clearAccount } = useAccount();
   useEffect(() => {
     if (account == null) {
-      window.alert("로그인이 필요한 기능입니다");
+      alert("로그인이 필요한 기능입니다");
       navigate("/log-in");
     }
-  });
+  }, [account]);
 
   const navigate = useNavigate();
 
@@ -142,6 +148,8 @@ export default function RoomDetail() {
     infant: 0,
     pet: 0,
   });
+
+  const [isLiked, setIsLiked] = useState(false);
   // 1. 먼저 room 가져오기
   const { room, setRoom } = useRoom();
 
@@ -149,16 +157,13 @@ export default function RoomDetail() {
   const maxCapacity = room?.maxCapacity ?? 0;
 
   // 3. 파생 값 계산
-  const [dateRange, setDateRange] = useState({
+ 
+  const [blockedDays, setBlockDays] = useState([]);
+  const [openCal, setOpenCal] = useState(false);
+   const [dateRange, setDateRange] = useState({
     from: null,
     to: null,
   });
-  const [blockedDays, setBlockDays] = useState([
-    "2025-12-17",
-    "2025-12-18",
-    "2025-12-19",
-  ]);
-  const [openCal, setOpenCal] = useState(false);
 
   const totalGuests = guests.adult + guests.child;
   const isMaxReached = totalGuests >= maxCapacity;
@@ -276,6 +281,40 @@ export default function RoomDetail() {
   const renderStars = (rating) => {
     return "⭐".repeat(rating);
   };
+  // 찜
+  useEffect(() => {
+    if (!token || !account) return;
+
+    getLikedAccommodationList(account.id, token).then((res) => {
+      if (res?.success && Array.isArray(res.accommodationId)) {
+        setIsLiked(res.accommodationId.includes(Number(accommodationId)));
+      }
+    });
+  }, [token, account, accommodationId]);
+  const toggleLike = async () => {
+    if (!token || !account) {
+      alert("로그인 후 이용 가능합니다.");
+      return;
+    }
+
+    const res = isLiked
+      ? await unlikeAccommodation(accommodationId, account.id, token)
+      : await likeAccommodation(accommodationId, account.id, token);
+
+    if (!res?.success) {
+      alert(res?.message || "처리 실패");
+      return;
+    }
+
+    setIsLiked((prev) => !prev);
+  };
+
+  const MENU = [
+    { label: "찜", path: "/profile/wishlists" },
+    { label: "리스트", path: "/hosting/listings" },
+    { label: "메시지", path: "/hosting/listings?tab=messages" },
+    { label: "내 프로필", path: "/profile" },
+  ];
 
   return (
     <>
@@ -336,62 +375,68 @@ export default function RoomDetail() {
 
             {/* ================= 메뉴 ================= */}
             {openMenu && (
-              <div className="absolute top-12 right-0 w-[180px] bg-white rounded-md shadow-xl border border-gray-200 z-50">
-                {/* 로그인 X */}
-                {!token && (
-                  <>
-                    <div
-                      className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-xs"
-                      onClick={() => {
-                        setShowLogin(true);
-                        setOpenMenu(false);
-                      }}
-                    >
-                      로그인
-                    </div>
-                    <div
-                      className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-xs"
-                      onClick={() => navigate("/sign-up")}
-                    >
-                      회원가입
-                    </div>
-                  </>
-                )}
+              <>
+                {/* 바깥 클릭 감지용 오버레이 */}
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setOpenMenu(false)}
+                />
 
-                {/* 로그인 O */}
-                {token && (
-                  <>
-                    <div className="px-4 py-3 text-xs hover:bg-gray-100 cursor-pointer">
-                      찜
-                    </div>
-                    <div
-                      className="px-4 py-3 text-xs hover:bg-gray-100 cursor-pointer"
-                      onClick={() => navigate("/hosting/list")}
-                    >
-                      리스트
-                    </div>
-                    <div className="px-4 py-3 text-xs hover:bg-gray-100 cursor-pointer">
-                      메시지
-                    </div>
-                    <div
-                      className="px-4 py-3 text-xs hover:bg-gray-100 cursor-pointer"
-                      onClick={() => navigate("/profile/edit")}
-                    >
-                      내 프로필
-                    </div>
-                    <div
-                      className="px-4 py-3 text-xs font-semibold text-red-500 hover:bg-gray-100 cursor-pointer"
-                      onClick={() => {
-                        clearToken();
-                        clearAccount();
-                        navigate("/");
-                      }}
-                    >
-                      로그아웃
-                    </div>
-                  </>
-                )}
-              </div>
+                {/* 메뉴 박스 */}
+                <div className="absolute top-12 right-0 w-[180px] bg-white rounded-md shadow-xl border border-gray-200 z-50">
+                  {!token && (
+                    <>
+                      <div
+                        className="px-4 py-3 hover:bg-gray-100 text-xs cursor-pointer"
+                        onClick={() => {
+                          setShowLogin(true);
+                          setOpenMenu(false);
+                        }}
+                      >
+                        로그인
+                      </div>
+                      <div
+                        className="px-4 py-3 hover:bg-gray-100 text-xs cursor-pointer"
+                        onClick={() => {
+                          navigate("/sign-up");
+                          setOpenMenu(false);
+                        }}
+                      >
+                        회원가입
+                      </div>
+                    </>
+                  )}
+
+                  {token && (
+                    <>
+                      {MENU.map((item) => (
+                        <div
+                          key={item.path}
+                          className="px-4 py-3 hover:bg-gray-100 text-xs cursor-pointer"
+                          onClick={() => {
+                            navigate(item.path);
+                            setOpenMenu(false);
+                          }}
+                        >
+                          {item.label}
+                        </div>
+                      ))}
+                      <div className="border-t" />
+                      <div
+                        className="px-4 py-3 hover:bg-gray-100 text-xs text-red-500 cursor-pointer"
+                        onClick={() => {
+                          clearToken();
+                          clearAccount();
+                          setOpenMenu(false);
+                          navigate("/");
+                        }}
+                      >
+                        로그아웃
+                      </div>
+                    </>
+                  )}
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -410,7 +455,18 @@ export default function RoomDetail() {
           <div className="flex justify-between mb-6">
             <h2 className="font-semibold text-2xl">{room.name}</h2>
             <div className="flex items-center gap-1 cursor-pointer">
-              ❤️ <span>찜</span>
+              <button
+                onClick={toggleLike}
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <Heart
+                  size={22}
+                  className={
+                    isLiked ? "fill-rose-500 text-rose-500" : "text-gray-500"
+                  }
+                />
+                <span className="text-sm font-medium">찜</span>
+              </button>
             </div>
           </div>
 
