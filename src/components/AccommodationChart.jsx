@@ -48,80 +48,53 @@ export default function AccommodationStatisticsPage() {
   }, []);
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6">
-      {/* ================= 헤더 ================= */}
-      <div className="bg-white rounded-lg shadow-sm p-4">
-        <div className="flex justify-between items-center border-b pb-3 mb-4">
-          <h2 className="text-lg font-semibold text-gray-800">
-            숙소 지역 통계 리포트
-          </h2>
+    <div className="grid grid-cols-[180px_1fr] gap-6 bg-white rounded-lg shadow-sm p-6">
+      {/* ===== 왼쪽: 차트 선택 ===== */}
+      <div className="space-y-3 border-r pr-4">
+        <button
+          onClick={() => setChartType("count-bar")}
+          className={`w-full px-3 py-2 rounded-md text-sm text-left ${
+            chartType === "count-bar"
+              ? "bg-emerald-400 text-white"
+              : "bg-gray-100 hover:bg-gray-200"
+          }`}
+        >
+          숙소 분포
+        </button>
 
-          {/* 차트 전환 버튼 */}
-          <div className="flex gap-2">
-            <button
-              onClick={() => setChartType("count-bar")}
-              className={`px-3 py-1 rounded-md text-sm ${
-                chartType === "count-bar"
-                  ? "bg-emerald-400 text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
-              }`}
-            >
-              숙소 분포
-            </button>
+        <button
+          onClick={() => setChartType("price-bar")}
+          className={`w-full px-3 py-2 rounded-md text-sm text-left ${
+            chartType === "price-bar"
+              ? "bg-blue-400 text-white"
+              : "bg-gray-100 hover:bg-gray-200"
+          }`}
+        >
+          평균 가격
+        </button>
 
-            <button
-              onClick={() => setChartType("price-bar")}
-              className={`px-3 py-1 rounded-md text-sm ${
-                chartType === "price-bar"
-                  ? "bg-blue-400 text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
-              }`}
-            >
-              평균 가격
-            </button>
-
-            <button
-              onClick={() => setChartType("pie")}
-              className={`px-3 py-1 rounded-md text-sm ${
-                chartType === "pie"
-                  ? "bg-violet-400 text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
-              }`}
-            >
-              파이형
-            </button>
-          </div>
-        </div>
-
-        {/* 소계 */}
-        <div className="text-sm text-gray-600 text-center">
-          전체 숙소 수 :<span className="font-semibold ml-1">{totalCount}</span>
-          개
-        </div>
+        <button
+          onClick={() => setChartType("pie")}
+          className={`w-full px-3 py-2 rounded-md text-sm text-left ${
+            chartType === "pie"
+              ? "bg-violet-400 text-white"
+              : "bg-gray-100 hover:bg-gray-200"
+          }`}
+        >
+          파이형
+        </button>
       </div>
 
-      {/* ================= 차트 영역 ================= */}
-      <div className="flex justify-center bg-white rounded-lg shadow-sm p-6">
-        {/* ================= 숙소 분포별 막대 ================= */}
+      {/* ===== 오른쪽: 차트 ===== */}
+      <div className="flex justify-center overflow-x-auto">
         {chartType === "count-bar" && (
-          <BarChart
-            width={800}
-            height={450}
-            data={summary}
-            margin={{ top: 20, right: 30, left: 10, bottom: 10 }}
-          >
+          <BarChart width={820} height={430} data={summary}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="location" />
             <YAxis />
             <Tooltip />
             <Legend />
-
-            <Bar
-              dataKey="accommodationCount"
-              name="숙소 수"
-              barSize={36}
-              isAnimationActive={true}
-            >
+            <Bar dataKey="accommodationCount" name="숙소 수" barSize={36}>
               {summary.map((_, index) => (
                 <Cell key={index} fill={COLORS[index % COLORS.length]} />
               ))}
@@ -129,28 +102,14 @@ export default function AccommodationStatisticsPage() {
           </BarChart>
         )}
 
-        {/* ================= 숙소 가격별 막대 ================= */}
         {chartType === "price-bar" && (
-          <BarChart
-            width={800}
-            height={450}
-            data={summary}
-            margin={{ top: 20, right: 30, left: 10, bottom: 10 }}
-          >
+          <BarChart width={820} height={430} data={summary}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="location" />
             <YAxis />
-            <Tooltip
-              formatter={(value) => `₩${Number(value).toLocaleString()}`}
-            />
+            <Tooltip formatter={(v) => `₩${Number(v).toLocaleString()}`} />
             <Legend />
-
-            <Bar
-              dataKey="averagePrice"
-              name="평균 가격"
-              barSize={36}
-              isAnimationActive={true}
-            >
+            <Bar dataKey="averagePrice" name="평균 가격" barSize={36}>
               {summary.map((_, index) => (
                 <Cell key={index} fill={COLORS[(index + 3) % COLORS.length]} />
               ))}
@@ -158,33 +117,21 @@ export default function AccommodationStatisticsPage() {
           </BarChart>
         )}
 
-        {/* ================= 파이형 ================= */}
         {chartType === "pie" && (
-          <PieChart width={520} height={450}>
+          <PieChart width={520} height={430}>
             <Pie
-              data={summary.filter((item) => item.accommodationCount > 0)}
+              data={summary.filter((i) => i.accommodationCount > 0)}
               dataKey="accommodationCount"
               nameKey="location"
-              cx="50%"
-              cy="50%"
-              outerRadius={160}
               innerRadius={90}
+              outerRadius={160}
               label
-              isAnimationActive={true}
             >
               {summary.map((_, index) => (
                 <Cell key={index} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
-
-            <Legend
-              payload={summary.map((item, index) => ({
-                value: `${item.location} (${item.accommodationCount})`,
-                type: "square",
-                id: index,
-                fill: COLORS[index % COLORS.length],
-              }))}
-            />
+            <Legend />
           </PieChart>
         )}
       </div>

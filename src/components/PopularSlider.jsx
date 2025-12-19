@@ -14,7 +14,7 @@ function PopularSlider({ title, data, onCardClick, alreadyLiked = [] }) {
   const { token } = useToken();
   const { account } = useAccount();
 
-  const VISIBLE = 4;
+  const VISIBLE = 5;
   const CARD_PERCENT = 100 / VISIBLE;
 
   /* ===============================
@@ -67,7 +67,7 @@ function PopularSlider({ title, data, onCardClick, alreadyLiked = [] }) {
   return (
     <section className="mb-16">
       {/* 타이틀 + 버튼 */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center px-3">
         <h3 className="font-semibold text-lg sm:text-xl">{title}</h3>
 
         <div className="flex gap-2">
@@ -138,14 +138,12 @@ function PopularSlider({ title, data, onCardClick, alreadyLiked = [] }) {
                 </div>
 
                 {/* 텍스트 */}
-                <div className="mt-3 space-y-1">
+                <div className="mt-3">
                   <div className="font-medium truncate">
                     {one.address?.split(" ")[0]}의 집
                   </div>
-                  <div className="text-xs text-neutral-500">
-                    1월 1일 ~ 12월 31일
-                  </div>
-                  <div className="text-xs text-neutral-500">
+
+                  <div className="text-sm text-neutral-600">
                     ₩{formatPrice(one.price)} · 평점 5.0
                   </div>
                 </div>

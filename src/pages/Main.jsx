@@ -49,10 +49,27 @@ export default function Main() {
   };
 
   const MENU = [
-    { label: "찜", path: "/profile/wishlists" },
-    { label: "리스트", path: "/hosting/listings" },
-    { label: "메시지", path: "/hosting/listings?tab=messages" },
-    { label: "내 프로필", path: "/profile" },
+    {
+      section: "예약",
+      items: [
+        { label: "숙소 예약", path: "/profile/bookings" },
+        { label: "찜", path: "/profile/wishlists" },
+      ],
+    },
+    {
+      section: "활동",
+      items: [
+        { label: "리스트", path: "/hosting/listings" },
+        { label: "메시지", path: "/hosting/listings?tab=messages" },
+      ],
+    },
+    {
+      section: "계정",
+      items: [
+        { label: "프로필", path: "/profile" },
+        { label: "리포트", path: "/report" },
+      ],
+    },
   ];
 
   function handleModalLogin() {
@@ -220,43 +237,24 @@ export default function Main() {
             {/* ================= 햄버거 메뉴 ================= */}
             {openMenu && (
               <>
-                {/* ⬇️ 바깥 클릭 감지용 오버레이 */}
+                {/* ⬇바깥 클릭 감지용 오버레이 */}
                 <div
                   className="fixed inset-0 z-40"
                   onClick={() => setOpenMenu(false)}
                 />
 
-                {/* ⬇️ 기존 메뉴 (그대로) */}
-                <div className="absolute top-[70px] right-6 md:right-10 w-[180px] bg-white rounded-md shadow-xl border border-gray-200 z-50">
-                  {!token && (
-                    <>
-                      <div
-                        className="px-4 py-3 hover:bg-gray-100 text-xs cursor-pointer"
-                        onClick={() => {
-                          setShowLogin(true);
-                          setOpenMenu(false);
-                        }}
-                      >
-                        로그인
-                      </div>
-                      <div
-                        className="px-4 py-3 hover:bg-gray-100 text-xs cursor-pointer"
-                        onClick={() => {
-                          navigate("/sign-up");
-                          setOpenMenu(false);
-                        }}
-                      >
-                        회원가입
-                      </div>
-                    </>
-                  )}
+                {/* 메뉴*/}
+                <div className="absolute top-[70px] right-6 md:right-10 w-[200px] bg-white rounded-md shadow-xl border z-50">
+                  {MENU.map((group) => (
+                    <div key={group.section}>
+                      <p className="px-4 pt-3 pb-1 text-[11px] text-neutral-400">
+                        {group.section}
+                      </p>
 
-                  {token && (
-                    <>
-                      {MENU.map((item) => (
+                      {group.items.map((item) => (
                         <div
                           key={item.path}
-                          className="px-4 py-3 hover:bg-gray-100 text-xs cursor-pointer"
+                          className="px-4 py-2 hover:bg-gray-100 text-xs cursor-pointer"
                           onClick={() => {
                             navigate(item.path);
                             setOpenMenu(false);
@@ -265,20 +263,22 @@ export default function Main() {
                           {item.label}
                         </div>
                       ))}
-                      <div className="border-t" />
-                      <div
-                        className="px-4 py-3 hover:bg-gray-100 text-xs text-red-500 cursor-pointer"
-                        onClick={() => {
-                          clearToken();
-                          clearAccount();
-                          setOpenMenu(false);
-                          navigate("/");
-                        }}
-                      >
-                        로그아웃
-                      </div>
-                    </>
-                  )}
+
+                      <div className="border-t my-1" />
+                    </div>
+                  ))}
+
+                  <div
+                    className="px-4 py-3 hover:bg-gray-100 text-xs text-red-500 cursor-pointer"
+                    onClick={() => {
+                      clearToken();
+                      clearAccount();
+                      setOpenMenu(false);
+                      navigate("/");
+                    }}
+                  >
+                    로그아웃
+                  </div>
                 </div>
               </>
             )}
@@ -435,7 +435,6 @@ export default function Main() {
 
       {/* 본문 */}
       <main className="mt-[250px] w-5/6 mx-auto lg:px-10">
-      <AccommodationLocationReportPage/>
         {chunkArray(item, 8).map((group, idx) => (
           <PopularSlider
             key={idx}
@@ -451,6 +450,102 @@ export default function Main() {
           />
         ))}
       </main>
+      <footer className=" border-t-2 border-neutral-200 mt-4 w-full bg-neutral-100">
+        <div className="mx-auto px-16 py-14">
+          {/* 상단 링크 영역 */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-sm text-gray-700">
+            {/* 에어비앤비 지원 */}
+            <div>
+              <h4 className="font-semibold mb-4">에어비앤비 지원</h4>
+              <ul className="space-y-2">
+                <li className="hover:underline cursor-pointer">도움말 센터</li>
+                <li className="hover:underline cursor-pointer">
+                  안전 문제 관련 도움받기
+                </li>
+                <li className="hover:underline cursor-pointer">에어커버</li>
+                <li className="hover:underline cursor-pointer">차별 반대</li>
+                <li className="hover:underline cursor-pointer">장애인 지원</li>
+                <li className="hover:underline cursor-pointer">
+                  예약 취소 옵션
+                </li>
+                <li className="hover:underline cursor-pointer">
+                  이웃 민원 신고
+                </li>
+              </ul>
+            </div>
+
+            {/* 호스팅 */}
+            <div>
+              <h4 className="font-semibold mb-4">호스팅</h4>
+              <ul className="space-y-2">
+                <li className="hover:underline cursor-pointer">
+                  당신의 공간을 에어비앤비하세요
+                </li>
+                <li className="hover:underline cursor-pointer">
+                  에어비앤비에서 체험 호스팅하기
+                </li>
+                <li className="hover:underline cursor-pointer">
+                  에어비앤비에서 서비스 호스팅하기
+                </li>
+                <li className="hover:underline cursor-pointer">
+                  호스트를 위한 에어커버
+                </li>
+                <li className="hover:underline cursor-pointer">호스팅 자료</li>
+                <li className="hover:underline cursor-pointer">
+                  커뮤니티 포럼
+                </li>
+                <li className="hover:underline cursor-pointer">
+                  책임감 있는 호스팅
+                </li>
+              </ul>
+            </div>
+
+            {/* 에어비앤비 */}
+            <div>
+              <h4 className="font-semibold mb-4">에어비앤비</h4>
+              <ul className="space-y-2">
+                <li className="hover:underline cursor-pointer">
+                  2025 여름 업데이트
+                </li>
+                <li className="hover:underline cursor-pointer">뉴스룸</li>
+                <li className="hover:underline cursor-pointer">채용정보</li>
+                <li className="hover:underline cursor-pointer">투자자 정보</li>
+                <li className="hover:underline cursor-pointer">
+                  Airbnb.org 긴급 숙소
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* 하단 바 */}
+          <div className="mt-12 pt-6 border-t border-neutral-200 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 gap-4">
+            <div className="flex flex-wrap gap-2">
+              <span>© 2025 Airbnb, Inc.</span>
+              <span>·</span>
+              <span className="hover:underline cursor-pointer">
+                개인정보 처리방침
+              </span>
+              <span>·</span>
+              <span className="hover:underline cursor-pointer">쿠키 정책</span>
+              <span>·</span>
+              <span className="hover:underline cursor-pointer">이용약관</span>
+              <span>·</span>
+              <span className="hover:underline cursor-pointer">
+                한국의 변경된 환불 정책
+              </span>
+              <span>·</span>
+              <span className="hover:underline cursor-pointer">
+                회사 세부정보
+              </span>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <span>한국어 (KR)</span>
+              <span>₩ KRW</span>
+            </div>
+          </div>
+        </div>
+      </footer>
 
       {/* 로그인 모달 */}
       {showLogin && (

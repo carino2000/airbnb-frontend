@@ -32,8 +32,7 @@ import HostingWeekendRate from "./pages/HostingWeekendRate";
 import HostingFinishSetUp from "./pages/HostingFinishSetUp";
 import HostingBaseRate from "./pages/HostingBaseRate";
 import HostingComplete from "./pages/HostingComplete";
-
-//test
+import Report from "./pages/Report";
 
 const router = createBrowserRouter([
   {
@@ -97,7 +96,7 @@ const router = createBrowserRouter([
 
   {
     path: "/reservation/:reservationCode",
-    element: <ReservationDetail />, //예약 기록 상세 페이지
+    element: <ReservationDetail />, //예약 기록 상세 페이지(모달)
   },
 
   //---------------------------------------------------
@@ -174,6 +173,10 @@ const router = createBrowserRouter([
   {
     path: "/hosting/listing/:accommodationId/edit",
     element: <HostingEdit />, // 내가 호스팅한 숙소 정보 수정
+  },
+  {
+    path: "/report",
+    element: <Report />, // 통계리포트
   },
 ]);
 
