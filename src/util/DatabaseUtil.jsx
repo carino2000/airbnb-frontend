@@ -344,6 +344,7 @@ function deleteReservation(code, token) {
   }).then((res) => res.json());
 }
 
+//숙소 수정
 function updateAccommodation(data, accommodationId, token) {
   return fetch(`${serverAddr}/accommodations/${accommodationId}`, {
     method: "put",
@@ -355,6 +356,7 @@ function updateAccommodation(data, accommodationId, token) {
   }).then((res) => res.json());
 }
 
+// 숙소 삭제
 function deleteAccommodation(accommodationId, token) {
   return fetch(`${serverAddr}/accommodations/${accommodationId}`, {
     method: "DELETE",
