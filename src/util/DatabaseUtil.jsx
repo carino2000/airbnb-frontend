@@ -310,6 +310,29 @@ function getAccommodationStatsInfo() {
   }).then((res) => res.json());
 }
 
+// 예약 수정
+function updateReservation(code, payload, token) {
+  return fetch(`${serverAddr}/reservations/${code}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+    headers: {
+      Token: token,
+      "Content-type": "application/json",
+    },
+  }).then((res) => res.json());
+}
+
+// 예약 삭제
+function deleteReservation(code, token) {
+  return fetch(`${serverAddr}/reservations/${code}`, {
+    method: "DELETE",
+    headers: {
+      Token: token,
+      "Content-type": "application/json",
+    },
+  }).then((res) => res.json());
+}
+
 function updateAccommodation(data, accommodationId, token) {
   return fetch(`${serverAddr}/accommodations/${accommodationId}`, {
     method: "put",
@@ -362,4 +385,6 @@ export {
   getAccommodationStatsInfo,
   updateAccommodation,
   deleteAccommodation,
+  updateReservation,
+  deleteReservation,
 };

@@ -157,10 +157,10 @@ export default function RoomDetail() {
   const maxCapacity = room?.maxCapacity ?? 0;
 
   // 3. 파생 값 계산
- 
+
   const [blockedDays, setBlockDays] = useState([]);
   const [openCal, setOpenCal] = useState(false);
-   const [dateRange, setDateRange] = useState({
+  const [dateRange, setDateRange] = useState({
     from: null,
     to: null,
   });
@@ -310,11 +310,29 @@ export default function RoomDetail() {
   };
 
   const MENU = [
-    { label: "찜", path: "/profile/wishlists" },
-    { label: "리스트", path: "/hosting/listings" },
-    { label: "메시지", path: "/hosting/listings?tab=messages" },
-    { label: "내 프로필", path: "/profile" },
+    {
+      section: "예약",
+      items: [
+        { label: "숙소 예약", path: "/profile/bookings" },
+        { label: "찜", path: "/profile/wishlists" },
+      ],
+    },
+    {
+      section: "활동",
+      items: [
+        { label: "리스트", path: "/hosting/listings" },
+        { label: "메시지", path: "/hosting/listings?tab=messages" },
+      ],
+    },
+    {
+      section: "계정",
+      items: [
+        { label: "프로필", path: "/profile" },
+        { label: "리포트", path: "/report" },
+      ],
+    },
   ];
+  const [openReviewModal, setOpenReviewModal] = useState(false);
 
   return (
     <>
@@ -383,36 +401,17 @@ export default function RoomDetail() {
                 />
 
                 {/* 메뉴 박스 */}
-                <div className="absolute top-12 right-0 w-[180px] bg-white rounded-md shadow-xl border border-gray-200 z-50">
-                  {!token && (
-                    <>
-                      <div
-                        className="px-4 py-3 hover:bg-gray-100 text-xs cursor-pointer"
-                        onClick={() => {
-                          setShowLogin(true);
-                          setOpenMenu(false);
-                        }}
-                      >
-                        로그인
-                      </div>
-                      <div
-                        className="px-4 py-3 hover:bg-gray-100 text-xs cursor-pointer"
-                        onClick={() => {
-                          navigate("/sign-up");
-                          setOpenMenu(false);
-                        }}
-                      >
-                        회원가입
-                      </div>
-                    </>
-                  )}
+                <div className="absolute top-12 right-0 w-[200px] bg-white rounded-md shadow-xl border border-gray-200 z-50">
+                  {MENU.map((group) => (
+                    <div key={group.section}>
+                      <p className="px-4 pt-3 pb-1 text-[11px] text-neutral-400">
+                        {group.section}
+                      </p>
 
-                  {token && (
-                    <>
-                      {MENU.map((item) => (
+                      {group.items.map((item) => (
                         <div
                           key={item.path}
-                          className="px-4 py-3 hover:bg-gray-100 text-xs cursor-pointer"
+                          className="px-4 py-2 hover:bg-gray-100 text-xs cursor-pointer"
                           onClick={() => {
                             navigate(item.path);
                             setOpenMenu(false);
@@ -421,20 +420,22 @@ export default function RoomDetail() {
                           {item.label}
                         </div>
                       ))}
-                      <div className="border-t" />
-                      <div
-                        className="px-4 py-3 hover:bg-gray-100 text-xs text-red-500 cursor-pointer"
-                        onClick={() => {
-                          clearToken();
-                          clearAccount();
-                          setOpenMenu(false);
-                          navigate("/");
-                        }}
-                      >
-                        로그아웃
-                      </div>
-                    </>
-                  )}
+
+                      <div className="border-t my-1" />
+                    </div>
+                  ))}
+
+                  <div
+                    className="px-4 py-3 hover:bg-gray-100 text-xs text-red-500 cursor-pointer"
+                    onClick={() => {
+                      clearToken();
+                      clearAccount();
+                      setOpenMenu(false);
+                      navigate("/");
+                    }}
+                  >
+                    로그아웃
+                  </div>
                 </div>
               </>
             )}
@@ -599,16 +600,13 @@ export default function RoomDetail() {
         {/*  전체 폭 영역  */}
         {/*후기 */}
         <section ref={reviewRef} className="mt-30">
-          <h2 className="text-2xl font-bold mb-7">후기</h2>
+          <h2 className="text-2xl font-bold mb-8">후기</h2>
 
           {/* 후기 그리드 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-10 bg-amber-100">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
             {review.length > 0 &&
-              review.map((item) => (
-                <div
-                  key={item.id}
-                  className="space-y-3 h-[250px] flex flex-col"
-                >
+              review.slice(0, 4).map((item) => (
+                <div key={item.id} className="space-y-3">
                   {/* 상단: 프로필 + 이름 */}
                   <div className="flex items-center gap-3">
                     {/* 프로필 이미지 (없으면 기본 원형) */}
@@ -645,12 +643,86 @@ export default function RoomDetail() {
                   </div>
 
                   {/* 후기 내용 */}
-                  <p className="leading-relaxed line-clamp-4 text-sm ">
+                  <p className="leading-relaxed line-clamp-4 text-sm  ">
                     {item.content}
                   </p>
                 </div>
               ))}
           </div>
+          {review.length > 4 && (
+            <div className="mt-8">
+              <button
+                onClick={() => setOpenReviewModal(true)}
+                className="px-6 py-2 border rounded-full text-sm font-semibold hover:bg-gray-100"
+              >
+                후기 {review.length}개 모두 보기
+              </button>
+            </div>
+          )}
+          {/*  리뷰 더보기 */}
+          {openReviewModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center">
+              {/* 배경 */}
+              <div
+                className="absolute inset-0 bg-black/40"
+                onClick={() => setOpenReviewModal(false)}
+              />
+
+              {/* 모달 */}
+              <div className="relative bg-white w-full max-w-[900px] max-h-[80vh] rounded-xl p-6 overflow-hidden">
+                {/* 헤더 */}
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-xl font-semibold">
+                    후기 {review.length}개
+                  </h2>
+                  <button
+                    onClick={() => setOpenReviewModal(false)}
+                    className="text-xl font-bold"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {/* 스크롤 영역 */}
+                <div className="max-h-[65vh] overflow-y-auto pr-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+                    {review.map((item) => (
+                      <div key={item.id} className="space-y-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-sm font-semibold">
+                            {item.accountId.charAt(0)}
+                          </div>
+                          <p className="text-sm font-medium">
+                            {item.accountId}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-sm">
+                          {[1, 2, 3, 4, 5].map((n) => (
+                            <Star
+                              key={n}
+                              className={`w-4 h-4 ${
+                                n <= item.rating
+                                  ? "fill-black text-black"
+                                  : "text-gray-300"
+                              }`}
+                            />
+                          ))}
+                          <span className="text-gray-400">
+                            · {item.writeAt?.slice(0, 10)}
+                          </span>
+                        </div>
+
+                        <p className="text-sm leading-relaxed">
+                          {item.content}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* 하단 버튼 */}
           {/* <div className="mt-10">
@@ -660,10 +732,10 @@ export default function RoomDetail() {
           </div> */}
         </section>
         {/*편의시설 */}
-        <section className="pt-20">
+        <section className="pt-30">
           <h2 className="text-2xl font-bold mb-7">숙소 편의시설</h2>
 
-          <div className="grid grid-cols-3 gap-y-7 bg-amber-200 py-2">
+          <div className="grid grid-cols-3 gap-y-7 py-2">
             {room.amenities.map((item) => {
               const Icon = AMENITY_ICON_MAP[item.amenity];
               const label = AMENITY_LABEL_MAP[item.amenity];
@@ -679,14 +751,102 @@ export default function RoomDetail() {
             })}
           </div>
         </section>
-
-        <section className="pt-20">
-          <h2 className="text-2xl font-bold mb-7">체크인 날짜 선택</h2>
-          <div className="h-[420px] bg-gray-200 rounded-md w-full" />
-        </section>
       </main>
-      <footer>
-        <div className="h-[420px] mt-40 bg-gray-200 rounded-md w-full" />
+      <footer className="border-t border-neutral-200 mt-40 bg-white">
+        <div className="max-w-[1200px] mx-auto px-6 py-14">
+          {/* 상단 링크 영역 */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-sm text-gray-700">
+            {/* 에어비앤비 지원 */}
+            <div>
+              <h4 className="font-semibold mb-4">에어비앤비 지원</h4>
+              <ul className="space-y-2">
+                <li className="hover:underline cursor-pointer">도움말 센터</li>
+                <li className="hover:underline cursor-pointer">
+                  안전 문제 관련 도움받기
+                </li>
+                <li className="hover:underline cursor-pointer">에어커버</li>
+                <li className="hover:underline cursor-pointer">차별 반대</li>
+                <li className="hover:underline cursor-pointer">장애인 지원</li>
+                <li className="hover:underline cursor-pointer">
+                  예약 취소 옵션
+                </li>
+                <li className="hover:underline cursor-pointer">
+                  이웃 민원 신고
+                </li>
+              </ul>
+            </div>
+
+            {/* 호스팅 */}
+            <div>
+              <h4 className="font-semibold mb-4">호스팅</h4>
+              <ul className="space-y-2">
+                <li className="hover:underline cursor-pointer">
+                  당신의 공간을 에어비앤비하세요
+                </li>
+                <li className="hover:underline cursor-pointer">
+                  에어비앤비에서 체험 호스팅하기
+                </li>
+                <li className="hover:underline cursor-pointer">
+                  에어비앤비에서 서비스 호스팅하기
+                </li>
+                <li className="hover:underline cursor-pointer">
+                  호스트를 위한 에어커버
+                </li>
+                <li className="hover:underline cursor-pointer">호스팅 자료</li>
+                <li className="hover:underline cursor-pointer">
+                  커뮤니티 포럼
+                </li>
+                <li className="hover:underline cursor-pointer">
+                  책임감 있는 호스팅
+                </li>
+              </ul>
+            </div>
+
+            {/* 에어비앤비 */}
+            <div>
+              <h4 className="font-semibold mb-4">에어비앤비</h4>
+              <ul className="space-y-2">
+                <li className="hover:underline cursor-pointer">
+                  2025 여름 업데이트
+                </li>
+                <li className="hover:underline cursor-pointer">뉴스룸</li>
+                <li className="hover:underline cursor-pointer">채용정보</li>
+                <li className="hover:underline cursor-pointer">투자자 정보</li>
+                <li className="hover:underline cursor-pointer">
+                  Airbnb.org 긴급 숙소
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* 하단 바 */}
+          <div className="mt-12 pt-6 border-t border-neutral-200 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 gap-4">
+            <div className="flex flex-wrap gap-2">
+              <span>© 2025 Airbnb, Inc.</span>
+              <span>·</span>
+              <span className="hover:underline cursor-pointer">
+                개인정보 처리방침
+              </span>
+              <span>·</span>
+              <span className="hover:underline cursor-pointer">쿠키 정책</span>
+              <span>·</span>
+              <span className="hover:underline cursor-pointer">이용약관</span>
+              <span>·</span>
+              <span className="hover:underline cursor-pointer">
+                한국의 변경된 환불 정책
+              </span>
+              <span>·</span>
+              <span className="hover:underline cursor-pointer">
+                회사 세부정보
+              </span>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <span>한국어 (KR)</span>
+              <span>₩ KRW</span>
+            </div>
+          </div>
+        </div>
       </footer>
 
       {/* ================= 예약 카드 ================= */}

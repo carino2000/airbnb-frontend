@@ -1,29 +1,16 @@
 import { useNavigate } from "react-router";
-import { useState } from "react";
 import logo from "../assets/Airbnb_Logo.png";
-
+import { useState, useEffect } from "react";
 import { useAccount, useToken } from "../stores/account-store";
+import AccommodationLocationReportPage from "@/components/accommodationChart";
+import { getAccommodationStatsInfo } from "@/util/DatabaseUtil";
 
-export default function BookingHistory() {
+export default function Report() {
   const navigate = useNavigate();
-
-  // ===== 추가된 상태 =====
   const [openMenu, setOpenMenu] = useState(false);
-  const { account, clearAccount } = useAccount();
-  const { clearToken } = useToken();
+  const { account } = useAccount();
+  const { clearToken, clearAccount } = useToken();
 
-  // 다중 선택
-  const [selectedList, setSelectedList] = useState([]);
-  const toggleSelect = (index) => {
-  setSelectedList((prev) =>
-    prev.includes(index)
-      ? prev.filter((i) => i !== index)
-      : [...prev, index]
-  );
-};
-
-
-  // ===== 메뉴 더미 =====
   const MENU = [
     {
       section: "예약",
@@ -48,6 +35,31 @@ export default function BookingHistory() {
     },
   ];
 
+  // ===== 통계 데이터 =====
+  const [summary, setSummary] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
+
+  useEffect(() => {
+    getAccommodationStatsInfo().then((res) => {
+      if (res?.success) {
+        setSummary(res.accommodationStatisticalInfoList ?? []);
+        setTotalCount(res.totalCount ?? 0);
+      }
+    });
+  }, []);
+
+  const topLocation =
+    summary.length > 0
+      ? summary.reduce((a, b) =>
+          b.accommodationCount > a.accommodationCount ? b : a
+        )
+      : null;
+
+  const maxAvgPriceLocation =
+    summary.length > 0
+      ? summary.reduce((a, b) => (b.averagePrice > a.averagePrice ? b : a))
+      : null;
+
   return (
     <>
       {/* ================= 헤더 ================= */}
@@ -69,13 +81,14 @@ export default function BookingHistory() {
                 게스트 모드로 전환
               </p>
             </div>
-
-            {/* 프로필 원형 */}
-            <div className="w-8 h-8 rounded-full bg-neutral-800 text-white flex items-center justify-center text-xs font-bold">
-              {account?.name?.charAt(0) ?? "U"}
+            {/* 프로필 원형 (메뉴 X) */}
+            <div
+              className="w-8 h-8 rounded-full bg-neutral-800 text-white
+              flex items-center justify-center text-xs font-bold"
+            >
+              {account?.name?.charAt(0)}
             </div>
-
-            {/* 햄버거 */}
+            {/* 햄버거 (메뉴 O) */}
             <div
               className="rounded-full px-2 py-2 bg-gray-100 hover:bg-gray-200 cursor-pointer"
               onClick={() => setOpenMenu((prev) => !prev)}
@@ -96,14 +109,17 @@ export default function BookingHistory() {
               </svg>
             </div>
 
+            {/* 메뉴 */}
             {openMenu && (
               <>
+                {/* 바깥 클릭 닫기 */}
                 <div
                   className="fixed inset-0 z-40"
                   onClick={() => setOpenMenu(false)}
                 />
 
-                <div className="absolute top-12 right-0 w-[200px] bg-white rounded-md shadow-xl border z-50">
+                {/* 메뉴 박스 */}
+                <div className="absolute top-12 right-0 md:right-0 w-[200px] bg-white rounded-md shadow-xl border z-50">
                   {MENU.map((group) => (
                     <div key={group.section}>
                       <p className="px-4 pt-3 pb-1 text-[11px] text-neutral-400">
@@ -146,86 +162,50 @@ export default function BookingHistory() {
       </header>
 
       {/* ================= 본문 ================= */}
-      <main className="mt-[120px] max-w-[1350px] mx-auto px-6 pb-24">
-        <div className="flex justify-between items-start">
-          <h1 className="text-2xl font-bold mb-6 mt-5">숙소 예약 </h1>
-        </div>
-        <section
-          className="
-          reservation-scroll
-    border rounded-xl p-4 space-y-4
-    max-h-[330px]
-    overflow-y-scroll
-  "
-        >
-          {/* 예약 카드 1 */}
-          <div className="border rounded-xl p-5 flex gap-6 hover:bg-neutral-50">
-            <div className="w-[160px] h-[100px] bg-neutral-200 rounded-md" />
-            <div className="flex-1">
-              <p className="font-semibold">서울 강남 감성 스테이</p>
-              <p className="text-sm text-neutral-500 mt-1">
-                2025-12-20 ~ 2025-12-23
+      <main className="w-full bg-neutral-50 pt-[90px]">
+        <div className="max-w-[1350px] mx-auto px-6 py-10 space-y-5">
+          {/* 제목 */}
+          <section>
+            <h1 className="text-2xl font-bold">리포트</h1>
+            <p className="text-sm text-gray-500">
+              숙소 지역별 통계 및 가격 분석
+            </p>
+          </section>
+
+          {/* ===== 요약 카드 3칸 ===== */}
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+            {/* 전체 숙소 수 */}
+            <div className="bg-white rounded-lg border px-4 py-3 h-fit">
+              <p className="text-xs text-gray-400">전체 숙소 수</p>
+              <p className="text-lg font-semibold mt-1">{totalCount}개</p>
+            </div>
+
+            {/* 가장 인기 지역 */}
+            <div className="bg-white rounded-lg border px-4 py-3 h-fit">
+              <p className="text-xs text-gray-400">
+                가장 인기 지역 : {topLocation?.accommodationCount ?? 0}개
               </p>
-              <p className="font-semibold mt-2">₩420,000</p>
-            </div>
-            <div className="self-center px-4 py-2 border rounded-md text-sm">
-              선택
-            </div>
-          </div>
-
-          {/* 예약 카드 2 */}
-          <div className="border rounded-xl p-5 flex gap-6 hover:bg-neutral-50">
-            <div className="w-[160px] h-[100px] bg-neutral-200 rounded-md" />
-            <div className="flex-1">
-              <p className="font-semibold">부산 해운대 오션뷰 숙소</p>
-              <p className="text-sm text-neutral-500 mt-1">
-                2026-01-03 ~ 2026-01-05
+              <p className="text-lg font-semibold mt-1">
+                {topLocation?.location ?? "-"}
               </p>
-              <p className="font-semibold mt-2">₩310,000</p>
             </div>
-            <div className="self-center px-4 py-2 border rounded-md text-sm">
-              선택
-            </div>
-          </div>
 
-          {/* 예약 카드 3 */}
-          <div className="border rounded-xl p-5 flex gap-6 hover:bg-neutral-50">
-            <div className="w-[160px] h-[100px] bg-neutral-200 rounded-md" />
-            <div className="flex-1">
-              <p className="font-semibold">제주 돌담 뷰 하우스</p>
-              <p className="text-sm text-neutral-500 mt-1">
-                2026-02-10 ~ 2026-02-13
+            {/* 평균 가격 최고 지역 */}
+            <div className="bg-white rounded-lg border px-4 py-3 h-fit">
+              <p className="text-xs text-gray-400">
+                평균 가격 최고 지역 : ₩
+                {maxAvgPriceLocation?.averagePrice?.toLocaleString() ?? 0}
               </p>
-              <p className="font-semibold mt-2">₩280,000</p>
+              <p className="text-lg font-semibold mt-1">
+                {maxAvgPriceLocation?.location ?? "-"}
+              </p>
             </div>
-            <div className="self-center px-4 py-2 border rounded-md text-sm">
-              선택
-            </div>
-          </div>
-        </section>
+          </section>
 
-        {/* 하단 정보 */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
-          <div className="border rounded-xl p-6 space-y-3">
-            <h3 className="font-semibold">호스트 정보</h3>
-            <p>예약자 ID: qwer1234</p>
-            <p>인원: 2명</p>
-            <p>일정: 2025-12-20 ~ 2025-12-23</p>
-          </div>
-
-          <div className="border rounded-xl p-6 space-y-3">
-            <h3 className="font-semibold">결제 금액</h3>
-            <div className="flex justify-between">
-              <span>총 결제금액</span>
-              <span className="font-bold text-red-500">₩420,000</span>
-            </div>
-          </div>
-        </section>
-
-        <div className="flex justify-center mt-10">
-          <button className="px-10 py-3 rounded-md text-sm bg-black text-white">
-            예약 취소
-          </button>
+          {/* ===== 그래프 ===== */}
+          <section className="bg-white rounded-xl border shadow-sm p-8">
+            <AccommodationLocationReportPage />
+          </section>
         </div>
       </main>
     </>
