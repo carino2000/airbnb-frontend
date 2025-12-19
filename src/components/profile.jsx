@@ -128,18 +128,17 @@ function WithdrawForm({ onSubmit }) {
 
   return (
     <div className="space-y-8">
-      <div className="bg-red-50 border border-red-200 p-4 rounded-md text-sm text-red-700">
-        계정을 탈퇴하면 모든 데이터가 삭제되며 복구할 수 없습니다.
-      </div>
-
       <form className="space-y-8" onSubmit={handleSubmit}>
         <Field
           label="비밀번호 확인"
           type="password"
           onChange={(e) => setPw(e.target.value)}
         />
+        <div className="bg-red-50 border border-red-200 p-4 rounded-md text-sm text-red-700">
+          계정을 탈퇴하면 모든 데이터가 삭제되며 복구할 수 없습니다.
+        </div>
 
-        <div className="pt-8">
+        <div className="">
           <button className="w-full p-3 bg-red-600 text-white rounded-md font-medium">
             계정 탈퇴
           </button>

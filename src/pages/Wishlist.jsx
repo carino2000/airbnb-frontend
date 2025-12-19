@@ -13,6 +13,13 @@ export default function Wishlist() {
   const { account, clearAccount } = useAccount();
   const { token, clearToken } = useToken();
 
+  const MENU = [
+    { label: "찜", path: "/profile/wishlists" },
+    { label: "리스트", path: "/hosting/listings" },
+    { label: "메시지", path: "/hosting/listings?tab=messages" },
+    { label: "내 프로필", path: "/profile" },
+  ];
+
   /** ================= 유틸 함수 ================= */
   const formatPrice = (price) => {
     if (!price) return "0";
@@ -62,10 +69,7 @@ export default function Wishlist() {
             </div>
 
             {/* 프로필 */}
-            <div
-              className="w-8 h-8 rounded-full bg-neutral-800 text-white flex items-center justify-center text-xs font-bold cursor-pointer"
-              onClick={() => setOpenMenu((prev) => !prev)}
-            >
+            <div className="w-8 h-8 rounded-full bg-neutral-800 text-white flex items-center justify-center text-xs font-bold">
               {account?.name?.charAt(0) ?? "?"}
             </div>
 
@@ -92,36 +96,52 @@ export default function Wishlist() {
 
             {/* 메뉴 */}
             {openMenu && (
-              <div className="absolute top-12 right-0 w-[150px] bg-white rounded-md shadow-xl z-50">
+              <>
+                {/* 바깥 클릭 닫기 */}
                 <div
-                  className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-xs"
-                  onClick={() => {
-                    navigate("/profile/edit");
-                    setOpenMenu(false);
-                  }}
-                >
-                  프로필 수정
+                  className="fixed inset-0 z-40"
+                  onClick={() => setOpenMenu(false)}
+                />
+
+                <div className="absolute top-12 right-0 w-[180px] bg-white rounded-md shadow-xl border border-gray-200 z-50">
+                  {MENU.map((item) => (
+                    <div
+                      key={item.path}
+                      className="px-4 py-3 hover:bg-gray-100 text-xs cursor-pointer"
+                      onClick={() => {
+                        navigate(item.path);
+                        setOpenMenu(false);
+                      }}
+                    >
+                      {item.label}
+                    </div>
+                  ))}
+
+                  <div className="border-t" />
+
+                  <div
+                    className="px-4 py-3 hover:bg-gray-100 text-xs text-red-500 cursor-pointer"
+                    onClick={() => {
+                      clearToken();
+                      clearAccount();
+                      setOpenMenu(false);
+                      navigate("/");
+                    }}
+                  >
+                    로그아웃
+                  </div>
                 </div>
-                <div
-                  className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-xs text-red-500"
-                  onClick={() => {
-                    clearToken();
-                    clearAccount();
-                    navigate("/");
-                  }}
-                >
-                  로그아웃
-                </div>
-              </div>
+              </>
             )}
           </div>
         </div>
       </header>
 
       {/* ================= 본문 ================= */}
-      <main className="mt-[120px] max-w-[1350px] mx-auto px-6">
-        <h1 className="text-2xl font-bold mb-6 mt-5">위시리스트</h1>
-
+      <main className="mt-[120px] max-w-[1350px] mx-auto px-6 pb-24">
+        <div className="flex justify-between items-start">
+          <h1 className="text-2xl font-bold mb-6 mt-5">❤️ 위시리스트 </h1>
+        </div>
         <div className="grid grid-cols-4 gap-4">
           {accommodation &&
             accommodation.map((one) => (
@@ -133,7 +153,7 @@ export default function Wishlist() {
                 <div>
                   <img
                     src={`http://192.168.0.17:8080${one.uri}`}
-                    className="w-full h-full object-cover rounded-xl"
+                    className="w-full aspect-square object-cover rounded-xl"
                     alt=""
                   />
                 </div>
@@ -141,10 +161,8 @@ export default function Wishlist() {
                   <div className="font-medium truncate">
                     {one.address?.split(" ")[0]}의 집
                   </div>
-                  <div className="text-xs text-neutral-500">
-                    1월 1일 ~ 12월 31일
-                  </div>
-                  <div className="text-xs text-neutral-500">
+
+                  <div className="text-sm text-neutral-600 truncate">
                     ₩{formatPrice(one.price)} · 평점 5.0
                   </div>
                 </div>

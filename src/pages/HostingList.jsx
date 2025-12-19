@@ -43,7 +43,7 @@ export default function HostingList() {
     { label: "찜", path: "/profile/wishlists" },
     { label: "리스트", path: "/hosting/listings" },
     { label: "메시지", path: "/hosting/listings?tab=messages" },
-    { label: "내 프로필", path: "/profile/edit" },
+    { label: "내 프로필", path: "/profile" },
   ];
 
   return (
@@ -163,11 +163,11 @@ export default function HostingList() {
       </header>
 
       {/* ================= 본문 ================= */}
-      <main className="mt-[120px] max-w-[1350px] mx-auto px-6">
+      <main className="mt-[120px] max-w-[1350px] mx-auto px-6 pb-24">
         {/* Wishlist와 동일한 상단 */}
         <div className="flex justify-between items-start">
           <h1 className="text-2xl font-bold mb-6 mt-5">
-            {tab === "listings" ? "내 리스팅" : "메시지"}
+            {tab === "listings" ? "🏠 내 리스팅" : "💬 메시지"}
           </h1>
 
           {tab === "listings" ? (
@@ -186,34 +186,35 @@ export default function HostingList() {
         </div>
         {/* 콘텐츠 */}
         {tab === "listings" && (
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-4 gap-4 ">
             {items.length === 0 ? (
               <div>리스팅 정보 없음</div>
             ) : (
-              items.map((item, index) => (
+              items.map((item) => (
                 <div
+                  key={item.id}
+                  className="cursor-pointer"
                   onClick={() => editHostingHandle(item.id)}
-                  key={index}
-                  className="bg-green-100 rounded-lg flex items-center justify-center aspect-square"
                 >
+                  {/* 이미지 (정사각형) */}
                   {item.uri && (
                     <img
-                      className="w-full h-full rounded-xl object-cover"
                       src={`http://192.168.0.17:8080${item.uri}`}
                       alt=""
+                      className="w-full aspect-square object-cover rounded-xl"
                     />
                   )}
-                  <div className="mt-2 text-left">
+
+                  {/* 텍스트 */}
+                  <div className="mt-2 space-y-1">
                     {item.address && (
-                      <div className="font-medium text-sm truncate">
+                      <div className="font-medium truncate">
                         {item.address.split(" ")[0]}의 집
                       </div>
                     )}
-                    <div className="text-xs text-gray-500 truncate">
-                      1월 1일 ~ 12월 31일
-                    </div>
-                    <div className="text-xs text-gray-500 truncate">
-                      ₩{item.price}
+
+                    <div className="text-sm text-neutral-600 truncate">
+                      ₩{item.price?.toLocaleString()}
                     </div>
                   </div>
                 </div>
