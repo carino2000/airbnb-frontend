@@ -1,7 +1,13 @@
-import { useState } from "react";
+import {
+  deleteAccommodation,
+  getDetailAccommodation,
+  updateAccommodation,
+} from "@/util/DatabaseUtil";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router";
 
 /* ================= 사이드 네비 ================= */
-export function EditorSideNav({ active, onChange }) {
+export function EditorSideNav({ active, onChange, accommodation }) {
   const itemBase = "w-full text-left p-4 rounded-xl border transition";
   const activeCls = "bg-neutral-100 border-neutral-300";
   const normalCls = "hover:bg-neutral-50";
@@ -19,6 +25,13 @@ export function EditorSideNav({ active, onChange }) {
       >
         <p className="font-semibold bg">기본 정보</p>
         <p className="text-xs text-neutral-500">이름, 설명, 주소</p>
+        {accommodation && (
+          <img
+            className="w-full h-full rounded-xl object-cover p-3"
+            src={`http://192.168.0.17:8080${accommodation.images[0].uri}`}
+            alt=""
+          />
+        )}
       </button>
 
       <button
@@ -41,17 +54,68 @@ export function EditorSideNav({ active, onChange }) {
 }
 
 /* ================= 메인 콘텐츠 ================= */
-export function ListingEditorContent({ active }) {
-  const [basic, setBasic] = useState({
-    name: "",
-    description: "",
-    address: "",
-  });
+export function ListingEditorContent({
+  active,
+  accommodation,
+  accommodationId,
+  token,
+}) {
+  const [basic, setBasic] = useState({});
+  const [roomState, setRoomState] = useState({});
+  const [price, setPrice] = useState({});
 
-  const [price, setPrice] = useState({
-    price: "",
-    extraRate: "",
-  });
+  useEffect(() => {
+    if (accommodation) {
+      setBasic({
+        name: accommodation.name ?? "",
+        description: accommodation.description ?? "",
+        address: accommodation.address ?? "",
+      });
+      setRoomState({
+        maxCapacity: accommodation.maxCapacity ?? 0,
+        bedroom: accommodation.bedroom ?? 0,
+        bed: accommodation.bed ?? 0,
+        bathroom: accommodation.bathroom ?? 0,
+      });
+      setPrice({
+        price: accommodation.price ?? 0,
+        extraRate: accommodation.extraRate ?? 0,
+      });
+    }
+  }, [accommodation]);
+
+  function editSubmitHandle() {
+    const data = {
+      ...basic,
+      ...roomState,
+      ...price,
+    };
+
+    updateAccommodation(data, accommodationId, token).then((obj) => {
+      if (obj.success) {
+        window.alert("정상 처리되었습니다!");
+        Navigate("/hosting/listing/28/edit");
+      } else {
+        window.alert("숙소 정보 수정 오류!");
+        Navigate("/hosting/listings");
+      }
+    });
+  }
+
+  function deleteSubmitHandle() {
+    if (window.confirm("정말 숙소 정보를 삭제하시겠습니까?")) {
+      deleteAccommodation(accommodationId, token).then((obj) => {
+        if (obj.success) {
+          window.alert("정상 처리되었습니다");
+        } else {
+          window.alert("숙소 삭제 오류!");
+        }
+        Navigate("/hosting/listings");
+      });
+    } else {
+      return;
+    }
+  }
 
   return (
     <div className="max-w-[900px]">
@@ -83,12 +147,28 @@ export function ListingEditorContent({ active }) {
       {active === "room" && (
         <SectionWrapper
           title="객실 정보"
-          onSave={() => console.log("객실 정보 저장")}
+          onSave={() => console.log("객실 정보 저장", roomState)}
         >
-          <Counter label="최대 인원" />
-          <Counter label="침실 수" />
-          <Counter label="침대 수" />
-          <Counter label="욕실 수" />
+          <Counter
+            label="최대 인원"
+            value={roomState.maxCapacity}
+            onChange={(v) => setRoomState({ ...roomState, maxCapacity: v })}
+          />
+          <Counter
+            label="침실 수"
+            value={roomState.bedroomCount}
+            onChange={(v) => setRoomState({ ...roomState, bedroomCount: v })}
+          />
+          <Counter
+            label="침대 수"
+            value={roomState.bedCount}
+            onChange={(v) => setRoomState({ ...roomState, bedCount: v })}
+          />
+          <Counter
+            label="욕실 수"
+            value={roomState.bathroomCount}
+            onChange={(v) => setRoomState({ ...roomState, bathroomCount: v })}
+          />
         </SectionWrapper>
       )}
 
@@ -112,6 +192,22 @@ export function ListingEditorContent({ active }) {
           />
         </SectionWrapper>
       )}
+      <div>
+        <button
+          onClick={editSubmitHandle}
+          className="px-6 mt-2 py-2 rounded-full text-sm font-semibold bg-neutral-800 text-white hover:bg-black"
+        >
+          전체 저장
+        </button>
+      </div>
+      <div>
+        <button
+          onClick={deleteSubmitHandle}
+          className="px-6 mt-2 py-2 rounded-full text-sm font-semibold bg-red-500 text-white hover:bg-red-600"
+        >
+          숙소 삭제
+        </button>
+      </div>
     </div>
   );
 }
@@ -171,25 +267,38 @@ export function Textarea({ label, ...props }) {
   );
 }
 
-export function Counter({ label }) {
-  const [v, setV] = useState(1);
+export function Counter({ label, value = 1, min = 1, max, onChange }) {
+  const decrease = () => {
+    const next = Math.max(min, value - 1);
+    onChange?.(next);
+  };
+
+  const increase = () => {
+    const next = max ? Math.min(max, value + 1) : value + 1;
+    onChange?.(next);
+  };
 
   return (
     <div className="flex justify-between items-center">
       <span className="font-medium">{label}</span>
+
       <div className="flex items-center gap-3">
         <button
           type="button"
-          onClick={() => setV((p) => Math.max(1, p - 1))}
-          className="w-8 h-8 border rounded-full"
+          onClick={decrease}
+          disabled={value <= min}
+          className="w-8 h-8 border rounded-full disabled:opacity-40"
         >
           -
         </button>
-        <span>{v}</span>
+
+        <span>{value}</span>
+
         <button
           type="button"
-          onClick={() => setV((p) => p + 1)}
-          className="w-8 h-8 border rounded-full"
+          onClick={increase}
+          disabled={max !== undefined && value >= max}
+          className="w-8 h-8 border rounded-full disabled:opacity-40"
         >
           +
         </button>
