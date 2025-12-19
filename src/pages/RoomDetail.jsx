@@ -536,7 +536,9 @@ export default function RoomDetail() {
               </p>
 
               <div className="mt-4 flex items-center gap-4 text-sm">
-                <span className="font-semibold">⭐ 4.93</span>
+                <span className="font-semibold">
+                  ⭐ {Math.round(room.averageRating * 100) / 100}
+                </span>
                 <span className="text-gray-500">후기 · {review.length}개</span>
                 <span className="px-2 py-1 border rounded-full text-xs">
                   게스트 선호

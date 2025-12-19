@@ -144,7 +144,7 @@ function PopularSlider({ title, data, onCardClick, alreadyLiked = [] }) {
                   </div>
 
                   <div className="text-sm text-neutral-600">
-                    ₩{formatPrice(one.price)} · 평점 5.0
+                    ₩{formatPrice(one.price)}
                   </div>
                 </div>
               </div>
