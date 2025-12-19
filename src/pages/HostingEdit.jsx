@@ -24,7 +24,7 @@ export default function HostingEdit() {
 
   const [activeSection, setActiveSection] = useState("basic");
   const [accommodation, setAccommodation] = useState();
-
+  const [newImages, setNewImages] = useState([]);
   const { accommodationId } = useParams();
 
   useEffect(() => {
@@ -144,6 +144,8 @@ export default function HostingEdit() {
                 accommodation={accommodation}
                 active={activeSection}
                 onChange={setActiveSection}
+                newImages={newImages}
+                setNewImages={setNewImages}
               />
             </div>
 
@@ -168,6 +170,8 @@ export default function HostingEdit() {
           {/* 오른쪽 */}
           <main className="flex-1 min-w-0 h-full overflow-y-auto">
             <ListingEditorContent
+              newImages={newImages}
+              setNewImages={setNewImages}
               token={token}
               accommodationId={accommodationId}
               accommodation={accommodation}

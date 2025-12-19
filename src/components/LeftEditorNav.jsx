@@ -22,7 +22,13 @@ import washing from "../assets/noun-washing-machine-6113545.png";
 import bed from "../assets/noun-single-bed-6113298.png";
 
 /* ================= 사이드 네비 ================= */
-export function EditorSideNav({ active, onChange, accommodation }) {
+export function EditorSideNav({
+  active,
+  onChange,
+  accommodation,
+  newImages,
+  setNewImages,
+}) {
   const itemBase =
     "w-full text-left rounded-2xl border bg-white transition shadow-sm hover:shadow-md";
   const activeCls = "border-neutral-900 ring-1 ring-neutral-900/10";
@@ -50,11 +56,14 @@ export function EditorSideNav({ active, onChange, accommodation }) {
               <p className="font-semibold">포토 투어</p>
               <p className="text-xs text-neutral-500 mt-1">사진 관리</p>
             </div>
+            <div className="text-[11px] px-2 py-1 rounded-full bg-neutral-100 border border-neutral-200">
+              {(images?.length ?? 0) + (newImages.length ?? 0)}장
+            </div>
           </div>
 
           <div className="mt-4">
             {/* 썸네일 */}
-            <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden bg-neutral-100 border border-neutral-200">
+            <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-neutral-100 border border-neutral-200">
               {cover ? (
                 <img
                   src={cover}
@@ -129,6 +138,8 @@ export function ListingEditorContent({
   accommodation,
   accommodationId,
   token,
+  newImages,
+  setNewImages,
 }) {
   const navigate = useNavigate();
 
@@ -148,7 +159,6 @@ export function ListingEditorContent({
   const [selectedTags, setSelectedTags] = useState([]);
   const [selectedAmenities, setSelectedAmenities] = useState([]);
 
-  const [newImages, setNewImages] = useState([]);
   const [images, setImages] = useState([]);
   const [deleteImageId, setDeleteImageId] = useState([]);
   const fileInputRef = useRef(null);
@@ -562,8 +572,8 @@ export function ListingEditorContent({
 export function SectionWrapper({ title, children }) {
   return (
     <section>
-      <h3 className="text-xl font-semibold mb-6">{title}</h3>
-      <div className="p-8 space-y-10">{children}</div>
+      <h3 className="text-2xl font-semibold mb-6">{title}</h3>
+      <div className="p-2 space-y-10">{children}</div>
     </section>
   );
 }

@@ -21,8 +21,6 @@ export default function Profile() {
   const { clearToken } = useToken();
   const { account, clearAccount, setAccount } = useAccount();
 
-  console.log("🔍 account from store:", account);
-
   const [activeTab, setActiveTab] = useState("info");
   // info | password | withdraw
 

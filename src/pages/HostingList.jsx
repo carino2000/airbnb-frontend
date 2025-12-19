@@ -217,9 +217,9 @@ export default function HostingList() {
             {items.length === 0 ? (
               <div>리스팅 정보 없음</div>
             ) : (
-              items.map((item) => (
+              items.map((item, index) => (
                 <div
-                  key={item.id}
+                  key={index}
                   className="cursor-pointer"
                   onClick={() => editHostingHandle(item.id)}
                 >
