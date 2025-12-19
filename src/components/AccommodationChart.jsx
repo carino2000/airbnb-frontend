@@ -26,6 +26,7 @@ const COLORS = [
   "#38BDF8", // sky
   "#FACC15", // yellow
   "#C084FC", // purple
+  "#64748B", // slate
 ];
 
 export default function AccommodationStatisticsPage() {
