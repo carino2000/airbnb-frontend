@@ -108,11 +108,13 @@ export default function HostingList() {
                 게스트 모드로 전환
               </p>
             </div>
-
+            {/* 원형프로필 */}
             <div
-              className="w-8 h-8 rounded-full bg-neutral-800 text-white
-              flex items-center justify-center text-xs font-bold cursor-pointer"
-              onClick={() => setOpenMenu((prev) => !prev)}
+              className="  w-8 h-8 rounded-full bg-neutral-800
+      text-white flex items-center justify-center
+      text-xs font-bold cursor-pointer
+      hover:ring-2 hover:ring-black/20 transition"
+              onClick={() => navigate("/profile")}
             >
               {account?.name?.charAt(0)}
             </div>

@@ -98,11 +98,15 @@ export default function SearchHeader({ onClose, onLogin }) {
                     className="hidden sm:block text-xs font-bold px-3 py-2 rounded-full hover:bg-gray-200"
                     onClick={() => navigate("/hosting")}
                   >
-                    호스팅 하기
+                    호스트 모드로 전환
                   </button>
 
                   {/* 원형 프로필 */}
-                  <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white text-xs font-bold cursor-pointer">
+                  <div
+                    className="w-8 h-8 rounded-full bg-black flex items-center justify-center
+             text-white text-xs font-bold cursor-pointer"
+                    onClick={() => navigate("/profile")}
+                  >
                     {account?.name?.[0]}
                   </div>
                 </>

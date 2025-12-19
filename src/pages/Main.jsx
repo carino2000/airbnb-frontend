@@ -200,13 +200,19 @@ export default function Main() {
                 <>
                   <button
                     className="hidden sm:block text-xs font-bold px-3 py-2 rounded-full hover:bg-gray-200"
-                    onClick={() => navigate("/hosting")}
+                    onClick={() => navigate("/hosting/listings")}
                   >
-                    호스팅 하기
+                    호스트 모드로 전환
                   </button>
 
                   {/* 원형 프로필 */}
-                  <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white text-xs font-bold cursor-pointer">
+                  <div
+                    className="w-8 h-8 rounded-full bg-neutral-800
+      text-white flex items-center justify-center
+      text-xs font-bold cursor-pointer
+      hover:ring-2 hover:ring-black/20 transition"
+                    onClick={() => navigate("/profile")}
+                  >
                     {account?.name?.[0]}
                   </div>
                 </>
@@ -294,7 +300,7 @@ export default function Main() {
             {/* 아래로 펼쳐지는 달력 영역 */}
             {openCal && (
               <>
-                {/* ✅ [추가] 바탕화면 클릭 감지용 오버레이 */}
+                {/*  바탕화면 클릭 감지용 오버레이 */}
                 <div
                   className="fixed inset-0 z-40"
                   onClick={() => setOpenCal(false)} // 바탕화면 클릭 시 닫힘

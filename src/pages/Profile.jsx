@@ -120,8 +120,10 @@ export default function Profile() {
             </div>
             {/* 프로필 원형 (메뉴 X) */}
             <div
-              className="w-8 h-8 rounded-full bg-neutral-800 text-white
-              flex items-center justify-center text-xs font-bold"
+              className="  w-8 h-8 rounded-full bg-neutral-800
+      text-white flex items-center justify-center
+      text-xs font-bold cursor-pointer
+      hover:ring-2 hover:ring-black/20 transition"
             >
               {account?.name?.charAt(0)}
             </div>
