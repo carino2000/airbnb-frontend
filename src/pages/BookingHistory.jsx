@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import logo from "../assets/Airbnb_Logo.png";
 
 import { useAccount, useToken } from "../stores/account-store";
+import { deleteReservation, getMyReservations } from "@/util/DatabaseUtil";
 
 export default function BookingHistory() {
   const navigate = useNavigate();
@@ -10,18 +11,10 @@ export default function BookingHistory() {
   // ===== 추가된 상태 =====
   const [openMenu, setOpenMenu] = useState(false);
   const { account, clearAccount } = useAccount();
-  const { clearToken } = useToken();
-
-  // 다중 선택
-  const [selectedList, setSelectedList] = useState([]);
-  const toggleSelect = (index) => {
-  setSelectedList((prev) =>
-    prev.includes(index)
-      ? prev.filter((i) => i !== index)
-      : [...prev, index]
-  );
-};
-
+  const { token, clearToken } = useToken();
+  const [reservations, setReservations] = useState([]);
+  const [reservation, setReservation] = useState();
+  const [modifiable, setModifiable] = useState(false);
 
   // ===== 메뉴 더미 =====
   const MENU = [
@@ -47,6 +40,42 @@ export default function BookingHistory() {
       ],
     },
   ];
+
+  useEffect(() => {
+    if (!account) return;
+    getMyReservations(account.id, token).then((obj) => {
+      if (obj.success) {
+        setReservations(obj.reservations);
+      } else {
+        window.alert("예약 기록 불러오기 오류!");
+        navigate("/");
+      }
+    });
+  }, []);
+
+  function reservationDitail(item) {
+    setReservation(item);
+    const now = new Date();
+    const startDate = new Date(item.startDate);
+    const oneWeekLater = new Date();
+    oneWeekLater.setDate(now.getDate() + 7);
+    const isModifiable = startDate > oneWeekLater;
+    setModifiable(isModifiable);
+    return;
+  }
+
+  function reservationDeleteHandle(code) {
+    if (window.confirm("정말 예약을 취소하시겠습니까?")) {
+      deleteReservation(code, token).then((obj) => {
+        if (obj.success) {
+          window.alert("예약이 취소되었습니다");
+
+          setReservations((prev) => prev.filter((item) => item.code !== code));
+          setReservation(null);
+        }
+      });
+    }
+  }
 
   return (
     <>
@@ -148,7 +177,7 @@ export default function BookingHistory() {
       {/* ================= 본문 ================= */}
       <main className="mt-[120px] max-w-[1350px] mx-auto px-6 pb-24">
         <div className="flex justify-between items-start">
-          <h1 className="text-2xl font-bold mb-6 mt-5">숙소 예약 </h1>
+          <h1 className="text-2xl font-bold mb-6 mt-5">이전 여행</h1>
         </div>
         <section
           className="
@@ -158,75 +187,98 @@ export default function BookingHistory() {
     overflow-y-scroll
   "
         >
-          {/* 예약 카드 1 */}
-          <div className="border rounded-xl p-5 flex gap-6 hover:bg-neutral-50">
-            <div className="w-[160px] h-[100px] bg-neutral-200 rounded-md" />
-            <div className="flex-1">
-              <p className="font-semibold">서울 강남 감성 스테이</p>
-              <p className="text-sm text-neutral-500 mt-1">
-                2025-12-20 ~ 2025-12-23
-              </p>
-              <p className="font-semibold mt-2">₩420,000</p>
-            </div>
-            <div className="self-center px-4 py-2 border rounded-md text-sm">
-              선택
-            </div>
-          </div>
-
-          {/* 예약 카드 2 */}
-          <div className="border rounded-xl p-5 flex gap-6 hover:bg-neutral-50">
-            <div className="w-[160px] h-[100px] bg-neutral-200 rounded-md" />
-            <div className="flex-1">
-              <p className="font-semibold">부산 해운대 오션뷰 숙소</p>
-              <p className="text-sm text-neutral-500 mt-1">
-                2026-01-03 ~ 2026-01-05
-              </p>
-              <p className="font-semibold mt-2">₩310,000</p>
-            </div>
-            <div className="self-center px-4 py-2 border rounded-md text-sm">
-              선택
-            </div>
-          </div>
-
-          {/* 예약 카드 3 */}
-          <div className="border rounded-xl p-5 flex gap-6 hover:bg-neutral-50">
-            <div className="w-[160px] h-[100px] bg-neutral-200 rounded-md" />
-            <div className="flex-1">
-              <p className="font-semibold">제주 돌담 뷰 하우스</p>
-              <p className="text-sm text-neutral-500 mt-1">
-                2026-02-10 ~ 2026-02-13
-              </p>
-              <p className="font-semibold mt-2">₩280,000</p>
-            </div>
-            <div className="self-center px-4 py-2 border rounded-md text-sm">
-              선택
-            </div>
-          </div>
+          {reservations &&
+            reservations.map((item) => {
+              return (
+                <div
+                  key={item.code}
+                  className="border rounded-xl p-5 flex gap-6 hover:bg-neutral-50"
+                >
+                  <div
+                    onClick={() => navigate(`/room/${item.accommodationId}`)}
+                    className="w-40 h-[100px] bg-neutral-200 rounded-md hover:cursor-pointer"
+                  >
+                    <img
+                      className="w-full h-full rounded-xl object-cover p-3"
+                      src={`http://192.168.0.17:8080${item.imageUri}`}
+                      alt=""
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold">{item.name}</p>
+                    <p className="text-sm text-neutral-500 mt-1">
+                      {item.startDate} ~ {item.endDate}
+                    </p>
+                    <p className="font-semibold mt-2">₩{item.price}</p>
+                  </div>
+                  <div
+                    onClick={() => reservationDitail(item)}
+                    className="self-center px-4 py-2 border rounded-md text-sm hover:cursor-pointer hover:bg-black/5"
+                  >
+                    선택
+                  </div>
+                </div>
+              );
+            })}
         </section>
 
         {/* 하단 정보 */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
-          <div className="border rounded-xl p-6 space-y-3">
-            <h3 className="font-semibold">호스트 정보</h3>
-            <p>예약자 ID: qwer1234</p>
-            <p>인원: 2명</p>
-            <p>일정: 2025-12-20 ~ 2025-12-23</p>
-          </div>
-
-          <div className="border rounded-xl p-6 space-y-3">
-            <h3 className="font-semibold">결제 금액</h3>
-            <div className="flex justify-between">
-              <span>총 결제금액</span>
-              <span className="font-bold text-red-500">₩420,000</span>
+        {reservation && (
+          <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
+            <div className="border rounded-xl p-6 space-y-3">
+              <h3 className="font-semibold">예약 세부정보</h3>
+              <p>예약자 ID: {account.id}</p>
+              <p>게스트: {reservation.visitors}명</p>
+              <p>
+                일정: {reservation.startDate} ~ {reservation.endDate}
+              </p>
             </div>
-          </div>
-        </section>
 
-        <div className="flex justify-center mt-10">
-          <button className="px-10 py-3 rounded-md text-sm bg-black text-white">
-            예약 취소
-          </button>
-        </div>
+            <div className="border rounded-xl p-6 space-y-3">
+              <h3 className="font-semibold">결제 금액</h3>
+              <div className="flex justify-between">
+                <span>총 결제금액</span>
+                <span className="font-bold text-red-500">
+                  ₩{reservation.price}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span>예약코드</span>
+                <span className="font-bold">{reservation.code}</span>
+              </div>
+              <div className="flex justify-center mt-10 gap-5">
+                <button
+                  disabled={!modifiable}
+                  className={`
+                      px-5 py-3 rounded-md text-sm
+                      ${
+                        modifiable
+                          ? "bg-slate-800 text-white hover:bg-slate-900 cursor-pointer"
+                          : "bg-slate-300 text-white cursor-not-allowed opacity-60"
+                      }
+                          `}
+                >
+                  예약 수정
+                </button>
+
+                <button
+                  onClick={() => reservationDeleteHandle(reservation.code)}
+                  disabled={!modifiable}
+                  className={`
+                      px-5 py-3 rounded-md text-sm
+                      ${
+                        modifiable
+                          ? "bg-rose-500 text-white hover:bg-rose-600 cursor-pointer"
+                          : "bg-rose-300 text-white cursor-not-allowed opacity-60"
+                      }
+                      `}
+                >
+                  예약 취소
+                </button>
+              </div>
+            </div>
+          </section>
+        )}
       </main>
     </>
   );

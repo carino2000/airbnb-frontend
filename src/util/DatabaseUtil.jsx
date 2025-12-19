@@ -310,6 +310,17 @@ function getAccommodationStatsInfo() {
   }).then((res) => res.json());
 }
 
+// 예약 기록 전체 조회
+function getMyReservations(accountId, token) {
+  return fetch(`${serverAddr}/reservations/${accountId}/history`, {
+    method: "GET",
+    headers: {
+      Token: token,
+      "Content-type": "application/json",
+    },
+  }).then((res) => res.json());
+}
+
 // 예약 수정
 function updateReservation(code, payload, token) {
   return fetch(`${serverAddr}/reservations/${code}`, {
@@ -387,4 +398,5 @@ export {
   deleteAccommodation,
   updateReservation,
   deleteReservation,
+  getMyReservations,
 };
