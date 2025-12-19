@@ -4,6 +4,7 @@ import logo from "../assets/Airbnb_Logo.png";
 
 import { useAccount, useToken } from "../stores/account-store";
 import {
+  checkReservation,
   deleteReservation,
   getMyReservations,
   updateReservation,
@@ -18,6 +19,7 @@ export default function BookingHistory() {
     startDate: "",
     endDate: "",
     price: 0,
+    accommodationId: 0,
   });
 
   // ===== 추가된 상태 =====
@@ -27,6 +29,7 @@ export default function BookingHistory() {
   const [reservations, setReservations] = useState([]);
   const [reservation, setReservation] = useState();
   const [modifiable, setModifiable] = useState(false);
+  const [able, setAble] = useState(false);
 
   // ===== 메뉴 더미 =====
   const MENU = [
@@ -65,6 +68,41 @@ export default function BookingHistory() {
     });
   }, []);
 
+  useEffect(() => {
+    if (!editForm.accommodationId || !editForm.startDate || !editForm.endDate) {
+      return;
+    }
+
+    const data = {
+      accommodationId: editForm.accommodationId,
+      accountId: account.id,
+      visitors: editForm.visitors,
+      startDate: editForm.startDate,
+      endDate: editForm.endDate,
+    };
+
+    checkReservation(data).then((obj) => {
+      if (obj.success) {
+        setEditForm((old) => {
+          // 가격이 같으면 업데이트 안 함 (중요)
+          if (old.price === obj.totalPrice) return old;
+          return { ...old, price: obj.totalPrice };
+        });
+
+        if (!obj.reservationAvailable) {
+          setAble(false);
+        } else {
+          setAble(true);
+        }
+      }
+    });
+  }, [
+    editForm.accommodationId,
+    editForm.visitors,
+    editForm.startDate,
+    editForm.endDate,
+  ]);
+
   function reservationDitail(item) {
     setReservation(item);
     const now = new Date();
@@ -73,6 +111,8 @@ export default function BookingHistory() {
     oneWeekLater.setDate(now.getDate() + 7);
     const isModifiable = startDate > oneWeekLater;
     setModifiable(isModifiable);
+    console.log(item.accommodationId);
+    setEditForm((old) => ({ ...old, accommodationId: item.accommodationId }));
     return;
   }
 
@@ -274,12 +314,13 @@ export default function BookingHistory() {
                 <button
                   disabled={!modifiable}
                   onClick={() => {
-                    setEditForm({
+                    setEditForm((old) => ({
+                      ...old,
                       visitors: reservation.visitors,
                       startDate: reservation.startDate,
                       endDate: reservation.endDate,
                       price: reservation.price,
-                    });
+                    }));
                     setEditOpen(true);
                   }}
                   className={`
@@ -366,18 +407,9 @@ export default function BookingHistory() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs">가격</label>
-                <input
-                  type="number"
-                  value={editForm.price}
-                  onChange={(e) =>
-                    setEditForm({
-                      ...editForm,
-                      price: Number(e.target.value),
-                    })
-                  }
-                  className="w-full border rounded-md px-3 py-2"
-                />
+                <span className="text-xl font-semibold">
+                  ₩{editForm.price.toLocaleString()} 원
+                </span>
               </div>
 
               <div className="flex gap-3 pt-4">
@@ -404,13 +436,14 @@ export default function BookingHistory() {
                       alert("예약이 수정되었습니다");
                       setEditOpen(false);
                       setReservation({ ...reservation, ...editForm });
+                      window.location.reload();
                     } else {
-                      alert("예약 수정 실패");
+                      alert("해당 조건에 부합하는 객실이 존재하지 않습니다");
                     }
                   }}
                   className="w-1/2 py-2 bg-black text-white rounded-md"
                 >
-                  수정 완료
+                  예약 수정
                 </button>
               </div>
             </div>

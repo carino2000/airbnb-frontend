@@ -141,6 +141,7 @@ export default function RoomDetail() {
   const [checkout, setCheckout] = useState("");
 
   const [guestOpen, setGuestOpen] = useState(false);
+  const [nights, setNights] = useState(1);
 
   const [guests, setGuests] = useState({
     adult: 1,
@@ -228,7 +229,8 @@ export default function RoomDetail() {
   useEffect(() => {
     getDetailAccommodation(accommodationId).then((obj) => {
       if (obj.success) {
-        setRoom({ ...obj.accommodation });
+        const career = calculateHostingYears(obj.accommodation.hostJoinAt);
+        setRoom({ ...obj.accommodation, career });
         setBlockDays([...obj.accommodation.reservedDate]);
         setReservation({ totalPrice: obj.accommodation.price });
       } else {
@@ -258,6 +260,40 @@ export default function RoomDetail() {
       }
     });
   }, [checkin, checkout, guests]);
+
+  useEffect(() => {
+    if (!checkin || !checkout) {
+      setNights(1);
+      return;
+    }
+
+    const start = new Date(checkin);
+    const end = new Date(checkout);
+
+    const diffTime = end - start;
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+    setNights(diffDays);
+  }, [checkin, checkout]);
+
+  // 호스팅 경력 일자 계산
+  function calculateHostingYears(hostJoinAt) {
+    const joinDate = new Date(hostJoinAt);
+    const today = new Date();
+
+    let years = today.getFullYear() - joinDate.getFullYear();
+
+    const hasNotPassedAnniversary =
+      today.getMonth() < joinDate.getMonth() ||
+      (today.getMonth() === joinDate.getMonth() &&
+        today.getDate() < joinDate.getDate());
+
+    if (hasNotPassedAnniversary) {
+      years -= 1;
+    }
+
+    return Math.max(years, 0);
+  }
 
   function confirmReservation() {
     const data = {
@@ -586,7 +622,13 @@ export default function RoomDetail() {
                   </span>
                 </p>
                 <p className="text-xs text-gray-500 mt-1">
-                  슈퍼호스트 · 호스팅 경력 3년
+                  <span className="text-sm text-gray-600">
+                    {room.career === 0 && "신생 호스트 🌱"}
+                    {room.career === 1 && "뉴비 호스트 🐣 · 호스팅 경력 1년"}
+                    {room.career === 2 && "슈퍼호스트 ⭐ · 호스팅 경력 2년"}
+                    {room.career >= 3 &&
+                      `슈퍼호스트 ⭐ · 호스팅 경력 ${room.career}년`}
+                  </span>
                 </p>
               </div>
             </section>
@@ -890,7 +932,7 @@ export default function RoomDetail() {
           <span className="text-3xl font-bold">
             ₩{reservation.totalPrice?.toLocaleString()}
           </span>
-          <span className="text-sm text-gray-500"> · 1박</span>
+          <span className="text-sm text-gray-500"> · {nights}박</span>
         </div>
 
         <div>

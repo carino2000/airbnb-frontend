@@ -172,7 +172,7 @@ export default function Report() {
         <div className="max-w-[1350px] mx-auto px-6 py-10 space-y-5">
           {/* 제목 */}
           <section>
-            <h1 className="text-2xl font-bold">리포트</h1>
+            <h1 className="text-2xl font-bold">Airbnb 리포트</h1>
             <p className="text-sm text-gray-500">
               숙소 지역별 통계 및 가격 분석
             </p>
