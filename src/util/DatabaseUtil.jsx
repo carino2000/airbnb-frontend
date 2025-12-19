@@ -310,6 +310,27 @@ function getAccommodationStatsInfo() {
   }).then((res) => res.json());
 }
 
+function updateAccommodation(data, accommodationId, token) {
+  return fetch(`${serverAddr}/accommodations/${accommodationId}`, {
+    method: "put",
+    body: JSON.stringify(data),
+    headers: {
+      Token: token,
+      "Content-type": "application/json",
+    },
+  }).then((res) => res.json());
+}
+
+function deleteAccommodation(accommodationId, token) {
+  return fetch(`${serverAddr}/accommodations/${accommodationId}`, {
+    method: "DELETE",
+    headers: {
+      Token: token,
+      "Content-type": "application/json",
+    },
+  }).then((res) => res.json());
+}
+
 export {
   idCheck,
   emailCheck,
@@ -339,4 +360,6 @@ export {
   unlikeAccommodation,
   getLikedAccommodationList,
   getAccommodationStatsInfo,
+  updateAccommodation,
+  deleteAccommodation,
 };

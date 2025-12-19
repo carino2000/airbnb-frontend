@@ -1,8 +1,8 @@
 import logo from "../assets/Airbnb_Logo.png";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useToken, useAccount } from "../stores/account-store";
-import { getMyHosting } from "@/util/DatabaseUtil";
+import { getDetailAccommodation, getMyHosting } from "@/util/DatabaseUtil";
 import {
   EditorSideNav,
   ListingEditorContent,
@@ -12,17 +12,26 @@ export default function HostingEdit() {
   const navigate = useNavigate();
   const [openMenu, setOpenMenu] = useState(false);
 
-  const { clearToken } = useToken();
+  const { token, clearToken } = useToken();
   const { account, clearAccount } = useAccount();
 
   // ✅ 탭 상태
   const [activeSection, setActiveSection] = useState("basic"); // basic | room | price
 
-  // (지금 edit 페이지에서 list 데이터 안 쓰면 이 부분은 제거해도 됨)
+  // 주입 시켜보기?
+  const [accommodation, setAccommodation] = useState();
+
+  const { accommodationId } = useParams();
   useEffect(() => {
-    if (!account?.id) return;
-    getMyHosting(account.id).catch(() => {});
-  }, [account?.id]);
+    getDetailAccommodation(accommodationId).then((obj) => {
+      if (obj.success) {
+        setAccommodation(obj.accommodation);
+      } else {
+        window.alert("숙소 수정 페이지 불러오기 오류!");
+        navigate("/hosting/listings");
+      }
+    });
+  }, []);
 
   const MENU = [
     { label: "찜", path: "/profile/wishlists" },
@@ -120,12 +129,21 @@ export default function HostingEdit() {
         <div className="max-w-[1350px] mx-auto px-6 py-10 flex gap-10">
           {/* 왼쪽 */}
           <aside className="w-[400px] shrink-0">
-            <EditorSideNav active={activeSection} onChange={setActiveSection} />
+            <EditorSideNav
+              accommodation={accommodation}
+              active={activeSection}
+              onChange={setActiveSection}
+            />
           </aside>
 
           {/* 오른쪽 */}
           <main className="flex-1 min-w-0">
-            <ListingEditorContent active={activeSection} />
+            <ListingEditorContent
+              token={token}
+              accommodationId={accommodationId}
+              accommodation={accommodation}
+              active={activeSection}
+            />
             {/* 또는 여기 자리에 <MessageList /> */}
           </main>
         </div>
