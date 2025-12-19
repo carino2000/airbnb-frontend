@@ -3,10 +3,22 @@ import { useEffect, useState } from "react";
 import logo from "../assets/Airbnb_Logo.png";
 
 import { useAccount, useToken } from "../stores/account-store";
-import { deleteReservation, getMyReservations } from "@/util/DatabaseUtil";
+import {
+  deleteReservation,
+  getMyReservations,
+  updateReservation,
+} from "@/util/DatabaseUtil";
 
 export default function BookingHistory() {
   const navigate = useNavigate();
+
+  const [editOpen, setEditOpen] = useState(false);
+  const [editForm, setEditForm] = useState({
+    visitors: 1,
+    startDate: "",
+    endDate: "",
+    price: 0,
+  });
 
   // ===== 추가된 상태 =====
   const [openMenu, setOpenMenu] = useState(false);
@@ -191,15 +203,16 @@ export default function BookingHistory() {
             reservations.map((item) => {
               return (
                 <div
+                  onClick={() => reservationDitail(item)}
                   key={item.code}
-                  className="border rounded-xl p-5 flex gap-6 hover:bg-neutral-50"
+                  className="border rounded-xl p-5 flex gap-6 hover:bg-neutral-100"
                 >
                   <div
                     onClick={() => navigate(`/room/${item.accommodationId}`)}
                     className="w-40 h-[100px] bg-neutral-200 rounded-md hover:cursor-pointer"
                   >
                     <img
-                      className="w-full h-full rounded-xl object-cover p-3"
+                      className="w-full h-full rounded-xl object-cover"
                       src={`http://192.168.0.17:8080${item.imageUri}`}
                       alt=""
                     />
@@ -209,11 +222,13 @@ export default function BookingHistory() {
                     <p className="text-sm text-neutral-500 mt-1">
                       {item.startDate} ~ {item.endDate}
                     </p>
-                    <p className="font-semibold mt-2">₩{item.price}</p>
+                    <p className="font-semibold mt-2">
+                      ₩{Number(item.price).toLocaleString()}
+                    </p>
                   </div>
                   <div
                     onClick={() => reservationDitail(item)}
-                    className="self-center px-4 py-2 border rounded-md text-sm hover:cursor-pointer hover:bg-black/5"
+                    className="self-center px-5 py-3 border rounded-md text-sm hover:cursor-pointer hover:bg-black/10"
                   >
                     선택
                   </div>
@@ -226,37 +241,55 @@ export default function BookingHistory() {
         {reservation && (
           <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
             <div className="border rounded-xl p-6 space-y-3">
-              <h3 className="font-semibold">예약 세부정보</h3>
-              <p>예약자 ID: {account.id}</p>
-              <p>게스트: {reservation.visitors}명</p>
-              <p>
-                일정: {reservation.startDate} ~ {reservation.endDate}
+              <h3 className="font-semibold mb-5">예약 세부정보</h3>
+              <p className="text-sm font-light">
+                예약자 ID: <span className="font-semibold">{account.id}</span>
+              </p>
+              <p className="text-sm font-light">
+                게스트:{" "}
+                <span className="font-semibold">{reservation.visitors}</span> 명
+              </p>
+              <p className="text-sm font-light">
+                일정:{" "}
+                <span className="font-semibold">
+                  {" "}
+                  {reservation.startDate} ~ {reservation.endDate}{" "}
+                </span>
               </p>
             </div>
 
             <div className="border rounded-xl p-6 space-y-3">
-              <h3 className="font-semibold">결제 금액</h3>
-              <div className="flex justify-between">
+              <h3 className="font-semibold mb-5">결제 금액</h3>
+              <div className="text-sm flex justify-between">
                 <span>총 결제금액</span>
-                <span className="font-bold text-red-500">
-                  ₩{reservation.price}
+                <span className="text-xl font-bold text-red-600">
+                  ₩{Number(reservation.price).toLocaleString()}
                 </span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between text-sm">
                 <span>예약코드</span>
                 <span className="font-bold">{reservation.code}</span>
               </div>
-              <div className="flex justify-center mt-10 gap-5">
+              <div className="flex justify-center mt-10 gap-4">
                 <button
                   disabled={!modifiable}
+                  onClick={() => {
+                    setEditForm({
+                      visitors: reservation.visitors,
+                      startDate: reservation.startDate,
+                      endDate: reservation.endDate,
+                      price: reservation.price,
+                    });
+                    setEditOpen(true);
+                  }}
                   className={`
-                      px-5 py-3 rounded-md text-sm
-                      ${
-                        modifiable
-                          ? "bg-slate-800 text-white hover:bg-slate-900 cursor-pointer"
-                          : "bg-slate-300 text-white cursor-not-allowed opacity-60"
-                      }
-                          `}
+    w-1/2 py-3 rounded-md text-sm
+    ${
+      modifiable
+        ? "bg-neutral-600 text-white hover:bg-slate-900"
+        : "bg-neutral-300 cursor-not-allowed opacity-60"
+    }
+  `}
                 >
                   예약 수정
                 </button>
@@ -265,10 +298,10 @@ export default function BookingHistory() {
                   onClick={() => reservationDeleteHandle(reservation.code)}
                   disabled={!modifiable}
                   className={`
-                      px-5 py-3 rounded-md text-sm
+                      w-1/2 py-3 rounded-md text-sm
                       ${
                         modifiable
-                          ? "bg-rose-500 text-white hover:bg-rose-600 cursor-pointer"
+                          ? "bg-rose-600 text-white hover:bg-rose-700 cursor-pointer"
                           : "bg-rose-300 text-white cursor-not-allowed opacity-60"
                       }
                       `}
@@ -280,6 +313,110 @@ export default function BookingHistory() {
           </section>
         )}
       </main>
+      {editOpen && (
+        <>
+          {/* 배경 */}
+          <div
+            className="fixed inset-0 bg-black/40 z-50"
+            onClick={() => setEditOpen(false)}
+          />
+
+          {/* 모달 */}
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="bg-white w-full max-w-md rounded-xl p-10 space-y-5">
+              <h2 className="text-xl font-bold">예약 수정</h2>
+
+              <div className="space-y-2">
+                <label className="text-xs">게스트 수</label>
+                <input
+                  type="number"
+                  value={editForm.visitors}
+                  onChange={(e) =>
+                    setEditForm({
+                      ...editForm,
+                      visitors: Number(e.target.value),
+                    })
+                  }
+                  className="w-full border rounded-md px-3 py-2"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs">시작일</label>
+                <input
+                  type="date"
+                  value={editForm.startDate}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, startDate: e.target.value })
+                  }
+                  className="w-full border rounded-md px-3 py-2"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs">종료일</label>
+                <input
+                  type="date"
+                  value={editForm.endDate}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, endDate: e.target.value })
+                  }
+                  className="w-full border rounded-md px-3 py-2"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs">가격</label>
+                <input
+                  type="number"
+                  value={editForm.price}
+                  onChange={(e) =>
+                    setEditForm({
+                      ...editForm,
+                      price: Number(e.target.value),
+                    })
+                  }
+                  className="w-full border rounded-md px-3 py-2"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={() => setEditOpen(false)}
+                  className="w-1/2 py-2 border rounded-md"
+                >
+                  취소
+                </button>
+
+                <button
+                  onClick={async () => {
+                    const res = await updateReservation(
+                      reservation.code,
+                      {
+                        ...editForm,
+                        visitors: Number(editForm.visitors),
+                        price: Number(editForm.price),
+                      },
+                      token
+                    );
+
+                    if (res.success) {
+                      alert("예약이 수정되었습니다");
+                      setEditOpen(false);
+                      setReservation({ ...reservation, ...editForm });
+                    } else {
+                      alert("예약 수정 실패");
+                    }
+                  }}
+                  className="w-1/2 py-2 bg-black text-white rounded-md"
+                >
+                  수정 완료
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 }

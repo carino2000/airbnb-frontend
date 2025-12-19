@@ -355,17 +355,25 @@ export default function RoomDetail() {
             {token && account && (
               <div
                 className="hidden sm:block rounded-full px-3 py-2 hover:bg-gray-200 cursor-pointer"
-                onClick={() => navigate("/hosting")}
+                onClick={() => navigate("/hosting/listings")}
               >
                 <p className="text-xs font-bold whitespace-nowrap">
-                  호스팅하기
+                  호스트 모드로 전환
                 </p>
               </div>
             )}
 
             {/* 로그인 O → 프로필 원형 */}
             {token && account && (
-              <div className="w-8 h-8 rounded-full bg-neutral-800 text-white flex items-center justify-center text-xs font-bold">
+              <div
+                className="
+      w-8 h-8 rounded-full bg-neutral-800
+      text-white flex items-center justify-center
+      text-xs font-bold cursor-pointer
+      hover:ring-2 hover:ring-black/20 transition
+    "
+                onClick={() => navigate("/profile")}
+              >
                 {account.name?.charAt(0)}
               </div>
             )}
