@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
 import { useAccount, useToken } from "../stores/account-store";
 import {
   createMessage,
   getMessage,
   getMyMessageList,
 } from "../util/DatabaseUtil";
+import { useEffect, useRef, useState } from "react";
 
 export default function MessageList() {
   const { token } = useToken();
@@ -16,6 +16,10 @@ export default function MessageList() {
     reservationCode: null,
     data: [],
   });
+  const bottomRef = useRef(null);
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "auto" });
+  }, [message.data]);
 
   /* =========================
      내 메시지룸 목록 조회
@@ -37,20 +41,13 @@ export default function MessageList() {
   ========================= */
   function selectMessageRoom(reservationCode, recipientId) {
     if (!reservationCode || !recipientId) return;
+
     getMessage(reservationCode, token).then((obj) => {
-      if (obj?.success && Array.isArray(obj.messages)) {
-        setMessage({
-          recipientId,
-          reservationCode,
-          data: obj.messages,
-        });
-      } else {
-        setMessage({
-          recipientId,
-          reservationCode,
-          data: [],
-        });
-      }
+      setMessage({
+        recipientId,
+        reservationCode,
+        data: obj?.success && Array.isArray(obj.messages) ? obj.messages : [],
+      });
     });
   }
 
@@ -83,11 +80,11 @@ export default function MessageList() {
   }
 
   return (
-    <section className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 h-[600px]">
+    <section className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 h-[600px] overflow-hidden">
       {/* =========================
           왼쪽: 대화 목록
       ========================= */}
-      <aside className="border rounded-xl overflow-y-auto bg-white">
+      <aside className="border rounded-xl bg-white h-full overflow-y-auto">
         {messageList.map((room) => (
           <div
             key={room.reservationCode}
@@ -120,11 +117,13 @@ export default function MessageList() {
       {/* =========================
           오른쪽: 채팅 영역
       ========================= */}
-      <div className="border rounded-xl flex flex-col bg-white">
-        <div className="px-5 py-4 border-b font-semibold">
+      <div className="border rounded-xl flex flex-col bg-white h-full overflow-hidden">
+        {/* 헤더 */}
+        <div className="px-5 py-4 border-b font-semibold shrink-0">
           {message.recipientId}
         </div>
 
+        {/* ✅ 메시지 영역만 스크롤 */}
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
           {message.data.map((item) =>
             item.writerId === message.recipientId ? (
@@ -141,11 +140,13 @@ export default function MessageList() {
               </div>
             )
           )}
+          <div ref={bottomRef} />
         </div>
 
+        {/* 입력창 */}
         <form
           onSubmit={messageSendHandle}
-          className="border-t px-4 py-3 flex gap-2"
+          className="border-t px-4 py-3 flex gap-2 shrink-0"
         >
           <input
             name="messageInput"
