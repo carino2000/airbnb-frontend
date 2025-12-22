@@ -301,7 +301,7 @@ export function ListingEditorContent({
     }
 
     alert("정상 처리되었습니다!");
-    navigate(`/hosting/listing/${accommodationId}/edit`);
+    navigate("/hosting/listings");
   }
 
   function deleteSubmitHandle() {

@@ -367,6 +367,18 @@ function deleteAccommodation(accommodationId, token) {
   }).then((res) => res.json());
 }
 
+function countMyReview(accountId, reservationCode, token) {
+  return fetch(
+    `${serverAddr}/reservations/review/count?accountId=${accountId}&reservationCode=${reservationCode}`,
+    {
+      method: "GET",
+      headers: {
+        Token: token,
+      },
+    }
+  ).then((res) => res.json());
+}
+
 export {
   idCheck,
   emailCheck,
@@ -401,4 +413,5 @@ export {
   updateReservation,
   deleteReservation,
   getMyReservations,
+  countMyReview,
 };

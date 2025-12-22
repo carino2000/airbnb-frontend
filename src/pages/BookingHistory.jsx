@@ -5,6 +5,7 @@ import logo from "../assets/Airbnb_Logo.png";
 import { useAccount, useToken } from "../stores/account-store";
 import {
   checkReservation,
+  countMyReview,
   deleteReservation,
   getMyReservations,
   updateReservation,
@@ -103,6 +104,16 @@ export default function BookingHistory() {
     editForm.endDate,
   ]);
 
+  function countMyReviewHandle(accountId, reservationCode) {
+    countMyReview(accountId, reservationCode, token).then((obj) => {
+      if (obj.success) {
+        window.alert("이미 작성한 리뷰가 존재하는 예약건입니다.");
+      } else {
+        navigate(`/review/${reservation.code}/write`);
+      }
+    });
+  }
+
   function reservationDitail(item) {
     setReservation(item);
     const now = new Date();
@@ -111,7 +122,6 @@ export default function BookingHistory() {
     oneWeekLater.setDate(now.getDate() + 7);
     const isModifiable = startDate > oneWeekLater;
     setModifiable(isModifiable);
-    console.log(item.accommodationId);
     setEditForm((old) => ({ ...old, accommodationId: item.accommodationId }));
     return;
   }
@@ -296,6 +306,25 @@ export default function BookingHistory() {
                   {reservation.startDate} ~ {reservation.endDate}{" "}
                 </span>
               </p>
+              <div>
+                <button
+                  onClick={() =>
+                    countMyReviewHandle(account.id, reservation.code)
+                  }
+                  disabled={modifiable}
+                  className={`
+    w-1/3 py-2.5 rounded-md text-sm
+    transition
+    ${
+      !modifiable
+        ? "bg-black text-white hover:bg-gray-900 cursor-pointer active:scale-95"
+        : "bg-gray-300 text-white cursor-not-allowed opacity-60"
+    }
+  `}
+                >
+                  리뷰 작성
+                </button>
+              </div>
             </div>
 
             <div className="border rounded-xl p-6 space-y-3">

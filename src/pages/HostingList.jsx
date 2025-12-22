@@ -13,7 +13,7 @@ export default function HostingList() {
 
   const [openMenu, setOpenMenu] = useState(false);
 
-  const { clearToken } = useToken();
+  const { token, clearToken } = useToken();
   const { account, clearAccount } = useAccount();
 
   const [items, setItems] = useState([]);
@@ -27,6 +27,13 @@ export default function HostingList() {
   function editHostingHandle(accommodationId) {
     navigate(`/hosting/listing/${accommodationId}/edit`);
   }
+
+  useEffect(() => {
+    if (!account || !token) {
+      window.alert("로그인이 필요한 페이지입니다.");
+      navigate("/");
+    }
+  }, [account, token]);
 
   useEffect(() => {
     getMyHosting(account.id).then((obj) => {
@@ -205,7 +212,16 @@ export default function HostingList() {
                 addItem();
                 navigate("/hosting");
               }}
-              className="flex items-center gap-2 cursor-pointer text-sm mt-7"
+              className="
+    mt-7 flex items-center gap-2
+    rounded-lg bg-rose-500
+    px-5 py-2.5
+    text-sm font-medium text-white
+    shadow-sm
+    transition
+    hover:bg-rose-600 hover:shadow-md
+    active:scale-95
+  "
             >
               + 추가하기
             </button>
@@ -217,7 +233,32 @@ export default function HostingList() {
         {tab === "listings" && (
           <div className="grid grid-cols-4 gap-4 ">
             {items.length === 0 ? (
-              <div>리스팅 정보 없음</div>
+              <div className="flex items-center justify-center py-24">
+                <div className="flex flex-col items-center rounded-2xl bg-gray-50 px-10 py-12 text-center shadow-sm">
+                  <div className="mb-4 text-5xl">🏠</div>
+
+                  <h2 className="mb-2 text-lg font-semibold text-gray-800">
+                    리스팅 정보가 없습니다
+                  </h2>
+
+                  <p className="text-sm leading-relaxed text-gray-500">
+                    아직 등록된 숙소가 없습니다.
+                    <br />
+                    새로운 리스팅을 추가해 주세요.
+                  </p>
+
+                  {/* 선택 버튼 */}
+                  <button
+                    onClick={() => {
+                      addItem();
+                      navigate("/hosting");
+                    }}
+                    className="mt-6 rounded-lg bg-rose-500 px-6 py-2 text-sm font-medium text-white transition hover:bg-rose-600"
+                  >
+                    리스팅 추가하기
+                  </button>
+                </div>
+              </div>
             ) : (
               items.map((item, index) => (
                 <div
