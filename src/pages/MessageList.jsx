@@ -37,8 +37,6 @@ export default function MessageList() {
   ========================= */
   function selectMessageRoom(reservationCode, recipientId) {
     if (!reservationCode || !recipientId) return;
-
-    console.log(reservationCode, token);
     getMessage(reservationCode, token).then((obj) => {
       if (obj?.success && Array.isArray(obj.messages)) {
         setMessage({
