@@ -1,5 +1,5 @@
 import logo from "../assets/Airbnb_Logo.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { useToken, useAccount } from "../stores/account-store";
 import {
@@ -31,6 +31,14 @@ export default function Profile() {
   };
 
   const { token } = useToken();
+
+  useEffect(() => {
+    if (!account || !token) {
+      window.alert("로그인이 필요한 페이지입니다.");
+      navigate("/");
+    }
+  }, [account, token]);
+
   const handleUpdateProfile = async (data) => {
     const res = await updateAccountProfile(account.id, data, token);
 
@@ -151,48 +159,74 @@ export default function Profile() {
             {/* 메뉴 */}
             {openMenu && (
               <>
-                {/* 바깥 클릭 닫기 */}
+                {/* ⬇바깥 클릭 감지용 오버레이 */}
                 <div
                   className="fixed inset-0 z-40"
                   onClick={() => setOpenMenu(false)}
                 />
 
-                {/* 메뉴 박스 */}
-                <div className="absolute top-12 right-0 md:right-0 w-[200px] bg-white rounded-md shadow-xl border z-50">
-                  {MENU.map((group) => (
-                    <div key={group.section}>
-                      <p className="px-4 pt-3 pb-1 text-[11px] text-neutral-400">
-                        {group.section}
-                      </p>
+                {/* 메뉴*/}
+                <div className="absolute top-[70px] right-6 md:right-10 w-[200px] bg-white rounded-md shadow-xl border z-50">
+                  {!token && (
+                    <>
+                      <div
+                        className="px-4 py-3 hover:bg-gray-100 text-xs cursor-pointer"
+                        onClick={() => {
+                          setShowLogin(true);
+                          setOpenMenu(false);
+                        }}
+                      >
+                        로그인
+                      </div>
+                      <div
+                        className="px-4 py-3 hover:bg-gray-100 text-xs cursor-pointer"
+                        onClick={() => {
+                          navigate("/sign-up");
+                          setOpenMenu(false);
+                        }}
+                      >
+                        회원가입
+                      </div>
+                    </>
+                  )}
 
-                      {group.items.map((item) => (
-                        <div
-                          key={item.path}
-                          className="px-4 py-2 hover:bg-gray-100 text-xs cursor-pointer"
-                          onClick={() => {
-                            navigate(item.path);
-                            setOpenMenu(false);
-                          }}
-                        >
-                          {item.label}
-                        </div>
-                      ))}
+                  {token &&
+                    MENU.map((group) => (
+                      <div key={group.section}>
+                        <p className="px-4 pt-3 pb-1 text-[11px] text-neutral-400">
+                          {group.section}
+                        </p>
 
-                      <div className="border-t my-1" />
+                        {group.items.map((item) => (
+                          <div
+                            key={item.path}
+                            className="px-4 py-2 hover:bg-gray-100 text-xs cursor-pointer"
+                            onClick={() => {
+                              navigate(item.path);
+                              setOpenMenu(false);
+                            }}
+                          >
+                            {item.label}
+                          </div>
+                        ))}
+
+                        <div className="border-t my-1" />
+                      </div>
+                    ))}
+
+                  {token && (
+                    <div
+                      className="px-4 py-3 hover:bg-gray-100 text-xs text-red-500 cursor-pointer"
+                      onClick={() => {
+                        clearToken();
+                        clearAccount();
+                        setOpenMenu(false);
+                        navigate("/");
+                      }}
+                    >
+                      로그아웃
                     </div>
-                  ))}
-
-                  <div
-                    className="px-4 py-3 hover:bg-gray-100 text-xs text-red-500 cursor-pointer"
-                    onClick={() => {
-                      clearToken();
-                      clearAccount();
-                      setOpenMenu(false);
-                      navigate("/");
-                    }}
-                  >
-                    로그아웃
-                  </div>
+                  )}
                 </div>
               </>
             )}
