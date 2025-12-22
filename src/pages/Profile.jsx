@@ -244,7 +244,7 @@ export default function Profile() {
             <nav className="space-y-2">
               <button
                 onClick={() => setActiveTab("info")}
-                className={`w-full text-left px-4 py-3 rounded-lg font-semibold
+                className={`w-full text-left px-4 py-3 rounded-lg
       ${
         activeTab === "info"
           ? "bg-neutral-100"

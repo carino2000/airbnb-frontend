@@ -58,6 +58,13 @@ export default function BookingHistory() {
   ];
 
   useEffect(() => {
+    if (!account || !token) {
+      window.alert("로그인이 필요한 페이지입니다.");
+      navigate("/");
+    }
+  }, [account, token]);
+
+  useEffect(() => {
     if (!account) return;
     getMyReservations(account.id, token).then((obj) => {
       if (obj.success) {

@@ -639,7 +639,19 @@ export default function RoomDetail() {
             </section>
 
             <section className="flex items-center gap-4 border-t border-t-neutral-300 pt-6">
-              <div className="w-12 h-12 rounded-full bg-gray-300" />
+              {token && account && (
+                <div
+                  className="
+      w-12 h-12 rounded-full bg-neutral-800
+      text-white flex items-center justify-center
+      text-lg font-bold cursor-pointer
+      hover:ring-2 hover:ring-black/20 transition
+    "
+                  onClick={() => navigate("/profile")}
+                >
+                  {account.name?.charAt(0)}
+                </div>
+              )}
               <div>
                 <p className="font-medium">
                   호스트:{" "}

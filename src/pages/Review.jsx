@@ -73,6 +73,15 @@ export default function Review() {
   ];
 
   useEffect(() => {
+    countMyReview(account.id, reservationCode, token).then((obj) => {
+      if (obj.success) {
+        window.alert("이미 리뷰를 작성한 숙소입니다!");
+        navigate("/profile/bookings");
+      }
+    });
+  }, []);
+
+  useEffect(() => {
     if (!account || !token) {
       window.alert("로그인이 필요한 페이지입니다.");
       navigate("/");
